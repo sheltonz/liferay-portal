@@ -14,9 +14,10 @@
 
 package com.liferay.portal.spring.aop;
 
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.spring.aop.AdvisedSupport;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.Serializable;
 
@@ -30,21 +31,28 @@ import java.util.Objects;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import org.springframework.aop.TargetSource;
-import org.springframework.aop.framework.AdvisedSupport;
-
 /**
  * @author Shuyang Zhou
  */
 public class ServiceBeanMethodInvocation
 	implements MethodInvocation, Serializable {
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #ServiceBeanMethodInvocation(Object, Method, Object[])}
+	 */
+	@Deprecated
 	public ServiceBeanMethodInvocation(
 		Object target, Class<?> targetClass, Method method,
 		Object[] arguments) {
 
+		this(target, method, arguments);
+	}
+
+	public ServiceBeanMethodInvocation(
+		Object target, Method method, Object[] arguments) {
+
 		_target = target;
-		_targetClass = targetClass;
 		_method = method;
 		_arguments = arguments;
 
@@ -97,7 +105,7 @@ public class ServiceBeanMethodInvocation
 	}
 
 	public Class<?> getTargetClass() {
-		return _targetClass;
+		return _target.getClass();
 	}
 
 	@Override
@@ -139,10 +147,7 @@ public class ServiceBeanMethodInvocation
 					ServiceBeanAopProxy.getAdvisedSupport(argument);
 
 				if (advisedSupport != null) {
-					TargetSource targetSource =
-						advisedSupport.getTargetSource();
-
-					argument = targetSource.getTarget();
+					argument = advisedSupport.getTarget();
 				}
 			}
 
@@ -167,9 +172,13 @@ public class ServiceBeanMethodInvocation
 		_methodInterceptors = methodInterceptors;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public ServiceBeanMethodInvocation toCacheKeyModel() {
 		ServiceBeanMethodInvocation serviceBeanMethodInvocation =
-			new ServiceBeanMethodInvocation(null, null, _method, null);
+			new ServiceBeanMethodInvocation(null, _method, null);
 
 		serviceBeanMethodInvocation._equalsMethod = _equalsMethod;
 		serviceBeanMethodInvocation._hashCode = _hashCode;
@@ -200,17 +209,20 @@ public class ServiceBeanMethodInvocation
 
 			sb.append(parameterType.getName());
 
-			if ((i + 1) < parameterTypes.length) {
-				sb.append(StringPool.COMMA);
-			}
+			sb.append(StringPool.COMMA);
+		}
+
+		if (parameterTypes.length > 0) {
+			sb.setIndex(sb.index() - 1);
 		}
 
 		sb.append(StringPool.CLOSE_PARENTHESIS);
 
-		if (_targetClass != null) {
-			sb.append(StringPool.AT);
-			sb.append(_targetClass.getName());
-		}
+		sb.append(StringPool.AT);
+
+		Class<?> targetClass = _target.getClass();
+
+		sb.append(targetClass.getName());
 
 		_toString = sb.toString();
 
@@ -225,7 +237,6 @@ public class ServiceBeanMethodInvocation
 	private final Method _method;
 	private List<MethodInterceptor> _methodInterceptors;
 	private final Object _target;
-	private final Class<?> _targetClass;
 	private String _toString;
 
 }

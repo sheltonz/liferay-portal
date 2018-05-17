@@ -16,6 +16,7 @@ package com.liferay.portal.kernel.upgrade.v6_2_0;
 
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.store.DLStoreUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 
 import java.sql.PreparedStatement;
@@ -442,8 +442,8 @@ public abstract class BaseUpgradeAttachments extends UpgradeProcess {
 
 		try {
 			ps = connection.prepareStatement(
-				"select actionId, bitwiseValue from ResourceAction " +
-					"where name = ?");
+				"select actionId, bitwiseValue from ResourceAction where " +
+					"name = ?");
 
 			ps.setString(1, name);
 

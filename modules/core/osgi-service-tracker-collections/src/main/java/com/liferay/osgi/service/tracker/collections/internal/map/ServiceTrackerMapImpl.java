@@ -55,11 +55,13 @@ public class ServiceTrackerMapImpl<K, SR, TS, R>
 		_serviceTrackerMapBucketFactory = serviceTrackerMapBucketFactory;
 		_serviceTrackerMapListener = serviceTrackerMapListener;
 
+		_logger = new Logger(bundleContext);
+
 		_serviceTracker = ServiceTrackerUtil.createServiceTracker(
 			bundleContext, clazz, filterString,
 			new ServiceReferenceServiceTrackerCustomizer());
 
-		_logger = new Logger(bundleContext);
+		_serviceTracker.open();
 	}
 
 	@Override
@@ -87,11 +89,6 @@ public class ServiceTrackerMapImpl<K, SR, TS, R>
 	@Override
 	public Set<K> keySet() {
 		return Collections.unmodifiableSet(_serviceTrackerBuckets.keySet());
-	}
-
-	@Override
-	public void open() {
-		_serviceTracker.open();
 	}
 
 	@Override
@@ -195,21 +192,24 @@ public class ServiceTrackerMapImpl<K, SR, TS, R>
 
 		@Override
 		public void emit(K key) {
-			if ((_keyedServiceReferenceServiceTuple == null) &&
-				!_invokedServiceTrackerCustomizer) {
+			if (_keyedServiceReferenceServiceTuple == null) {
+				if (!_invokedServiceTrackerCustomizer) {
+					TS service = _serviceTrackerCustomizer.addingService(
+						_serviceReference);
 
-				TS service = _serviceTrackerCustomizer.addingService(
-					_serviceReference);
+					_invokedServiceTrackerCustomizer = true;
 
-				_invokedServiceTrackerCustomizer = true;
+					if (service == null) {
+						return;
+					}
 
-				if (service == null) {
+					_keyedServiceReferenceServiceTuple =
+						new KeyedServiceReferenceServiceTuple<>(
+							_serviceReference, service);
+				}
+				else {
 					return;
 				}
-
-				_keyedServiceReferenceServiceTuple =
-					new KeyedServiceReferenceServiceTuple<>(
-						_serviceReference, service);
 			}
 
 			_storeKey(key, _keyedServiceReferenceServiceTuple);

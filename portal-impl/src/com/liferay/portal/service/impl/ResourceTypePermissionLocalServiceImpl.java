@@ -38,6 +38,14 @@ public class ResourceTypePermissionLocalServiceImpl
 	extends ResourceTypePermissionLocalServiceBaseImpl {
 
 	@Override
+	public ResourceTypePermission fetchResourceTypePermission(
+		long companyId, long groupId, String name, long roleId) {
+
+		return resourceTypePermissionPersistence.fetchByC_G_N_R(
+			companyId, groupId, name, roleId);
+	}
+
+	@Override
 	public long getCompanyScopeActionIds(
 		long companyId, String name, long roleId) {
 
@@ -77,18 +85,18 @@ public class ResourceTypePermissionLocalServiceImpl
 			resourceTypePermissionFinder.findByEitherScopeC_G_N(
 				companyId, groupId, name);
 
-		ResourceBlockPermissionsContainer resourceBlockPermissionContainer =
+		ResourceBlockPermissionsContainer resourceBlockPermissionsContainer =
 			new ResourceBlockPermissionsContainer();
 
 		for (ResourceTypePermission resourceTypePermission :
 				resourceTypePermissions) {
 
-			resourceBlockPermissionContainer.setPermissions(
+			resourceBlockPermissionsContainer.setPermissions(
 				resourceTypePermission.getRoleId(),
 				resourceTypePermission.getActionIds());
 		}
 
-		return resourceBlockPermissionContainer;
+		return resourceBlockPermissionsContainer;
 	}
 
 	@Override
@@ -146,6 +154,7 @@ public class ResourceTypePermissionLocalServiceImpl
 				companyId, groupId, name, roleId);
 
 		long actionIdsLong = resourceTypePermission.getActionIds();
+
 		long bitwiseValue = resourceAction.getBitwiseValue();
 
 		if ((actionIdsLong & bitwiseValue) == bitwiseValue) {

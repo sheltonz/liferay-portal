@@ -32,12 +32,14 @@ import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.lock.Lock;
+import com.liferay.portal.kernel.model.UserConstants;
 import com.liferay.portal.kernel.repository.Repository;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileShortcut;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.repository.model.RepositoryEntry;
+import com.liferay.portal.kernel.repository.util.RepositoryUserUtil;
 import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.IndexSearcherHelperUtil;
 import com.liferay.portal.kernel.search.Indexer;
@@ -163,10 +165,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return addFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			folderId, sourceFileName, mimeType, title, description, changeLog,
-			file, serviceContext);
+			RepositoryUserUtil.getUserId(), folderId, sourceFileName, mimeType,
+			title, description, changeLog, file, serviceContext);
 	}
 
 	/**
@@ -183,10 +183,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return addFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			folderId, sourceFileName, mimeType, title, description, changeLog,
-			is, size, serviceContext);
+			RepositoryUserUtil.getUserId(), folderId, sourceFileName, mimeType,
+			title, description, changeLog, is, size, serviceContext);
 	}
 
 	@Override
@@ -229,9 +227,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return addFolder(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			parentFolderId, name, description, serviceContext);
+			RepositoryUserUtil.getUserId(), parentFolderId, name, description,
+			serviceContext);
 	}
 
 	@Override
@@ -258,9 +255,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		checkInFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			fileEntryId, major, changeLog, serviceContext);
+			RepositoryUserUtil.getUserId(), fileEntryId, major, changeLog,
+			serviceContext);
 	}
 
 	@Override
@@ -294,9 +290,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		checkInFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			fileEntryId, lockUuid, serviceContext);
+			RepositoryUserUtil.getUserId(), fileEntryId, lockUuid,
+			serviceContext);
 	}
 
 	@Override
@@ -347,9 +342,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return copyFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			groupId, fileEntryId, destFolderId, serviceContext);
+			RepositoryUserUtil.getUserId(), groupId, fileEntryId, destFolderId,
+			serviceContext);
 	}
 
 	@Override
@@ -440,6 +434,19 @@ public class LiferayRepository
 
 	@Override
 	public List<FileEntry> getFileEntries(
+			long folderId, String[] mimeTypes, int status, int start, int end,
+			OrderByComparator<FileEntry> obc)
+		throws PortalException {
+
+		List<DLFileEntry> dlFileEntries = dlFileEntryService.getFileEntries(
+			getGroupId(), toFolderId(folderId), mimeTypes, status, start, end,
+			DLFileEntryOrderByComparator.getOrderByComparator(obc));
+
+		return RepositoryModelUtil.toFileEntries(dlFileEntries);
+	}
+
+	@Override
+	public List<FileEntry> getFileEntries(
 			long folderId, String[] mimeTypes, int start, int end,
 			OrderByComparator<FileEntry> obc)
 		throws PortalException {
@@ -503,6 +510,15 @@ public class LiferayRepository
 	public int getFileEntriesCount(long folderId, String[] mimeTypes) {
 		return dlFileEntryService.getFileEntriesCount(
 			getGroupId(), folderId, mimeTypes);
+	}
+
+	@Override
+	public int getFileEntriesCount(
+			long folderId, String[] mimeTypes, int status)
+		throws PortalException {
+
+		return dlFileEntryService.getFileEntriesCount(
+			getGroupId(), toFolderId(folderId), mimeTypes, status);
 	}
 
 	@Override
@@ -614,12 +630,18 @@ public class LiferayRepository
 	@Override
 	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
 			long folderId, int status, String[] mimeTypes,
-			boolean includeMountFolders, int start, int end,
-			OrderByComparator<?> obc)
+			boolean includeMountFolders, boolean includeOwner, int start,
+			int end, OrderByComparator<?> obc)
 		throws PortalException {
 
+		long userId = UserConstants.USER_ID_DEFAULT;
+
+		if (includeOwner) {
+			userId = PrincipalThreadLocal.getUserId();
+		}
+
 		QueryDefinition<Object> queryDefinition = new QueryDefinition<>(
-			status, PrincipalThreadLocal.getUserId(), true, start, end,
+			status, userId, includeOwner, start, end,
 			(OrderByComparator<Object>)obc);
 
 		List<Object> dlFoldersAndDLFileEntriesAndDLFileShortcuts =
@@ -629,6 +651,18 @@ public class LiferayRepository
 
 		return RepositoryModelUtil.toRepositoryEntries(
 			dlFoldersAndDLFileEntriesAndDLFileShortcuts);
+	}
+
+	@Override
+	public List<RepositoryEntry> getFoldersAndFileEntriesAndFileShortcuts(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, int start, int end,
+			OrderByComparator<?> obc)
+		throws PortalException {
+
+		return getFoldersAndFileEntriesAndFileShortcuts(
+			folderId, status, mimeTypes, includeMountFolders, true, start, end,
+			obc);
 	}
 
 	@Override
@@ -646,8 +680,24 @@ public class LiferayRepository
 			boolean includeMountFolders)
 		throws PortalException {
 
+		return getFoldersAndFileEntriesAndFileShortcutsCount(
+			folderId, status, mimeTypes, includeMountFolders, true);
+	}
+
+	@Override
+	public int getFoldersAndFileEntriesAndFileShortcutsCount(
+			long folderId, int status, String[] mimeTypes,
+			boolean includeMountFolders, boolean includeOwner)
+		throws PortalException {
+
+		long userId = UserConstants.USER_ID_DEFAULT;
+
+		if (includeOwner) {
+			userId = PrincipalThreadLocal.getUserId();
+		}
+
 		QueryDefinition<Object> queryDefinition = new QueryDefinition<>(
-			status, PrincipalThreadLocal.getUserId(), true);
+			status, userId, includeOwner);
 
 		return dlFolderService.getFoldersAndFileEntriesAndFileShortcutsCount(
 			getGroupId(), toFolderId(folderId), mimeTypes, includeMountFolders,
@@ -801,9 +851,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return moveFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			fileEntryId, newFolderId, serviceContext);
+			RepositoryUserUtil.getUserId(), fileEntryId, newFolderId,
+			serviceContext);
 	}
 
 	@Override
@@ -830,9 +879,8 @@ public class LiferayRepository
 		throws PortalException {
 
 		return moveFolder(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			folderId, newParentFolderId, serviceContext);
+			RepositoryUserUtil.getUserId(), folderId, newParentFolderId,
+			serviceContext);
 	}
 
 	@Override
@@ -997,10 +1045,9 @@ public class LiferayRepository
 		throws PortalException {
 
 		return updateFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			fileEntryId, sourceFileName, mimeType, title, description,
-			changeLog, majorVersion, file, serviceContext);
+			RepositoryUserUtil.getUserId(), fileEntryId, sourceFileName,
+			mimeType, title, description, changeLog, majorVersion, file,
+			serviceContext);
 	}
 
 	/**
@@ -1018,10 +1065,9 @@ public class LiferayRepository
 		throws PortalException {
 
 		return updateFileEntry(
-			com.liferay.portal.kernel.repository.util.RepositoryUserUtil.
-				getUserId(),
-			fileEntryId, sourceFileName, mimeType, title, description,
-			changeLog, majorVersion, is, size, serviceContext);
+			RepositoryUserUtil.getUserId(), fileEntryId, sourceFileName,
+			mimeType, title, description, changeLog, majorVersion, is, size,
+			serviceContext);
 	}
 
 	@Override

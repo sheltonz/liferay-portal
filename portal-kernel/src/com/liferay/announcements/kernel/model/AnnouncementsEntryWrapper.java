@@ -76,7 +76,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 		attributes.put("displayDate", getDisplayDate());
 		attributes.put("expirationDate", getExpirationDate());
 		attributes.put("priority", getPriority());
-		attributes.put("alert", getAlert());
+		attributes.put("alert", isAlert());
 
 		return attributes;
 	}
@@ -187,13 +187,13 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	}
 
 	@Override
-	public AnnouncementsEntry toEscapedModel() {
-		return new AnnouncementsEntryWrapper(_announcementsEntry.toEscapedModel());
+	public Object clone() {
+		return new AnnouncementsEntryWrapper((AnnouncementsEntry)_announcementsEntry.clone());
 	}
 
 	@Override
-	public AnnouncementsEntry toUnescapedModel() {
-		return new AnnouncementsEntryWrapper(_announcementsEntry.toUnescapedModel());
+	public int compareTo(AnnouncementsEntry announcementsEntry) {
+		return _announcementsEntry.compareTo(announcementsEntry);
 	}
 
 	/**
@@ -204,6 +204,217 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	@Override
 	public boolean getAlert() {
 		return _announcementsEntry.getAlert();
+	}
+
+	/**
+	* Returns the fully qualified class name of this announcements entry.
+	*
+	* @return the fully qualified class name of this announcements entry
+	*/
+	@Override
+	public String getClassName() {
+		return _announcementsEntry.getClassName();
+	}
+
+	/**
+	* Returns the class name ID of this announcements entry.
+	*
+	* @return the class name ID of this announcements entry
+	*/
+	@Override
+	public long getClassNameId() {
+		return _announcementsEntry.getClassNameId();
+	}
+
+	/**
+	* Returns the class pk of this announcements entry.
+	*
+	* @return the class pk of this announcements entry
+	*/
+	@Override
+	public long getClassPK() {
+		return _announcementsEntry.getClassPK();
+	}
+
+	/**
+	* Returns the company ID of this announcements entry.
+	*
+	* @return the company ID of this announcements entry
+	*/
+	@Override
+	public long getCompanyId() {
+		return _announcementsEntry.getCompanyId();
+	}
+
+	/**
+	* Returns the content of this announcements entry.
+	*
+	* @return the content of this announcements entry
+	*/
+	@Override
+	public String getContent() {
+		return _announcementsEntry.getContent();
+	}
+
+	/**
+	* Returns the create date of this announcements entry.
+	*
+	* @return the create date of this announcements entry
+	*/
+	@Override
+	public Date getCreateDate() {
+		return _announcementsEntry.getCreateDate();
+	}
+
+	/**
+	* Returns the display date of this announcements entry.
+	*
+	* @return the display date of this announcements entry
+	*/
+	@Override
+	public Date getDisplayDate() {
+		return _announcementsEntry.getDisplayDate();
+	}
+
+	/**
+	* Returns the entry ID of this announcements entry.
+	*
+	* @return the entry ID of this announcements entry
+	*/
+	@Override
+	public long getEntryId() {
+		return _announcementsEntry.getEntryId();
+	}
+
+	@Override
+	public ExpandoBridge getExpandoBridge() {
+		return _announcementsEntry.getExpandoBridge();
+	}
+
+	/**
+	* Returns the expiration date of this announcements entry.
+	*
+	* @return the expiration date of this announcements entry
+	*/
+	@Override
+	public Date getExpirationDate() {
+		return _announcementsEntry.getExpirationDate();
+	}
+
+	@Override
+	public long getGroupId()
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _announcementsEntry.getGroupId();
+	}
+
+	/**
+	* Returns the modified date of this announcements entry.
+	*
+	* @return the modified date of this announcements entry
+	*/
+	@Override
+	public Date getModifiedDate() {
+		return _announcementsEntry.getModifiedDate();
+	}
+
+	/**
+	* Returns the primary key of this announcements entry.
+	*
+	* @return the primary key of this announcements entry
+	*/
+	@Override
+	public long getPrimaryKey() {
+		return _announcementsEntry.getPrimaryKey();
+	}
+
+	@Override
+	public Serializable getPrimaryKeyObj() {
+		return _announcementsEntry.getPrimaryKeyObj();
+	}
+
+	/**
+	* Returns the priority of this announcements entry.
+	*
+	* @return the priority of this announcements entry
+	*/
+	@Override
+	public int getPriority() {
+		return _announcementsEntry.getPriority();
+	}
+
+	/**
+	* Returns the title of this announcements entry.
+	*
+	* @return the title of this announcements entry
+	*/
+	@Override
+	public String getTitle() {
+		return _announcementsEntry.getTitle();
+	}
+
+	/**
+	* Returns the type of this announcements entry.
+	*
+	* @return the type of this announcements entry
+	*/
+	@Override
+	public String getType() {
+		return _announcementsEntry.getType();
+	}
+
+	/**
+	* Returns the url of this announcements entry.
+	*
+	* @return the url of this announcements entry
+	*/
+	@Override
+	public String getUrl() {
+		return _announcementsEntry.getUrl();
+	}
+
+	/**
+	* Returns the user ID of this announcements entry.
+	*
+	* @return the user ID of this announcements entry
+	*/
+	@Override
+	public long getUserId() {
+		return _announcementsEntry.getUserId();
+	}
+
+	/**
+	* Returns the user name of this announcements entry.
+	*
+	* @return the user name of this announcements entry
+	*/
+	@Override
+	public String getUserName() {
+		return _announcementsEntry.getUserName();
+	}
+
+	/**
+	* Returns the user uuid of this announcements entry.
+	*
+	* @return the user uuid of this announcements entry
+	*/
+	@Override
+	public String getUserUuid() {
+		return _announcementsEntry.getUserUuid();
+	}
+
+	/**
+	* Returns the uuid of this announcements entry.
+	*
+	* @return the uuid of this announcements entry
+	*/
+	@Override
+	public String getUuid() {
+		return _announcementsEntry.getUuid();
+	}
+
+	@Override
+	public int hashCode() {
+		return _announcementsEntry.hashCode();
 	}
 
 	/**
@@ -232,242 +443,6 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	}
 
 	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _announcementsEntry.getExpandoBridge();
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<AnnouncementsEntry> toCacheModel() {
-		return _announcementsEntry.toCacheModel();
-	}
-
-	@Override
-	public int compareTo(AnnouncementsEntry announcementsEntry) {
-		return _announcementsEntry.compareTo(announcementsEntry);
-	}
-
-	/**
-	* Returns the priority of this announcements entry.
-	*
-	* @return the priority of this announcements entry
-	*/
-	@Override
-	public int getPriority() {
-		return _announcementsEntry.getPriority();
-	}
-
-	@Override
-	public int hashCode() {
-		return _announcementsEntry.hashCode();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _announcementsEntry.getPrimaryKeyObj();
-	}
-
-	@Override
-	public java.lang.Object clone() {
-		return new AnnouncementsEntryWrapper((AnnouncementsEntry)_announcementsEntry.clone());
-	}
-
-	/**
-	* Returns the fully qualified class name of this announcements entry.
-	*
-	* @return the fully qualified class name of this announcements entry
-	*/
-	@Override
-	public java.lang.String getClassName() {
-		return _announcementsEntry.getClassName();
-	}
-
-	/**
-	* Returns the content of this announcements entry.
-	*
-	* @return the content of this announcements entry
-	*/
-	@Override
-	public java.lang.String getContent() {
-		return _announcementsEntry.getContent();
-	}
-
-	/**
-	* Returns the title of this announcements entry.
-	*
-	* @return the title of this announcements entry
-	*/
-	@Override
-	public java.lang.String getTitle() {
-		return _announcementsEntry.getTitle();
-	}
-
-	/**
-	* Returns the type of this announcements entry.
-	*
-	* @return the type of this announcements entry
-	*/
-	@Override
-	public java.lang.String getType() {
-		return _announcementsEntry.getType();
-	}
-
-	/**
-	* Returns the url of this announcements entry.
-	*
-	* @return the url of this announcements entry
-	*/
-	@Override
-	public java.lang.String getUrl() {
-		return _announcementsEntry.getUrl();
-	}
-
-	/**
-	* Returns the user name of this announcements entry.
-	*
-	* @return the user name of this announcements entry
-	*/
-	@Override
-	public java.lang.String getUserName() {
-		return _announcementsEntry.getUserName();
-	}
-
-	/**
-	* Returns the user uuid of this announcements entry.
-	*
-	* @return the user uuid of this announcements entry
-	*/
-	@Override
-	public java.lang.String getUserUuid() {
-		return _announcementsEntry.getUserUuid();
-	}
-
-	/**
-	* Returns the uuid of this announcements entry.
-	*
-	* @return the uuid of this announcements entry
-	*/
-	@Override
-	public java.lang.String getUuid() {
-		return _announcementsEntry.getUuid();
-	}
-
-	@Override
-	public java.lang.String toString() {
-		return _announcementsEntry.toString();
-	}
-
-	@Override
-	public java.lang.String toXmlString() {
-		return _announcementsEntry.toXmlString();
-	}
-
-	/**
-	* Returns the create date of this announcements entry.
-	*
-	* @return the create date of this announcements entry
-	*/
-	@Override
-	public Date getCreateDate() {
-		return _announcementsEntry.getCreateDate();
-	}
-
-	/**
-	* Returns the display date of this announcements entry.
-	*
-	* @return the display date of this announcements entry
-	*/
-	@Override
-	public Date getDisplayDate() {
-		return _announcementsEntry.getDisplayDate();
-	}
-
-	/**
-	* Returns the expiration date of this announcements entry.
-	*
-	* @return the expiration date of this announcements entry
-	*/
-	@Override
-	public Date getExpirationDate() {
-		return _announcementsEntry.getExpirationDate();
-	}
-
-	/**
-	* Returns the modified date of this announcements entry.
-	*
-	* @return the modified date of this announcements entry
-	*/
-	@Override
-	public Date getModifiedDate() {
-		return _announcementsEntry.getModifiedDate();
-	}
-
-	/**
-	* Returns the class name ID of this announcements entry.
-	*
-	* @return the class name ID of this announcements entry
-	*/
-	@Override
-	public long getClassNameId() {
-		return _announcementsEntry.getClassNameId();
-	}
-
-	/**
-	* Returns the class p k of this announcements entry.
-	*
-	* @return the class p k of this announcements entry
-	*/
-	@Override
-	public long getClassPK() {
-		return _announcementsEntry.getClassPK();
-	}
-
-	/**
-	* Returns the company ID of this announcements entry.
-	*
-	* @return the company ID of this announcements entry
-	*/
-	@Override
-	public long getCompanyId() {
-		return _announcementsEntry.getCompanyId();
-	}
-
-	/**
-	* Returns the entry ID of this announcements entry.
-	*
-	* @return the entry ID of this announcements entry
-	*/
-	@Override
-	public long getEntryId() {
-		return _announcementsEntry.getEntryId();
-	}
-
-	@Override
-	public long getGroupId()
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _announcementsEntry.getGroupId();
-	}
-
-	/**
-	* Returns the primary key of this announcements entry.
-	*
-	* @return the primary key of this announcements entry
-	*/
-	@Override
-	public long getPrimaryKey() {
-		return _announcementsEntry.getPrimaryKey();
-	}
-
-	/**
-	* Returns the user ID of this announcements entry.
-	*
-	* @return the user ID of this announcements entry
-	*/
-	@Override
-	public long getUserId() {
-		return _announcementsEntry.getUserId();
-	}
-
-	@Override
 	public void persist() {
 		_announcementsEntry.persist();
 	}
@@ -488,7 +463,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	}
 
 	@Override
-	public void setClassName(java.lang.String className) {
+	public void setClassName(String className) {
 		_announcementsEntry.setClassName(className);
 	}
 
@@ -503,9 +478,9 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	}
 
 	/**
-	* Sets the class p k of this announcements entry.
+	* Sets the class pk of this announcements entry.
 	*
-	* @param classPK the class p k of this announcements entry
+	* @param classPK the class pk of this announcements entry
 	*/
 	@Override
 	public void setClassPK(long classPK) {
@@ -528,7 +503,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param content the content of this announcements entry
 	*/
 	@Override
-	public void setContent(java.lang.String content) {
+	public void setContent(String content) {
 		_announcementsEntry.setContent(content);
 	}
 
@@ -563,14 +538,14 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	}
 
 	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_announcementsEntry.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
 	public void setExpandoBridgeAttributes(
 		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
 		_announcementsEntry.setExpandoBridgeAttributes(baseModel);
+	}
+
+	@Override
+	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
+		_announcementsEntry.setExpandoBridgeAttributes(expandoBridge);
 	}
 
 	@Override
@@ -634,7 +609,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param title the title of this announcements entry
 	*/
 	@Override
-	public void setTitle(java.lang.String title) {
+	public void setTitle(String title) {
 		_announcementsEntry.setTitle(title);
 	}
 
@@ -644,7 +619,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param type the type of this announcements entry
 	*/
 	@Override
-	public void setType(java.lang.String type) {
+	public void setType(String type) {
 		_announcementsEntry.setType(type);
 	}
 
@@ -654,7 +629,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param url the url of this announcements entry
 	*/
 	@Override
-	public void setUrl(java.lang.String url) {
+	public void setUrl(String url) {
 		_announcementsEntry.setUrl(url);
 	}
 
@@ -674,7 +649,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param userName the user name of this announcements entry
 	*/
 	@Override
-	public void setUserName(java.lang.String userName) {
+	public void setUserName(String userName) {
 		_announcementsEntry.setUserName(userName);
 	}
 
@@ -684,7 +659,7 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param userUuid the user uuid of this announcements entry
 	*/
 	@Override
-	public void setUserUuid(java.lang.String userUuid) {
+	public void setUserUuid(String userUuid) {
 		_announcementsEntry.setUserUuid(userUuid);
 	}
 
@@ -694,8 +669,33 @@ public class AnnouncementsEntryWrapper implements AnnouncementsEntry,
 	* @param uuid the uuid of this announcements entry
 	*/
 	@Override
-	public void setUuid(java.lang.String uuid) {
+	public void setUuid(String uuid) {
 		_announcementsEntry.setUuid(uuid);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.CacheModel<AnnouncementsEntry> toCacheModel() {
+		return _announcementsEntry.toCacheModel();
+	}
+
+	@Override
+	public AnnouncementsEntry toEscapedModel() {
+		return new AnnouncementsEntryWrapper(_announcementsEntry.toEscapedModel());
+	}
+
+	@Override
+	public String toString() {
+		return _announcementsEntry.toString();
+	}
+
+	@Override
+	public AnnouncementsEntry toUnescapedModel() {
+		return new AnnouncementsEntryWrapper(_announcementsEntry.toUnescapedModel());
+	}
+
+	@Override
+	public String toXmlString() {
+		return _announcementsEntry.toXmlString();
 	}
 
 	@Override

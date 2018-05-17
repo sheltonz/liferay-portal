@@ -10,7 +10,7 @@
 <tbody>
 <tr>
 	<td>WORKFLOW_STATUS</td>
-	<td>//span[contains(@class,'workflow-status')]/strong | //span[@class='workflow-status']/span </td>
+	<td>//span[contains(@class,'workflow-status')]/strong | //span[@class='workflow-status']/span</td>
 	<td></td>
 </tr>
 <tr>
@@ -57,6 +57,23 @@
 <tr>
 	<td>NESTED_CHILD_REPEATING_FIELD</td>
 	<td>//div[@data-fieldname='${key_nestedParentFieldFieldName}' and @data-repeatable='true']/following-sibling::div[@data-fieldname='${key_nestedParentFieldFieldName}']/div[@class='form-group']/following-sibling::div[@data-fieldname='${key_nestedChildFieldFieldName}']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
+<!--INFO_SIDEBAR-->
+<tr>
+	<td>INFO_SIDEBAR_EXPANDED</td>
+	<td>//div[@class='sidenav-menu-slider' and contains(@style,'width: 320px')]</td>
+	<td></td>
+</tr>
+<!--TRANSLATION-->
+<tr>
+	<td>ADD_TRANSLATION</td>
+	<td>//div[contains(@id,'translationManager')]//div[contains(@class,'translation-manager-icon-menu')]/a</td>
 	<td></td>
 </tr>
 </tbody>

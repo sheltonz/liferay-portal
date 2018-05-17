@@ -177,7 +177,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns all the social activity counters where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching social activity counters
 	*/
 	public java.util.List<SocialActivityCounter> findByC_C(long classNameId,
@@ -191,7 +191,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
 	* @return the range of matching social activity counters
@@ -207,7 +207,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -225,7 +225,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -241,7 +241,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns the first social activity counter in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity counter
 	* @throws NoSuchActivityCounterException if a matching social activity counter could not be found
@@ -255,7 +255,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns the first social activity counter in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
@@ -267,7 +267,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns the last social activity counter in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity counter
 	* @throws NoSuchActivityCounterException if a matching social activity counter could not be found
@@ -280,7 +280,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns the last social activity counter in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
@@ -293,7 +293,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param activityCounterId the primary key of the current social activity counter
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next social activity counter
 	* @throws NoSuchActivityCounterException if a social activity counter with the primary key could not be found
@@ -307,7 +307,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Removes all the social activity counters where classNameId = &#63; and classPK = &#63; from the database.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	*/
 	public void removeByC_C(long classNameId, long classPK);
 
@@ -315,7 +315,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* Returns the number of social activity counters where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching social activity counters
 	*/
 	public int countByC_C(long classNameId, long classPK);
@@ -325,7 +325,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @return the matching social activity counters
 	*/
@@ -341,7 +341,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
@@ -359,7 +359,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
@@ -379,7 +379,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param start the lower bound of the range of social activity counters
 	* @param end the upper bound of the range of social activity counters (not inclusive)
@@ -397,7 +397,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity counter
@@ -413,7 +413,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
@@ -427,7 +427,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity counter
@@ -443,7 +443,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
@@ -458,7 +458,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* @param activityCounterId the primary key of the current social activity counter
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next social activity counter
@@ -475,7 +475,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	*/
 	public void removeByG_C_C_O(long groupId, long classNameId, long classPK,
@@ -486,7 +486,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param ownerType the owner type
 	* @return the number of matching social activity counters
 	*/
@@ -498,7 +498,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param startPeriod the start period
@@ -506,7 +506,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* @throws NoSuchActivityCounterException if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter findByG_C_C_N_O_S(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int startPeriod) throws NoSuchActivityCounterException;
 
 	/**
@@ -514,14 +514,14 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param startPeriod the start period
 	* @return the matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter fetchByG_C_C_N_O_S(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int startPeriod);
 
 	/**
@@ -529,7 +529,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param startPeriod the start period
@@ -537,7 +537,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* @return the matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter fetchByG_C_C_N_O_S(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int startPeriod, boolean retrieveFromCache);
 
 	/**
@@ -545,14 +545,14 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param startPeriod the start period
 	* @return the social activity counter that was removed
 	*/
 	public SocialActivityCounter removeByG_C_C_N_O_S(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int startPeriod) throws NoSuchActivityCounterException;
 
 	/**
@@ -560,21 +560,21 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param startPeriod the start period
 	* @return the number of matching social activity counters
 	*/
 	public int countByG_C_C_N_O_S(long groupId, long classNameId, long classPK,
-		java.lang.String name, int ownerType, int startPeriod);
+		String name, int ownerType, int startPeriod);
 
 	/**
 	* Returns the social activity counter where groupId = &#63; and classNameId = &#63; and classPK = &#63; and name = &#63; and ownerType = &#63; and endPeriod = &#63; or throws a {@link NoSuchActivityCounterException} if it could not be found.
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param endPeriod the end period
@@ -582,7 +582,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* @throws NoSuchActivityCounterException if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter findByG_C_C_N_O_E(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int endPeriod) throws NoSuchActivityCounterException;
 
 	/**
@@ -590,14 +590,14 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param endPeriod the end period
 	* @return the matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter fetchByG_C_C_N_O_E(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int endPeriod);
 
 	/**
@@ -605,7 +605,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param endPeriod the end period
@@ -613,7 +613,7 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	* @return the matching social activity counter, or <code>null</code> if a matching social activity counter could not be found
 	*/
 	public SocialActivityCounter fetchByG_C_C_N_O_E(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int endPeriod, boolean retrieveFromCache);
 
 	/**
@@ -621,14 +621,14 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param endPeriod the end period
 	* @return the social activity counter that was removed
 	*/
 	public SocialActivityCounter removeByG_C_C_N_O_E(long groupId,
-		long classNameId, long classPK, java.lang.String name, int ownerType,
+		long classNameId, long classPK, String name, int ownerType,
 		int endPeriod) throws NoSuchActivityCounterException;
 
 	/**
@@ -636,14 +636,14 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	*
 	* @param groupId the group ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param name the name
 	* @param ownerType the owner type
 	* @param endPeriod the end period
 	* @return the number of matching social activity counters
 	*/
 	public int countByG_C_C_N_O_E(long groupId, long classNameId, long classPK,
-		java.lang.String name, int ownerType, int endPeriod);
+		String name, int ownerType, int endPeriod);
 
 	/**
 	* Caches the social activity counter in the entity cache if it is enabled.
@@ -768,5 +768,5 @@ public interface SocialActivityCounterPersistence extends BasePersistence<Social
 	public int countAll();
 
 	@Override
-	public java.util.Set<java.lang.String> getBadColumnNames();
+	public java.util.Set<String> getBadColumnNames();
 }

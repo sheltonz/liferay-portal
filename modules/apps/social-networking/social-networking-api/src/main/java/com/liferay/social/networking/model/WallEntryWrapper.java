@@ -121,13 +121,128 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	}
 
 	@Override
-	public WallEntry toEscapedModel() {
-		return new WallEntryWrapper(_wallEntry.toEscapedModel());
+	public Object clone() {
+		return new WallEntryWrapper((WallEntry)_wallEntry.clone());
 	}
 
 	@Override
-	public WallEntry toUnescapedModel() {
-		return new WallEntryWrapper(_wallEntry.toUnescapedModel());
+	public int compareTo(WallEntry wallEntry) {
+		return _wallEntry.compareTo(wallEntry);
+	}
+
+	/**
+	* Returns the comments of this wall entry.
+	*
+	* @return the comments of this wall entry
+	*/
+	@Override
+	public String getComments() {
+		return _wallEntry.getComments();
+	}
+
+	/**
+	* Returns the company ID of this wall entry.
+	*
+	* @return the company ID of this wall entry
+	*/
+	@Override
+	public long getCompanyId() {
+		return _wallEntry.getCompanyId();
+	}
+
+	/**
+	* Returns the create date of this wall entry.
+	*
+	* @return the create date of this wall entry
+	*/
+	@Override
+	public Date getCreateDate() {
+		return _wallEntry.getCreateDate();
+	}
+
+	@Override
+	public ExpandoBridge getExpandoBridge() {
+		return _wallEntry.getExpandoBridge();
+	}
+
+	/**
+	* Returns the group ID of this wall entry.
+	*
+	* @return the group ID of this wall entry
+	*/
+	@Override
+	public long getGroupId() {
+		return _wallEntry.getGroupId();
+	}
+
+	/**
+	* Returns the modified date of this wall entry.
+	*
+	* @return the modified date of this wall entry
+	*/
+	@Override
+	public Date getModifiedDate() {
+		return _wallEntry.getModifiedDate();
+	}
+
+	/**
+	* Returns the primary key of this wall entry.
+	*
+	* @return the primary key of this wall entry
+	*/
+	@Override
+	public long getPrimaryKey() {
+		return _wallEntry.getPrimaryKey();
+	}
+
+	@Override
+	public Serializable getPrimaryKeyObj() {
+		return _wallEntry.getPrimaryKeyObj();
+	}
+
+	/**
+	* Returns the user ID of this wall entry.
+	*
+	* @return the user ID of this wall entry
+	*/
+	@Override
+	public long getUserId() {
+		return _wallEntry.getUserId();
+	}
+
+	/**
+	* Returns the user name of this wall entry.
+	*
+	* @return the user name of this wall entry
+	*/
+	@Override
+	public String getUserName() {
+		return _wallEntry.getUserName();
+	}
+
+	/**
+	* Returns the user uuid of this wall entry.
+	*
+	* @return the user uuid of this wall entry
+	*/
+	@Override
+	public String getUserUuid() {
+		return _wallEntry.getUserUuid();
+	}
+
+	/**
+	* Returns the wall entry ID of this wall entry.
+	*
+	* @return the wall entry ID of this wall entry
+	*/
+	@Override
+	public long getWallEntryId() {
+		return _wallEntry.getWallEntryId();
+	}
+
+	@Override
+	public int hashCode() {
+		return _wallEntry.hashCode();
 	}
 
 	@Override
@@ -146,146 +261,6 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	}
 
 	@Override
-	public ExpandoBridge getExpandoBridge() {
-		return _wallEntry.getExpandoBridge();
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.CacheModel<WallEntry> toCacheModel() {
-		return _wallEntry.toCacheModel();
-	}
-
-	@Override
-	public int compareTo(WallEntry wallEntry) {
-		return _wallEntry.compareTo(wallEntry);
-	}
-
-	@Override
-	public int hashCode() {
-		return _wallEntry.hashCode();
-	}
-
-	@Override
-	public Serializable getPrimaryKeyObj() {
-		return _wallEntry.getPrimaryKeyObj();
-	}
-
-	@Override
-	public java.lang.Object clone() {
-		return new WallEntryWrapper((WallEntry)_wallEntry.clone());
-	}
-
-	/**
-	* Returns the comments of this wall entry.
-	*
-	* @return the comments of this wall entry
-	*/
-	@Override
-	public java.lang.String getComments() {
-		return _wallEntry.getComments();
-	}
-
-	/**
-	* Returns the user name of this wall entry.
-	*
-	* @return the user name of this wall entry
-	*/
-	@Override
-	public java.lang.String getUserName() {
-		return _wallEntry.getUserName();
-	}
-
-	/**
-	* Returns the user uuid of this wall entry.
-	*
-	* @return the user uuid of this wall entry
-	*/
-	@Override
-	public java.lang.String getUserUuid() {
-		return _wallEntry.getUserUuid();
-	}
-
-	@Override
-	public java.lang.String toString() {
-		return _wallEntry.toString();
-	}
-
-	@Override
-	public java.lang.String toXmlString() {
-		return _wallEntry.toXmlString();
-	}
-
-	/**
-	* Returns the create date of this wall entry.
-	*
-	* @return the create date of this wall entry
-	*/
-	@Override
-	public Date getCreateDate() {
-		return _wallEntry.getCreateDate();
-	}
-
-	/**
-	* Returns the modified date of this wall entry.
-	*
-	* @return the modified date of this wall entry
-	*/
-	@Override
-	public Date getModifiedDate() {
-		return _wallEntry.getModifiedDate();
-	}
-
-	/**
-	* Returns the company ID of this wall entry.
-	*
-	* @return the company ID of this wall entry
-	*/
-	@Override
-	public long getCompanyId() {
-		return _wallEntry.getCompanyId();
-	}
-
-	/**
-	* Returns the group ID of this wall entry.
-	*
-	* @return the group ID of this wall entry
-	*/
-	@Override
-	public long getGroupId() {
-		return _wallEntry.getGroupId();
-	}
-
-	/**
-	* Returns the primary key of this wall entry.
-	*
-	* @return the primary key of this wall entry
-	*/
-	@Override
-	public long getPrimaryKey() {
-		return _wallEntry.getPrimaryKey();
-	}
-
-	/**
-	* Returns the user ID of this wall entry.
-	*
-	* @return the user ID of this wall entry
-	*/
-	@Override
-	public long getUserId() {
-		return _wallEntry.getUserId();
-	}
-
-	/**
-	* Returns the wall entry ID of this wall entry.
-	*
-	* @return the wall entry ID of this wall entry
-	*/
-	@Override
-	public long getWallEntryId() {
-		return _wallEntry.getWallEntryId();
-	}
-
-	@Override
 	public void persist() {
 		_wallEntry.persist();
 	}
@@ -301,7 +276,7 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	* @param comments the comments of this wall entry
 	*/
 	@Override
-	public void setComments(java.lang.String comments) {
+	public void setComments(String comments) {
 		_wallEntry.setComments(comments);
 	}
 
@@ -326,14 +301,14 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	}
 
 	@Override
-	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
-		_wallEntry.setExpandoBridgeAttributes(expandoBridge);
-	}
-
-	@Override
 	public void setExpandoBridgeAttributes(
 		com.liferay.portal.kernel.model.BaseModel<?> baseModel) {
 		_wallEntry.setExpandoBridgeAttributes(baseModel);
+	}
+
+	@Override
+	public void setExpandoBridgeAttributes(ExpandoBridge expandoBridge) {
+		_wallEntry.setExpandoBridgeAttributes(expandoBridge);
 	}
 
 	@Override
@@ -397,7 +372,7 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	* @param userName the user name of this wall entry
 	*/
 	@Override
-	public void setUserName(java.lang.String userName) {
+	public void setUserName(String userName) {
 		_wallEntry.setUserName(userName);
 	}
 
@@ -407,7 +382,7 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	* @param userUuid the user uuid of this wall entry
 	*/
 	@Override
-	public void setUserUuid(java.lang.String userUuid) {
+	public void setUserUuid(String userUuid) {
 		_wallEntry.setUserUuid(userUuid);
 	}
 
@@ -419,6 +394,31 @@ public class WallEntryWrapper implements WallEntry, ModelWrapper<WallEntry> {
 	@Override
 	public void setWallEntryId(long wallEntryId) {
 		_wallEntry.setWallEntryId(wallEntryId);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.CacheModel<WallEntry> toCacheModel() {
+		return _wallEntry.toCacheModel();
+	}
+
+	@Override
+	public WallEntry toEscapedModel() {
+		return new WallEntryWrapper(_wallEntry.toEscapedModel());
+	}
+
+	@Override
+	public String toString() {
+		return _wallEntry.toString();
+	}
+
+	@Override
+	public WallEntry toUnescapedModel() {
+		return new WallEntryWrapper(_wallEntry.toUnescapedModel());
+	}
+
+	@Override
+	public String toXmlString() {
+		return _wallEntry.toXmlString();
 	}
 
 	@Override

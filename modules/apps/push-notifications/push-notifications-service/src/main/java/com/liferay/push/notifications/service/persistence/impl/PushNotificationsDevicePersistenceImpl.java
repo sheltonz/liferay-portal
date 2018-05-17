@@ -25,11 +25,13 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
@@ -40,6 +42,8 @@ import com.liferay.push.notifications.model.impl.PushNotificationsDeviceModelImp
 import com.liferay.push.notifications.service.persistence.PushNotificationsDevicePersistence;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -117,7 +121,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			msg.append("token=");
 			msg.append(token);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -177,7 +181,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (token == null) {
 				query.append(_FINDER_COLUMN_TOKEN_TOKEN_1);
 			}
-			else if (token.equals(StringPool.BLANK)) {
+			else if (token.equals("")) {
 				query.append(_FINDER_COLUMN_TOKEN_TOKEN_3);
 			}
 			else {
@@ -277,7 +281,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (token == null) {
 				query.append(_FINDER_COLUMN_TOKEN_TOKEN_1);
 			}
-			else if (token.equals(StringPool.BLANK)) {
+			else if (token.equals("")) {
 				query.append(_FINDER_COLUMN_TOKEN_TOKEN_3);
 			}
 			else {
@@ -478,7 +482,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (platform == null) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_1);
 			}
-			else if (platform.equals(StringPool.BLANK)) {
+			else if (platform.equals("")) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_3);
 			}
 			else {
@@ -574,7 +578,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		msg.append(", platform=");
 		msg.append(platform);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchDeviceException(msg.toString());
 	}
@@ -631,7 +635,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		msg.append(", platform=");
 		msg.append(platform);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchDeviceException(msg.toString());
 	}
@@ -731,7 +735,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		if (platform == null) {
 			query.append(_FINDER_COLUMN_U_P_PLATFORM_1);
 		}
-		else if (platform.equals(StringPool.BLANK)) {
+		else if (platform.equals("")) {
 			query.append(_FINDER_COLUMN_U_P_PLATFORM_3);
 		}
 		else {
@@ -965,15 +969,15 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			query.append(_SQL_SELECT_PUSHNOTIFICATIONSDEVICE_WHERE);
 
 			if (userIds.length > 0) {
-				query.append(StringPool.OPEN_PARENTHESIS);
+				query.append("(");
 
 				query.append(_FINDER_COLUMN_U_P_USERID_7);
 
 				query.append(StringUtil.merge(userIds));
 
-				query.append(StringPool.CLOSE_PARENTHESIS);
+				query.append(")");
 
-				query.append(StringPool.CLOSE_PARENTHESIS);
+				query.append(")");
 
 				query.append(WHERE_AND);
 			}
@@ -983,7 +987,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (platform == null) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_1);
 			}
-			else if (platform.equals(StringPool.BLANK)) {
+			else if (platform.equals("")) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_3);
 			}
 			else {
@@ -1092,7 +1096,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (platform == null) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_1);
 			}
-			else if (platform.equals(StringPool.BLANK)) {
+			else if (platform.equals("")) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_3);
 			}
 			else {
@@ -1164,15 +1168,15 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			query.append(_SQL_COUNT_PUSHNOTIFICATIONSDEVICE_WHERE);
 
 			if (userIds.length > 0) {
-				query.append(StringPool.OPEN_PARENTHESIS);
+				query.append("(");
 
 				query.append(_FINDER_COLUMN_U_P_USERID_7);
 
 				query.append(StringUtil.merge(userIds));
 
-				query.append(StringPool.CLOSE_PARENTHESIS);
+				query.append(")");
 
-				query.append(StringPool.CLOSE_PARENTHESIS);
+				query.append(")");
 
 				query.append(WHERE_AND);
 			}
@@ -1182,7 +1186,7 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			if (platform == null) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_1);
 			}
-			else if (platform.equals(StringPool.BLANK)) {
+			else if (platform.equals("")) {
 				query.append(_FINDER_COLUMN_U_P_PLATFORM_3);
 			}
 			else {
@@ -1309,7 +1313,8 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((PushNotificationsDeviceModelImpl)pushNotificationsDevice);
+		clearUniqueFindersCache((PushNotificationsDeviceModelImpl)pushNotificationsDevice,
+			true);
 	}
 
 	@Override
@@ -1323,48 +1328,36 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 				PushNotificationsDeviceImpl.class,
 				pushNotificationsDevice.getPrimaryKey());
 
-			clearUniqueFindersCache((PushNotificationsDeviceModelImpl)pushNotificationsDevice);
+			clearUniqueFindersCache((PushNotificationsDeviceModelImpl)pushNotificationsDevice,
+				true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
+		PushNotificationsDeviceModelImpl pushNotificationsDeviceModelImpl) {
+		Object[] args = new Object[] { pushNotificationsDeviceModelImpl.getToken() };
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_TOKEN, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_TOKEN, args,
+			pushNotificationsDeviceModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
 		PushNotificationsDeviceModelImpl pushNotificationsDeviceModelImpl,
-		boolean isNew) {
-		if (isNew) {
+		boolean clearCurrent) {
+		if (clearCurrent) {
 			Object[] args = new Object[] {
 					pushNotificationsDeviceModelImpl.getToken()
 				};
 
-			finderCache.putResult(FINDER_PATH_COUNT_BY_TOKEN, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_TOKEN, args,
-				pushNotificationsDeviceModelImpl);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_TOKEN, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_TOKEN, args);
 		}
-		else {
-			if ((pushNotificationsDeviceModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_TOKEN.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						pushNotificationsDeviceModelImpl.getToken()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_TOKEN, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_TOKEN, args,
-					pushNotificationsDeviceModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
-		PushNotificationsDeviceModelImpl pushNotificationsDeviceModelImpl) {
-		Object[] args = new Object[] { pushNotificationsDeviceModelImpl.getToken() };
-
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_TOKEN, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_TOKEN, args);
 
 		if ((pushNotificationsDeviceModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_TOKEN.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					pushNotificationsDeviceModelImpl.getOriginalToken()
 				};
 
@@ -1385,6 +1378,8 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 
 		pushNotificationsDevice.setNew(true);
 		pushNotificationsDevice.setPrimaryKey(pushNotificationsDeviceId);
+
+		pushNotificationsDevice.setCompanyId(companyProvider.getCompanyId());
 
 		return pushNotificationsDevice;
 	}
@@ -1445,8 +1440,6 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 	@Override
 	protected PushNotificationsDevice removeImpl(
 		PushNotificationsDevice pushNotificationsDevice) {
-		pushNotificationsDevice = toUnwrappedModel(pushNotificationsDevice);
-
 		Session session = null;
 
 		try {
@@ -1478,9 +1471,23 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 	@Override
 	public PushNotificationsDevice updateImpl(
 		PushNotificationsDevice pushNotificationsDevice) {
-		pushNotificationsDevice = toUnwrappedModel(pushNotificationsDevice);
-
 		boolean isNew = pushNotificationsDevice.isNew();
+
+		if (!(pushNotificationsDevice instanceof PushNotificationsDeviceModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(pushNotificationsDevice.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(pushNotificationsDevice);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in pushNotificationsDevice proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom PushNotificationsDevice implementation " +
+				pushNotificationsDevice.getClass());
+		}
 
 		PushNotificationsDeviceModelImpl pushNotificationsDeviceModelImpl = (PushNotificationsDeviceModelImpl)pushNotificationsDevice;
 
@@ -1507,8 +1514,23 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !PushNotificationsDeviceModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!PushNotificationsDeviceModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] {
+					pushNotificationsDeviceModelImpl.getUserId(),
+					pushNotificationsDeviceModelImpl.getPlatform()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_U_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_U_P,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1539,32 +1561,12 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 			pushNotificationsDevice.getPrimaryKey(), pushNotificationsDevice,
 			false);
 
-		clearUniqueFindersCache(pushNotificationsDeviceModelImpl);
-		cacheUniqueFindersCache(pushNotificationsDeviceModelImpl, isNew);
+		clearUniqueFindersCache(pushNotificationsDeviceModelImpl, false);
+		cacheUniqueFindersCache(pushNotificationsDeviceModelImpl);
 
 		pushNotificationsDevice.resetOriginalValues();
 
 		return pushNotificationsDevice;
-	}
-
-	protected PushNotificationsDevice toUnwrappedModel(
-		PushNotificationsDevice pushNotificationsDevice) {
-		if (pushNotificationsDevice instanceof PushNotificationsDeviceImpl) {
-			return pushNotificationsDevice;
-		}
-
-		PushNotificationsDeviceImpl pushNotificationsDeviceImpl = new PushNotificationsDeviceImpl();
-
-		pushNotificationsDeviceImpl.setNew(pushNotificationsDevice.isNew());
-		pushNotificationsDeviceImpl.setPrimaryKey(pushNotificationsDevice.getPrimaryKey());
-
-		pushNotificationsDeviceImpl.setPushNotificationsDeviceId(pushNotificationsDevice.getPushNotificationsDeviceId());
-		pushNotificationsDeviceImpl.setUserId(pushNotificationsDevice.getUserId());
-		pushNotificationsDeviceImpl.setCreateDate(pushNotificationsDevice.getCreateDate());
-		pushNotificationsDeviceImpl.setPlatform(pushNotificationsDevice.getPlatform());
-		pushNotificationsDeviceImpl.setToken(pushNotificationsDevice.getToken());
-
-		return pushNotificationsDeviceImpl;
 	}
 
 	/**
@@ -1717,14 +1719,14 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		query.append(_SQL_SELECT_PUSHNOTIFICATIONSDEVICE_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 
@@ -1968,6 +1970,8 @@ public class PushNotificationsDevicePersistenceImpl extends BasePersistenceImpl<
 		finderCache.removeCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 	}
 
+	@ServiceReference(type = CompanyProviderWrapper.class)
+	protected CompanyProvider companyProvider;
 	@ServiceReference(type = EntityCache.class)
 	protected EntityCache entityCache;
 	@ServiceReference(type = FinderCache.class)

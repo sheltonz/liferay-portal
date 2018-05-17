@@ -1,9 +1,11 @@
 <definition>
 	<command name="addCP">
 		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
+
 		<execute function="Type" locator1="TextInput#SOURCE_URL" value1="${sourceURL}" />
-		<execute macro="Button#clickSave" />
-		<execute macro="Alert#viewSuccessMessage" />
+
+		<execute macro="PortletEntry#save" />
+
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
@@ -18,16 +20,35 @@
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
+	<command name="selectCategoryFrame">
+		<execute function="SelectFrame" locator1="IFrame#SELECT_CATEGORY" />
+	</command>
+
 	<command name="selectConfigurationFrame">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<if>
+			<condition function="IsElementPresent" locator1="IFrame#DIALOG" />
+			<then>
+				<echo message="Selecting configuration iframe" />
+
+				<execute function="SelectFrame" locator1="IFrame#DIALOG" />
+			</then>
+		</if>
+	</command>
+
+	<command name="selectEditAssetFrame">
+		<execute function="SelectFrame" locator1="IFrame#EDIT_ASSET" />
+	</command>
+
+	<command name="selectModalFrame">
+		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
 	</command>
 
 	<command name="selectPermissionsFrame">
-		<var name="key_iframeTitle" value="Permissions" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
-		<execute function="AssertElementPresent" locator1="IFrame#IFRAME_TITLE" value1="Permissions" />
-
-		<execute function="SelectFrame" locator1="Permissions#PERMISSIONS_IFRAME" />
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Permissions" />
+		</execute>
 	</command>
 
 	<command name="selectTopFrame">

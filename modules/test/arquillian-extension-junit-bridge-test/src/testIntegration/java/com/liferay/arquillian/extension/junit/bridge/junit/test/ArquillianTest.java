@@ -68,7 +68,8 @@ public class ArquillianTest {
 
 		List<?> failures = result.getFailures();
 
-		Assert.assertTrue(failures.isEmpty());
+		Assert.assertTrue(failures.toString(), failures.isEmpty());
+
 		Assert.assertEquals(0, result.getIgnoreCount());
 
 		int runCount = 0;

@@ -25,6 +25,7 @@ import com.liferay.sync.engine.service.SyncAccountService;
 import com.liferay.sync.engine.service.SyncFileService;
 import com.liferay.sync.engine.session.Session;
 import com.liferay.sync.engine.session.SessionManager;
+import com.liferay.sync.engine.session.rate.limiter.RateLimitedInputStream;
 import com.liferay.sync.engine.util.FileKeyUtil;
 import com.liferay.sync.engine.util.FileUtil;
 import com.liferay.sync.engine.util.GetterUtil;
@@ -32,6 +33,7 @@ import com.liferay.sync.engine.util.IODeltaUtil;
 import com.liferay.sync.engine.util.MSOfficeFileUtil;
 import com.liferay.sync.engine.util.StreamUtil;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -127,7 +129,7 @@ public class DownloadFileHandler extends BaseHandler {
 				FileEventUtil.downloadFile(getSyncAccountId(), syncFile, false);
 			}
 			else {
-				SyncFileService.deleteSyncFile(syncFile);
+				handleException(syncFile);
 			}
 
 			return;
@@ -175,7 +177,11 @@ public class DownloadFileHandler extends BaseHandler {
 			return true;
 		}
 
-		return super.handlePortalException(exception);
+		removeEvent();
+
+		handleException(syncFile);
+
+		return true;
 	}
 
 	protected void copyFile(
@@ -190,7 +196,7 @@ public class DownloadFileHandler extends BaseHandler {
 		try {
 			Path tempFilePath = FileUtil.getTempFilePath(syncFile);
 
-			boolean exists = Files.exists(filePath);
+			boolean exists = FileUtil.exists(filePath);
 
 			if (append) {
 				outputStream = Files.newOutputStream(
@@ -200,6 +206,11 @@ public class DownloadFileHandler extends BaseHandler {
 			}
 			else {
 				if (exists && (boolean)getParameterValue("patch")) {
+					if (_logger.isDebugEnabled()) {
+						_logger.debug(
+							"Patching {}", syncFile.getFilePathName());
+					}
+
 					Files.copy(
 						filePath, tempFilePath,
 						StandardCopyOption.REPLACE_EXISTING);
@@ -263,6 +274,8 @@ public class DownloadFileHandler extends BaseHandler {
 		}
 		catch (FileSystemException fse) {
 			if (fse instanceof AccessDeniedException) {
+				_logger.error(fse.getMessage(), fse);
+
 				syncFile.setState(SyncFile.STATE_ERROR);
 				syncFile.setUiEvent(SyncFile.UI_EVENT_ACCESS_DENIED_LOCAL);
 
@@ -307,7 +320,9 @@ public class DownloadFileHandler extends BaseHandler {
 			handleSiteDeactivatedException();
 		}
 
-		final Session session = SessionManager.getSession(getSyncAccountId());
+		long syncAccountId = getSyncAccountId();
+
+		final Session session = SessionManager.getSession(syncAccountId);
 
 		Header tokenHeader = httpResponse.getFirstHeader("Sync-JWT");
 
@@ -339,6 +354,9 @@ public class DownloadFileHandler extends BaseHandler {
 
 			};
 
+			inputStream = new RateLimitedInputStream(
+				inputStream, syncAccountId);
+
 			if (httpResponse.getFirstHeader("Accept-Ranges") != null) {
 				copyFile(syncFile, filePath, inputStream, true);
 			}
@@ -348,6 +366,24 @@ public class DownloadFileHandler extends BaseHandler {
 		}
 		finally {
 			StreamUtil.cleanUp(inputStream);
+		}
+	}
+
+	protected void handleException(SyncFile syncFile) {
+		syncFile.setState(SyncFile.STATE_ERROR);
+		syncFile.setUiEvent(SyncFile.UI_EVENT_DOWNLOAD_EXCEPTION);
+
+		SyncFileService.update(syncFile);
+
+		Path filePathName = Paths.get(syncFile.getFilePathName());
+
+		if (FileUtil.notExists(filePathName)) {
+			try {
+				Files.createFile(filePathName);
+			}
+			catch (IOException ioe) {
+				_logger.error(ioe.getMessage(), ioe);
+			}
 		}
 	}
 
@@ -371,7 +407,7 @@ public class DownloadFileHandler extends BaseHandler {
 
 		Path filePath = Paths.get(syncFile.getFilePathName());
 
-		if (Files.notExists(filePath.getParent())) {
+		if (FileUtil.notExists(filePath.getParent())) {
 			if (_logger.isDebugEnabled()) {
 				_logger.debug(
 					"Skipping file {}. Missing parent file path {}.",

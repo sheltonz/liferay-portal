@@ -14,6 +14,7 @@
 
 package com.liferay.portal.plugin;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.CompanyConstants;
 import com.liferay.portal.kernel.plugin.License;
 import com.liferay.portal.kernel.plugin.PluginPackage;
@@ -32,7 +33,6 @@ import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -128,17 +128,14 @@ public class PluginPackageIndexer extends BaseIndexer<PluginPackage> {
 		List<License> licenses = pluginPackage.getLicenses();
 
 		document.addKeyword(
-			"license",
-			ListUtil.toArray(licenses, License.NAME_ACCESSOR));
+			"license", ListUtil.toArray(licenses, License.NAME_ACCESSOR));
 
 		document.addText("longDescription", longDescription);
 		document.addKeyword("moduleId", pluginPackage.getModuleId());
 
 		boolean osiLicense = false;
 
-		for (int i = 0; i < licenses.size(); i++) {
-			License license = licenses.get(i);
-
+		for (License license : licenses) {
 			if (license.isOsiApproved()) {
 				osiLicense = true;
 

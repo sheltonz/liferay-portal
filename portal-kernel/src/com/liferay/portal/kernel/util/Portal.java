@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.portlet.LayoutFriendlyURLSeparatorComposite;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.servlet.taglib.ui.BreadcrumbEntry;
@@ -76,6 +77,7 @@ import javax.servlet.http.HttpSession;
 /**
  * @author Brian Wing Shun Chan
  * @author Eduardo Lundgren
+ * @author Marco Leo
  */
 @ProviderType
 public interface Portal {
@@ -183,6 +185,8 @@ public interface Portal {
 	 * @param title the title of the new breakcrumb entry
 	 * @param url the URL of the new breadcrumb entry
 	 * @param data the HTML5 data parameters of the new breadcrumb entry
+	 * @param portletBreadcrumbEntry whether the entry is a portlet breadcrumb
+	 *        entry
 	 */
 	public void addPortletBreadcrumbEntry(
 		HttpServletRequest request, String title, String url,
@@ -191,8 +195,9 @@ public interface Portal {
 	/**
 	 * Adds the default resource permissions for the portlet to the page.
 	 *
-	 * @param request the servlet request for the page
-	 * @param portlet the portlet
+	 * @param  request the servlet request for the page
+	 * @param  portlet the portlet
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public void addPortletDefaultResource(
 			HttpServletRequest request, Portlet portlet)
@@ -231,6 +236,10 @@ public interface Portal {
 	 * @return the URL with the preserved parameters added
 	 */
 	public String addPreservedParameters(ThemeDisplay themeDisplay, String url);
+
+	public String addPreservedParameters(
+		ThemeDisplay themeDisplay, String url, boolean typeControlPanel,
+		boolean doAsUser);
 
 	public void addUserLocaleOptionsMessage(HttpServletRequest request);
 
@@ -301,13 +310,18 @@ public interface Portal {
 	 * @param  layout the page being requested
 	 * @return the alternate URL for the requested canonical URL in the given
 	 *         locale
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public String getAlternateURL(
 			String canonicalURL, ThemeDisplay themeDisplay, Locale locale,
 			Layout layout)
 		throws PortalException;
 
-	public long[] getAncestorSiteGroupIds(long groupId) throws PortalException;
+	public Map<Locale, String> getAlternateURLs(
+			String canonicalURL, ThemeDisplay themeDisplay, Layout layout)
+		throws PortalException;
+
+	public long[] getAncestorSiteGroupIds(long groupId);
 
 	/**
 	 * Returns the base model instance for the resource permission.
@@ -316,6 +330,7 @@ public interface Portal {
 	 * @return the base model instance, or <code>null</code> if the resource
 	 *         permission does not have a base model instance (such as if its a
 	 *         portlet)
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public BaseModel<?> getBaseModel(ResourcePermission resourcePermission)
 		throws PortalException;
@@ -327,6 +342,7 @@ public interface Portal {
 	 * @param  primKey the primary key of the model instance to get
 	 * @return the base model instance, or <code>null</code> if the model does
 	 *         not have a base model instance (such as if its a portlet)
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public BaseModel<?> getBaseModel(String modelName, String primKey)
 		throws PortalException;
@@ -362,6 +378,7 @@ public interface Portal {
 	 * @param  layout the layout. If it is <code>null</code>, then it is
 	 *         generated for the current layout
 	 * @return the canonical URL
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public String getCanonicalURL(
 			String completeURL, ThemeDisplay themeDisplay, Layout layout)
@@ -378,10 +395,41 @@ public interface Portal {
 	 * @param  forceLayoutFriendlyURL adds the page friendly URL to the
 	 *         canonical URL even if it is not needed
 	 * @return the canonical URL
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public String getCanonicalURL(
 			String completeURL, ThemeDisplay themeDisplay, Layout layout,
 			boolean forceLayoutFriendlyURL)
+		throws PortalException;
+
+	/**
+	 * Returns the canonical URL of the page. The canonical URL is often used to
+	 * distinguish a preferred page from its translations.
+	 *
+	 * <p>
+	 * A page's canonical URL is the preferred URL to specify for a set of pages
+	 * with similar or identical content. The canonical URL is used to inform
+	 * search engines that several URLs point to the same page. It is also used
+	 * to generate the URLs for site maps, the URLs that social bookmarks
+	 * publish (Twitter, Facebook links, etc.), and the URLs in sent email. For
+	 * more information, see <a
+	 * href="https://support.google.com/webmasters/answer/139394?hl=en">https://support.google.com/webmasters/answer/139394?hl=en</a>.
+	 * </p>
+	 *
+	 * @param  completeURL the complete URL of the page
+	 * @param  themeDisplay the theme display
+	 * @param  layout the page being requested (optionally <code>null</code>).
+	 *         If <code>null</code> is specified, the current page is used.
+	 * @param  forceLayoutFriendlyURL whether to add the page's friendly URL to
+	 *         the canonical URL
+	 * @param  includeQueryString whether to add the URL query string to the
+	 *         canonical URL
+	 * @return the canonical URL
+	 * @throws PortalException if a portal exception occurred
+	 */
+	public String getCanonicalURL(
+			String completeURL, ThemeDisplay themeDisplay, Layout layout,
+			boolean forceLayoutFriendlyURL, boolean includeQueryString)
 		throws PortalException;
 
 	/**
@@ -541,6 +589,7 @@ public interface Portal {
 	 *         date.
 	 * @return the date object, or <code>null</code> if the date is invalid and
 	 *         no exception to throw was provided
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public Date getDate(
 			int month, int day, int year,
@@ -561,6 +610,7 @@ public interface Portal {
 	 *         date.
 	 * @return the date object, or <code>null</code> if the date is invalid and
 	 *         no exception to throw was provided
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public Date getDate(
 			int month, int day, int year, int hour, int min,
@@ -582,6 +632,7 @@ public interface Portal {
 	 *         date.
 	 * @return the date object, or <code>null</code> if the date is invalid and
 	 *         no exception to throw was provided
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public Date getDate(
 			int month, int day, int year, int hour, int min, TimeZone timeZone,
@@ -601,6 +652,7 @@ public interface Portal {
 	 *         date.
 	 * @return the date object, or <code>null</code> if the date is invalid and
 	 *         no exception to throw was provided
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public Date getDate(
 			int month, int day, int year, TimeZone timeZone,
@@ -652,6 +704,10 @@ public interface Portal {
 			String displayType)
 		throws PortalException;
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public String getFacebookURL(
 			Portlet portlet, String facebookCanvasPageURL,
 			ThemeDisplay themeDisplay)
@@ -758,9 +814,25 @@ public interface Portal {
 			Layout layout, ThemeDisplay themeDisplay, Locale locale)
 		throws PortalException;
 
+	public String getLayoutFriendlyURL(ThemeDisplay themeDisplay)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #getLayoutFriendlyURLSeparatorComposite(long, boolean,
+	 *             String, Map<String, String[]>, Map<String, Object>)}
+	 */
+	@Deprecated
 	public LayoutFriendlyURLComposite getLayoutFriendlyURLComposite(
 			long groupId, boolean privateLayout, String friendlyURL,
 			Map<String, String[]> params, Map<String, Object> requestContext)
+		throws PortalException;
+
+	public LayoutFriendlyURLSeparatorComposite
+			getLayoutFriendlyURLSeparatorComposite(
+				long groupId, boolean privateLayout, String friendlyURL,
+				Map<String, String[]> params,
+				Map<String, Object> requestContext)
 		throws PortalException;
 
 	public String getLayoutFullURL(Layout layout, ThemeDisplay themeDisplay)
@@ -826,9 +898,8 @@ public interface Portal {
 	public Locale getLocale(PortletRequest portletRequest);
 
 	public String getLocalizedFriendlyURL(
-			HttpServletRequest request, Layout layout, Locale locale,
-			Locale originalLocale)
-		throws Exception;
+		HttpServletRequest request, Layout layout, Locale locale,
+		Locale originalLocale);
 
 	public String getMailId(String mx, String popPortletPrefix, Object... ids);
 
@@ -1055,6 +1126,30 @@ public interface Portal {
 
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #getSiteAdminURL(ThemeDisplay, String, Map)}
+	 */
+	@Deprecated
+	public String getSiteAdminURL(
+			Company company, Group group, String ppid,
+			Map<String, String[]> params)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #getSiteAdminURL(ThemeDisplay, String, Map)}
+	 */
+	@Deprecated
+	public String getSiteAdminURL(
+			Group group, String ppid, Map<String, String[]> params)
+		throws PortalException;
+
+	public String getSiteAdminURL(
+			ThemeDisplay themeDisplay, String ppid,
+			Map<String, String[]> params)
+		throws PortalException;
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getCurrentAndAncestorSiteGroupIds(long)}
 	 */
 	@Deprecated
@@ -1069,6 +1164,8 @@ public interface Portal {
 	public long[] getSiteAndCompanyGroupIds(ThemeDisplay themeDisplay)
 		throws PortalException;
 
+	public Locale getSiteDefaultLocale(Group group) throws PortalException;
+
 	public Locale getSiteDefaultLocale(long groupId) throws PortalException;
 
 	public long getSiteGroupId(long groupId);
@@ -1080,6 +1177,7 @@ public interface Portal {
 	 * @param  themeDisplay the theme display for the current page
 	 * @return the URL of the login page for the current site, or
 	 *         <code>null</code> if one is not available
+	 * @throws PortalException if a portal exception occurred
 	 */
 	public String getSiteLoginURL(ThemeDisplay themeDisplay)
 		throws PortalException;
@@ -1229,6 +1327,8 @@ public interface Portal {
 
 	public boolean isControlPanelPortlet(
 		String portletId, ThemeDisplay themeDisplay);
+
+	public boolean isCustomPortletMode(PortletMode portletMode);
 
 	public boolean isForwardedSecure(HttpServletRequest request);
 

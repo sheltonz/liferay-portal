@@ -14,11 +14,12 @@
 
 package com.liferay.portal.kernel.model.impl;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutTypeController;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.servlet.TransferHeadersHelperUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.Collection;
@@ -59,7 +60,8 @@ public abstract class BaseLayoutTypeControllerImpl
 		throws Exception {
 
 		RequestDispatcher requestDispatcher =
-			servletContext.getRequestDispatcher(getEditPage());
+			TransferHeadersHelperUtil.getTransferHeadersRequestDispatcher(
+				servletContext.getRequestDispatcher(getEditPage()));
 
 		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
@@ -85,7 +87,8 @@ public abstract class BaseLayoutTypeControllerImpl
 		throws Exception {
 
 		RequestDispatcher requestDispatcher =
-			servletContext.getRequestDispatcher(getViewPage());
+			TransferHeadersHelperUtil.getTransferHeadersRequestDispatcher(
+				servletContext.getRequestDispatcher(getViewPage()));
 
 		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
@@ -93,6 +96,7 @@ public abstract class BaseLayoutTypeControllerImpl
 			response, unsyncStringWriter);
 
 		String contentType = servletResponse.getContentType();
+
 		String includeServletPath = (String)request.getAttribute(
 			RequestDispatcher.INCLUDE_SERVLET_PATH);
 

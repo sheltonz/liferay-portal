@@ -16,79 +16,88 @@
 
 <%@ include file="/init.jsp" %>
 
+<%
+String redirect = ParamUtil.getString(request, "redirect");
+%>
+
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
 
-<aui:form action="<%= configurationActionURL %>" method="post" onSubmit='<%= "event.preventDefault(); " + renderResponse.getNamespace() + "saveConfiguration();" %>'>
+<liferay-frontend:edit-form
+	action="<%= configurationActionURL %>"
+	method="post"
+	name="fm"
+>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 
-	<aui:fieldset id="controls" label="video-properties">
-		<aui:input label="video-id" name="preferences--url--" value="<%= url %>" />
+	<liferay-frontend:edit-form-body>
+		<liferay-frontend:fieldset-group>
+			<liferay-frontend:fieldset
+				collapsed="<%= false %>"
+				collapsible="<%= true %>"
+				label="display-settings"
+			>
+				<aui:input label="video-id" name="preferences--url--" value="<%= youTubeDisplayContext.getURL() %>" />
 
-		<aui:select inlineField="<%= true %>" label="preset-frame-size" name="preferences--presetSize--" onChange='<%= renderResponse.getNamespace() + "updateFrameSize(this.value);" %>' value="<%= presetSize %>">
-			<aui:option label="custom" value="custom" />
-			<aui:option label="standard-360-4-3" value="480x360" />
-			<aui:option label="standard-360-16-9" value="640x360" />
-			<aui:option label="enhanced-480-4-3" value="640x480" />
-			<aui:option label="enhanced-480-16-9" value="854x480" />
-			<aui:option label="hd-720-4-3" value="960x720" />
-			<aui:option label="hd-720-16-9" value="1280x720" />
-			<aui:option label="full-hd-1080-4-3" value="1440x1080" />
-			<aui:option label="full-hd-1080-16-9" value="1920x1080" />
-		</aui:select>
+				<aui:select inlineField="<%= true %>" label="preset-frame-size" name="preferences--presetSize--" onChange='<%= renderResponse.getNamespace() + "updateFrameSize(this.value);" %>' value="<%= youTubeDisplayContext.getPresetSize() %>">
+					<aui:option label="custom" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "custom") %>' value="custom" />
+					<aui:option label="standard-360-4-3" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "480x360") %>' value="480x360" />
+					<aui:option label="standard-360-16-9" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "640x360") %>' value="640x360" />
+					<aui:option label="enhanced-480-4-3" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "640x480") %>' value="640x480" />
+					<aui:option label="enhanced-480-16-9" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "854x480") %>' value="854x480" />
+					<aui:option label="hd-720-4-3" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "960x720") %>' value="960x720" />
+					<aui:option label="hd-720-16-9" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "1280x720") %>' value="1280x720" />
+					<aui:option label="full-hd-1080-4-3" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "1440x1080") %>' value="1440x1080" />
+					<aui:option label="full-hd-1080-16-9" selected='<%= Objects.equals(youTubeDisplayContext.getPresetSize(), "1920x1080") %>' value="1920x1080" />
+				</aui:select>
 
-		<aui:input disabled="<%= true %>" inlineField="<%= true %>" label="frame-width" name="preferences--width--" value="<%= width %>">
-			<aui:validator name="digits" />
-		</aui:input>
+				<aui:input disabled="<%= !youTubeDisplayContext.isCustomSize() %>" inlineField="<%= true %>" label="frame-width" name="preferences--width--" value="<%= youTubeDisplayContext.getWidth() %>">
+					<aui:validator name="digits" />
+				</aui:input>
 
-		<aui:input disabled="<%= true %>" inlineField="<%= true %>" label="frame-height" name="preferences--height--" value="<%= height %>">
-			<aui:validator name="digits" />
-		</aui:input>
+				<aui:input disabled="<%= !youTubeDisplayContext.isCustomSize() %>" inlineField="<%= true %>" label="frame-height" name="preferences--height--" value="<%= youTubeDisplayContext.getHeight() %>">
+					<aui:validator name="digits" />
+				</aui:input>
+			</liferay-frontend:fieldset>
 
-		<liferay-ui:panel-container extended="<%= false %>" persistState="<%= true %>">
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" persistState="<%= true %>" title="advanced-options">
-				<aui:input label="show-thumbnail" name="preferences--showThumbnail--" type="checkbox" value="<%= showThumbnail %>" />
+			<liferay-frontend:fieldset
+				collapsed="<%= true %>"
+				collapsible="<%= true %>"
+				label="advanced-options"
+			>
+				<aui:input label="watch-this-video-at-youtube" name="preferences--showThumbnail--" type="toggle-switch" value="<%= youTubeDisplayContext.isShowThumbnail() %>" />
 
-				<aui:fieldset>
-					<aui:input inlineField="<%= true %>" label="auto-play" name="preferences--autoplay--" type="checkbox" value="<%= autoplay %>" />
+				<div class="<%= youTubeDisplayContext.isShowThumbnail() ? "hide" : StringPool.BLANK %>" id="<portlet:namespace />videoPreferences">
+					<aui:input inlineField="<%= true %>" label="auto-play" name="preferences--autoplay--" type="toggle-switch" value="<%= youTubeDisplayContext.isAutoPlay() %>" />
 
-					<aui:input inlineField="<%= true %>" label="loop" name="preferences--loop--" type="checkbox" value="<%= loop %>" />
-				</aui:fieldset>
+					<aui:input inlineField="<%= true %>" name="preferences--loop--" type="toggle-switch" value="<%= youTubeDisplayContext.isLoop() %>" />
 
-				<aui:fieldset>
-					<aui:input checked="<%= enableKeyboardControls %>" inlineField="<%= true %>" label="enable-keyboard-controls" name="preferences--enableKeyboardControls--" type="checkbox" value="<%= enableKeyboardControls %>" />
-				</aui:fieldset>
+					<aui:input inlineField="<%= true %>" name="preferences--enableKeyboardControls--" type="toggle-switch" value="<%= youTubeDisplayContext.isEnableKeyboardControls() %>" />
 
-				<aui:fieldset>
-					<aui:input inlineField="<%= true %>" label="annotations" name="preferences--annotations--" type="checkbox" value="<%= annotations %>" />
+					<aui:input inlineField="<%= true %>" name="preferences--annotations--" type="toggle-switch" value="<%= youTubeDisplayContext.isAnnotations() %>" />
 
-					<aui:input inlineField="<%= true %>" label="closed-captioning" name="preferences--closedCaptioning--" type="checkbox" value="<%= closedCaptioning %>" />
-				</aui:fieldset>
+					<aui:input inlineField="<%= true %>" name="preferences--closedCaptioning--" type="toggle-switch" value="<%= youTubeDisplayContext.isClosedCaptioning() %>" />
 
-				<aui:input label="start-time" name="preferences--startTime--" value="<%= startTime %>" />
-			</liferay-ui:panel>
-		</liferay-ui:panel-container>
+					<aui:input name="preferences--startTime--" value="<%= youTubeDisplayContext.getStartTime() %>">
+						<aui:validator name="digits" />
+					</aui:input>
+				</div>
+			</liferay-frontend:fieldset>
+		</liferay-frontend:fieldset-group>
+	</liferay-frontend:edit-form-body>
 
-		<aui:button-row>
-			<aui:button type="submit" />
-		</aui:button-row>
-	</aui:fieldset>
-</aui:form>
+	<liferay-frontend:edit-form-footer>
+		<aui:button type="submit" />
+
+		<aui:button href="<%= redirect %>" type="cancel" />
+	</liferay-frontend:edit-form-footer>
+</liferay-frontend:edit-form>
 
 <aui:script>
-	function <portlet:namespace />saveConfiguration() {
-		var form = AUI.$(document.<portlet:namespace />fm);
-
-		submitForm(form);
-	}
-
-	var <portlet:namespace />customHeight;
-	var <portlet:namespace />customWidth;
-
 	function <portlet:namespace />updateFrameSize(value) {
 		var Util = Liferay.Util;
 
-		var heightNode = AUI.$('#<portlet:namespace />height');
-		var widthNode = AUI.$('#<portlet:namespace />width');
+		var heightNode = document.querySelector('#<portlet:namespace />height');
+		var widthNode = document.querySelector('#<portlet:namespace />width');
 
 		var useDefaults = value != 'custom';
 
@@ -98,27 +107,10 @@
 		if (useDefaults) {
 			var dimensions = value.split('x');
 
-			heightNode.val(dimensions[1]);
-			widthNode.val(dimensions[0]);
-		}
-		else {
-			heightNode.on(
-				'blur',
-				function(event) {
-					<portlet:namespace />customHeight = event.currentTarget.value;
-				}
-			);
-
-			heightNode.val(<portlet:namespace />customHeight);
-
-			widthNode.on(
-				'blur',
-				function(event) {
-					<portlet:namespace />customWidth = event.currentTarget.value;
-				}
-			);
-
-			widthNode.val(<portlet:namespace />customWidth);
+			heightNode.value = dimensions[1];
+			widthNode.value = dimensions[0];
 		}
 	}
+
+	Liferay.Util.toggleBoxes('<portlet:namespace />showThumbnail','<portlet:namespace />videoPreferences','<%= youTubeDisplayContext.isShowThumbnail() %>');
 </aui:script>

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
@@ -26,6 +27,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringWriter;
+
+import java.lang.ref.Reference;
+import java.lang.reflect.Field;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -414,6 +418,20 @@ public class StringBundlerTest {
 	}
 
 	@Test
+	public void testConcat() {
+		Assert.assertSame("test1", StringBundler.concat("test1"));
+		Assert.assertSame(
+			StringPool.NULL, StringBundler.concat(new String[] {null}));
+		Assert.assertEquals(
+			"test1test2", StringBundler.concat("test1", "test2"));
+		Assert.assertEquals(
+			"test1test2test3", StringBundler.concat("test1", "test2", "test3"));
+		Assert.assertEquals(
+			"test1test2test3test4",
+			StringBundler.concat("test1", "test2", "test3", "test4"));
+	}
+
+	@Test
 	public void testConstructor() {
 		StringBundler sb = new StringBundler();
 
@@ -740,7 +758,7 @@ public class StringBundlerTest {
 
 	@NewEnv(type = NewEnv.Type.CLASSLOADER)
 	@Test
-	public void testToStringWithThreadLocalBuffer() {
+	public void testToStringWithThreadLocalBuffer() throws Exception {
 		int threadLocalBufferLimit = 3;
 
 		String propertyKey =
@@ -756,9 +774,9 @@ public class StringBundlerTest {
 				ReflectionTestUtil.getFieldValue(
 					StringBundler.class, "_THREAD_LOCAL_BUFFER_LIMIT"));
 
-			ThreadLocal<StringBuilder> threadLocal =
+			ThreadLocal<Reference<Object>> threadLocal =
 				ReflectionTestUtil.getFieldValue(
-					StringBundler.class, "_stringBuilderThreadLocal");
+					StringBundler.class, "_unsafeStringBuilderThreadLocal");
 
 			Assert.assertNotNull(threadLocal);
 
@@ -773,22 +791,85 @@ public class StringBundlerTest {
 
 			Assert.assertEquals("1234", sb.toString());
 
-			StringBuilder stringBuilder = threadLocal.get();
+			Reference<Object> reference = threadLocal.get();
 
-			Assert.assertNotNull(stringBuilder);
-			Assert.assertEquals(4, stringBuilder.capacity());
+			Object unsafeStringBuilder = reference.get();
+
+			Field countField = ReflectionTestUtil.getField(
+				unsafeStringBuilder.getClass(), "_count");
+
+			Assert.assertNotNull(unsafeStringBuilder);
+			Assert.assertEquals(4, countField.get(unsafeStringBuilder));
 
 			sb.append("5");
 
 			Assert.assertEquals("12345", sb.toString());
-			Assert.assertSame(stringBuilder, threadLocal.get());
-			Assert.assertEquals(10, stringBuilder.capacity());
+
+			reference = threadLocal.get();
+
+			Assert.assertSame(unsafeStringBuilder, reference.get());
+
+			Assert.assertEquals(5, countField.get(unsafeStringBuilder));
 
 			sb.append("6");
 
 			Assert.assertEquals("123456", sb.toString());
-			Assert.assertSame(stringBuilder, threadLocal.get());
-			Assert.assertEquals(10, stringBuilder.capacity());
+
+			reference = threadLocal.get();
+
+			Assert.assertSame(unsafeStringBuilder, reference.get());
+
+			Assert.assertEquals(6, countField.get(unsafeStringBuilder));
+		}
+		finally {
+			if (propertyValue == null) {
+				System.clearProperty(propertyKey);
+			}
+			else {
+				System.setProperty(propertyKey, propertyValue);
+			}
+		}
+	}
+
+	@NewEnv(type = NewEnv.Type.CLASSLOADER)
+	@Test
+	public void testUnsafeStringBuilderEnsureCapacity() {
+		int threadLocalBufferLimit = 10;
+
+		String propertyKey =
+			StringBundler.class.getName() + ".threadlocal.buffer.limit";
+
+		String propertyValue = System.getProperty(propertyKey);
+
+		System.setProperty(propertyKey, String.valueOf(threadLocalBufferLimit));
+
+		try {
+			Assert.assertEquals(
+				Integer.valueOf(threadLocalBufferLimit),
+				ReflectionTestUtil.getFieldValue(
+					StringBundler.class, "_THREAD_LOCAL_BUFFER_LIMIT"));
+
+			StringBundler sb = new StringBundler(4);
+
+			sb.append("test1");
+			sb.append("test2");
+			sb.append("test3");
+
+			Assert.assertEquals("test1test2test3", sb.toString());
+
+			sb.append("test4");
+
+			Assert.assertEquals("test1test2test3test4", sb.toString());
+
+			sb.setIndex(sb.index() - 1);
+
+			Assert.assertEquals("test1test2test3", sb.toString());
+
+			sb.append("test4test5test6test7test8test9test10");
+
+			Assert.assertEquals(
+				"test1test2test3test4test5test6test7test8test9test10",
+				sb.toString());
 		}
 		finally {
 			if (propertyValue == null) {
@@ -840,7 +921,7 @@ public class StringBundlerTest {
 					StringBundler.class, "_THREAD_LOCAL_BUFFER_LIMIT"));
 			Assert.assertNull(
 				ReflectionTestUtil.getFieldValue(
-					StringBundler.class, "_stringBuilderThreadLocal"));
+					StringBundler.class, "_unsafeStringBuilderThreadLocal"));
 
 			StringBundler sb = new StringBundler();
 
@@ -850,9 +931,10 @@ public class StringBundlerTest {
 			sb.append("4");
 
 			Assert.assertEquals("1234", sb.toString());
+
 			Assert.assertNull(
 				ReflectionTestUtil.getFieldValue(
-					StringBundler.class, "_stringBuilderThreadLocal"));
+					StringBundler.class, "_unsafeStringBuilderThreadLocal"));
 		}
 		finally {
 			if (propertyValue != null) {

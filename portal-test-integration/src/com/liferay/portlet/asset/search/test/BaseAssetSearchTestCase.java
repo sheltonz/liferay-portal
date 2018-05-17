@@ -30,7 +30,6 @@ import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.security.RandomUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.test.IdempotentRetryAssert;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -60,8 +59,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -130,6 +127,7 @@ public abstract class BaseAssetSearchTestCase {
 
 		_assetCategoryIds1 =
 			new long[] {_healthCategoryId, _sportCategoryId, _travelCategoryId};
+
 		_assetCategoryIds2 = new long[] {
 			_fashionCategoryId, _foodCategoryId, _healthCategoryId,
 			_sportCategoryId
@@ -137,8 +135,7 @@ public abstract class BaseAssetSearchTestCase {
 
 		_group2 = GroupTestUtil.addGroup();
 
-		long[] groupIds =
-			new long[] {_group1.getGroupId(), _group2.getGroupId()};
+		long[] groupIds = {_group1.getGroupId(), _group2.getGroupId()};
 
 		for (long groupId : groupIds) {
 			serviceContext = ServiceContextTestUtil.getServiceContext(groupId);
@@ -911,9 +908,8 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] titles = {
-			"open", "liferay", "social", "osgi", "content", "life"
-		};
+		String[] titles =
+			{"open", "liferay", "social", "osgi", "content", "life"};
 
 		testOrderByCreateDate(assetEntryQuery, "asc", titles, titles);
 	}
@@ -924,13 +920,11 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] titles = {
-			"open", "liferay", "social", "osgi", "content", "life"
-		};
+		String[] titles =
+			{"open", "liferay", "social", "osgi", "content", "life"};
 
-		String[] orderedTitles = {
-			"life", "content", "osgi", "social", "liferay", "open"
-		};
+		String[] orderedTitles =
+			{"life", "content", "osgi", "social", "liferay", "open"};
 
 		testOrderByCreateDate(assetEntryQuery, "desc", titles, orderedTitles);
 	}
@@ -963,13 +957,11 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] defaultTitles = {
-			"open", "liferay", "content", "social", "osgi", "life"
-		};
+		String[] defaultTitles =
+			{"open", "liferay", "content", "social", "osgi", "life"};
 
-		String[] frenchTitles = {
-			"ouvert", "liferay", "content", "social", "osgi", "vie"
-		};
+		String[] frenchTitles =
+			{"ouvert", "liferay", "content", "social", "osgi", "vie"};
 
 		List<Map<Locale, String>> titleMaps = new ArrayList<>();
 
@@ -982,13 +974,11 @@ public abstract class BaseAssetSearchTestCase {
 			titleMaps.add(titleMap);
 		}
 
-		String[] defaultOrderedTitles = {
-			"content", "life", "liferay", "open", "osgi", "social"
-		};
+		String[] defaultOrderedTitles =
+			{"content", "life", "liferay", "open", "osgi", "social"};
 
-		String[] frenchOrderedTitles = {
-			"content", "liferay", "osgi", "ouvert", "social", "vie"
-		};
+		String[] frenchOrderedTitles =
+			{"content", "liferay", "osgi", "ouvert", "social", "vie"};
 
 		List<Map<Locale, String>> orderedTitleMaps = new ArrayList<>();
 
@@ -1019,13 +1009,11 @@ public abstract class BaseAssetSearchTestCase {
 			AssetEntryQueryTestUtil.createAssetEntryQuery(
 				_group1.getGroupId(), new String[] {getBaseModelClassName()});
 
-		String[] defaultTitles = {
-			"open", "liferay", "content", "social", "osgi", "life"
-		};
+		String[] defaultTitles =
+			{"open", "liferay", "content", "social", "osgi", "life"};
 
-		String[] frenchTitles = {
-			"ouvert", "liferay", "content", "social", "osgi", "vie"
-		};
+		String[] frenchTitles =
+			{"ouvert", "liferay", "content", "social", "osgi", "vie"};
 
 		List<Map<Locale, String>> titleMaps = new ArrayList<>();
 
@@ -1038,13 +1026,11 @@ public abstract class BaseAssetSearchTestCase {
 			titleMaps.add(titleMap);
 		}
 
-		String[] defaultOrderedTitles = {
-			"social", "osgi", "open", "liferay", "life", "content"
-		};
+		String[] defaultOrderedTitles =
+			{"social", "osgi", "open", "liferay", "life", "content"};
 
-		String[] frenchOrderedTitles = {
-			"vie", "social", "ouvert", "osgi", "liferay", "content"
-		};
+		String[] frenchOrderedTitles =
+			{"vie", "social", "ouvert", "osgi", "liferay", "content"};
 
 		List<Map<Locale, String>> orderedTitleMaps = new ArrayList<>();
 
@@ -1174,21 +1160,10 @@ public abstract class BaseAssetSearchTestCase {
 			final SearchContext searchContext, final int start, final int end)
 		throws Exception {
 
-		IdempotentRetryAssert.retryAssert(
-			10, TimeUnit.SECONDS, 1, TimeUnit.SECONDS,
-			new Callable<Void>() {
+		int actualCount = searchCount(
+			assetEntryQuery, searchContext, start, end);
 
-				@Override
-				public Void call() throws Exception {
-					int actualCount = searchCount(
-						assetEntryQuery, searchContext, start, end);
-
-					Assert.assertEquals(expectedCount, actualCount);
-
-					return null;
-				}
-
-			});
+		Assert.assertEquals(expectedCount, actualCount);
 	}
 
 	protected String[] format(Date[] dates, DateFormat dateFormat) {
@@ -1449,24 +1424,12 @@ public abstract class BaseAssetSearchTestCase {
 		assetEntryQuery.setOrderByCol1("createDate");
 		assetEntryQuery.setOrderByType1(orderByType);
 
-		IdempotentRetryAssert.retryAssert(
-			10, TimeUnit.SECONDS,
-			new Callable<Void>() {
+		List<AssetEntry> assetEntries = search(assetEntryQuery, searchContext);
 
-				@Override
-				public Void call() throws Exception {
-					List<AssetEntry> assetEntries = search(
-						assetEntryQuery, searchContext);
-
-					Assert.assertEquals(
-						ArrayUtils.toString(orderedTitles),
-						ArrayUtils.toString(
-							getTitles(assetEntries, LocaleUtil.getDefault())));
-
-					return null;
-				}
-
-			});
+		Assert.assertEquals(
+			ArrayUtils.toString(orderedTitles),
+			ArrayUtils.toString(
+				getTitles(assetEntries, LocaleUtil.getDefault())));
 	}
 
 	protected void testOrderByExpirationDate(
@@ -1499,27 +1462,14 @@ public abstract class BaseAssetSearchTestCase {
 		final DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
 			PropsValues.INDEX_DATE_FORMAT_PATTERN);
 
-		IdempotentRetryAssert.retryAssert(
-			10, TimeUnit.SECONDS,
-			new Callable<Void>() {
+		List<AssetEntry> assetEntries = search(assetEntryQuery, searchContext);
 
-				@Override
-				public Void call() throws Exception {
-					List<AssetEntry> assetEntries = search(
-						assetEntryQuery, searchContext);
-
-					Assert.assertEquals(
-						ArrayUtils.toString(
-							format(expirationDates, dateFormat)),
-						ArrayUtils.toString(
-							format(
-								getExpirationDates(assetEntries, orderByType),
-								dateFormat)));
-
-					return null;
-				}
-
-			});
+		Assert.assertEquals(
+			ArrayUtils.toString(format(expirationDates, dateFormat)),
+			ArrayUtils.toString(
+				format(
+					getExpirationDates(assetEntries, orderByType),
+					dateFormat)));
 	}
 
 	protected void testOrderByTitle(
@@ -1549,25 +1499,12 @@ public abstract class BaseAssetSearchTestCase {
 		for (final Locale locale : locales) {
 			searchContext.setLocale(locale);
 
-			IdempotentRetryAssert.retryAssert(
-				10, TimeUnit.SECONDS,
-				new Callable<Void>() {
+			List<AssetEntry> assetEntries = search(
+				assetEntryQuery, searchContext);
 
-					@Override
-					public Void call() throws Exception {
-						List<AssetEntry> assetEntries = search(
-							assetEntryQuery, searchContext);
-
-						Assert.assertEquals(
-							ArrayUtils.toString(
-								getOrderedTitles(orderedTitleMaps, locale)),
-							ArrayUtils.toString(
-								getTitles(assetEntries, locale)));
-
-						return null;
-					}
-
-				});
+			Assert.assertEquals(
+				ArrayUtils.toString(getOrderedTitles(orderedTitleMaps, locale)),
+				ArrayUtils.toString(getTitles(assetEntries, locale)));
 		}
 	}
 

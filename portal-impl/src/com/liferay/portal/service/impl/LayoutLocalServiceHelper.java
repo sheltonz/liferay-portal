@@ -14,6 +14,7 @@
 
 package com.liferay.portal.service.impl;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.exception.LayoutFriendlyURLException;
 import com.liferay.portal.kernel.exception.LayoutFriendlyURLsException;
@@ -23,6 +24,8 @@ import com.liferay.portal.kernel.exception.LayoutTypeException;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutConstants;
@@ -49,7 +52,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.LayoutPriorityComparator;
@@ -107,7 +109,7 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 	}
 
 	public String getFriendlyURL(String friendlyURL) {
-		return FriendlyURLNormalizerUtil.normalize(friendlyURL);
+		return FriendlyURLNormalizerUtil.normalizeWithEncoding(friendlyURL);
 	}
 
 	public Map<Locale, String> getFriendlyURLMap(
@@ -174,6 +176,13 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 			return priority;
 		}
 		catch (NoSuchLayoutException nsle) {
+
+			// LPS-52675
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(nsle, nsle);
+			}
+
 			return 0;
 		}
 	}
@@ -233,7 +242,9 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 				firstLayout = true;
 			}
 			else {
-				long firstLayoutId = layouts.get(0).getLayoutId();
+				Layout layout = layouts.get(0);
+
+				long firstLayoutId = layout.getLayoutId();
 
 				if (firstLayoutId == layoutId) {
 					firstLayout = true;
@@ -354,7 +365,9 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 
 		LayoutImpl.validateFriendlyURLKeyword(friendlyURL);
 
-		if (friendlyURL.contains(Portal.FRIENDLY_URL_SEPARATOR)) {
+		if (friendlyURL.contains(Portal.FRIENDLY_URL_SEPARATOR) ||
+			friendlyURL.endsWith(_FRIENDLY_URL_SEPARATOR_HEAD)) {
+
 			LayoutFriendlyURLException lfurle = new LayoutFriendlyURLException(
 				LayoutFriendlyURLException.KEYWORD_CONFLICT);
 
@@ -535,7 +548,9 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 			// You can only reach this point if there are more than two layouts
 			// at the root level because of the descendant check
 
-			long firstLayoutId = layouts.get(0).getLayoutId();
+			Layout firstLayout = layouts.get(0);
+
+			long firstLayoutId = firstLayout.getLayoutId();
 
 			if (firstLayoutId == layoutId) {
 				Layout secondLayout = layouts.get(1);
@@ -577,6 +592,13 @@ public class LayoutLocalServiceHelper implements IdentifiableOSGiService {
 	@BeanReference(type = ResourcePermissionLocalService.class)
 	protected ResourcePermissionLocalService resourcePermissionLocalService;
 
+	private static final String _FRIENDLY_URL_SEPARATOR_HEAD =
+		Portal.FRIENDLY_URL_SEPARATOR.substring(
+			0, Portal.FRIENDLY_URL_SEPARATOR.length() - 1);
+
 	private static final int _PRIORITY_BUFFER = 1000000;
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		LayoutLocalServiceHelper.class);
 
 }

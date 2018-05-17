@@ -36,13 +36,16 @@ import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.AccountImpl;
 import com.liferay.portal.model.impl.AccountModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -90,6 +93,25 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 	public AccountPersistenceImpl() {
 		setModelClass(Account.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("type", "type_");
+			dbColumnNames.put("size", "size_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -237,8 +259,6 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 	@Override
 	protected Account removeImpl(Account account) {
-		account = toUnwrappedModel(account);
-
 		Session session = null;
 
 		try {
@@ -269,9 +289,23 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 
 	@Override
 	public Account updateImpl(Account account) {
-		account = toUnwrappedModel(account);
-
 		boolean isNew = account.isNew();
+
+		if (!(account instanceof AccountModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(account.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(account);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in account proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Account implementation " +
+				account.getClass());
+		}
 
 		AccountModelImpl accountModelImpl = (AccountModelImpl)account;
 
@@ -321,7 +355,9 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		entityCache.putResult(AccountModelImpl.ENTITY_CACHE_ENABLED,
@@ -330,37 +366,6 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 		account.resetOriginalValues();
 
 		return account;
-	}
-
-	protected Account toUnwrappedModel(Account account) {
-		if (account instanceof AccountImpl) {
-			return account;
-		}
-
-		AccountImpl accountImpl = new AccountImpl();
-
-		accountImpl.setNew(account.isNew());
-		accountImpl.setPrimaryKey(account.getPrimaryKey());
-
-		accountImpl.setMvccVersion(account.getMvccVersion());
-		accountImpl.setAccountId(account.getAccountId());
-		accountImpl.setCompanyId(account.getCompanyId());
-		accountImpl.setUserId(account.getUserId());
-		accountImpl.setUserName(account.getUserName());
-		accountImpl.setCreateDate(account.getCreateDate());
-		accountImpl.setModifiedDate(account.getModifiedDate());
-		accountImpl.setParentAccountId(account.getParentAccountId());
-		accountImpl.setName(account.getName());
-		accountImpl.setLegalName(account.getLegalName());
-		accountImpl.setLegalId(account.getLegalId());
-		accountImpl.setLegalType(account.getLegalType());
-		accountImpl.setSicCode(account.getSicCode());
-		accountImpl.setTickerSymbol(account.getTickerSymbol());
-		accountImpl.setIndustry(account.getIndustry());
-		accountImpl.setType(account.getType());
-		accountImpl.setSize(account.getSize());
-
-		return accountImpl;
 	}
 
 	/**
@@ -511,14 +516,14 @@ public class AccountPersistenceImpl extends BasePersistenceImpl<Account>
 		query.append(_SQL_SELECT_ACCOUNT_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

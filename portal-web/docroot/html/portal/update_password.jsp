@@ -28,9 +28,9 @@ String ticketKey = ParamUtil.getString(request, "ticketKey");
 if (referer.startsWith(themeDisplay.getPathMain() + "/portal/update_password") && Validator.isNotNull(ticketKey)) {
 	referer = themeDisplay.getPathMain();
 }
-
-PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 %>
+
+<%@ include file="/html/portal/select_language.jspf" %>
 
 <c:choose>
 	<c:when test="<%= !themeDisplay.isSignedIn() && (ticket == null) %>">
@@ -38,13 +38,13 @@ PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 			<liferay-ui:message key="your-password-reset-link-is-no-longer-valid" />
 
 			<%
-			PortletURL portletURL = new PortletURLImpl(request, PortletKeys.LOGIN, plid, PortletRequest.RENDER_PHASE);
+			PortletURL portletURL = PortletURLFactoryUtil.create(request, PortletKeys.LOGIN, PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("mvcRenderCommandName", "/login/forgot_password");
 			portletURL.setWindowState(WindowState.MAXIMIZED);
 			%>
 
-			<div>
+			<div class="reset-link-contaner">
 				<aui:a href="<%= portletURL.toString() %>" label="request-a-new-password-reset-link"></aui:a>
 			</div>
 		</div>
@@ -84,11 +84,9 @@ PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
 							<liferay-ui:message arguments="<%= String.valueOf(upe.minLength) %>" key="that-password-is-too-short" translateArguments="<%= false %>" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustComplyWithModelListeners.class.getName()) %>">
 							<liferay-ui:message key="that-password-is-invalid-please-enter-a-different-password" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustComplyWithRegex.class.getName()) %>">
 
 							<%
@@ -97,31 +95,24 @@ PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 
 							<liferay-ui:message arguments="<%= upe.regex %>" key="that-password-does-not-comply-with-the-regular-expression" translateArguments="<%= false %>" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustMatch.class.getName()) %>">
 							<liferay-ui:message key="the-passwords-you-entered-do-not-match" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustNotBeEqualToCurrent.class.getName()) %>">
 							<liferay-ui:message key="your-new-password-cannot-be-the-same-as-your-old-password-please-enter-a-different-password" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustNotBeNull.class.getName()) %>">
 							<liferay-ui:message key="the-password-cannot-be-blank" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustNotBeRecentlyUsed.class.getName()) %>">
 							<liferay-ui:message key="that-password-has-already-been-used-please-enter-a-different-password" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustNotBeTrivial.class.getName()) %>">
 							<liferay-ui:message key="that-password-uses-common-words-please-enter-a-password-that-is-harder-to-guess-i-e-contains-a-mix-of-numbers-and-letters" />
 						</c:when>
-
 						<c:when test="<%= SessionErrors.contains(request, UserPasswordException.MustNotContainDictionaryWords.class.getName()) %>">
 							<liferay-ui:message key="that-password-uses-common-dictionary-words" />
 						</c:when>
-
 						<c:otherwise>
 							<liferay-ui:message key="your-request-failed-to-complete" />
 						</c:otherwise>
@@ -144,7 +135,7 @@ PasswordPolicy passwordPolicy = user.getPasswordPolicy();
 			</aui:fieldset>
 
 			<aui:button-row>
-				<aui:button cssClass="btn-lg" type="submit" />
+				<aui:button type="submit" />
 			</aui:button-row>
 		</aui:form>
 	</c:otherwise>

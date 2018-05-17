@@ -17,7 +17,6 @@ package com.liferay.portal.kernel.upgrade;
 import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
@@ -28,7 +27,6 @@ import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
-import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
@@ -38,7 +36,6 @@ import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.PortletKeys;
@@ -91,13 +88,11 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 		}
 
 		_portlets.clear();
-
-		assertFurtherTestsInTheSameJVMCanAddCompanies();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		try (Connection con = DataAccess.getUpgradeOptimizedConnection()) {
+		try (Connection con = DataAccess.getConnection()) {
 			connection = con;
 
 			String[][] renamePortletIdsArray = getRenamePortletIdsArray();
@@ -148,14 +143,6 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 		}
 	}
 
-	protected static void assertFurtherTestsInTheSameJVMCanAddCompanies()
-		throws Exception {
-
-		Company company = CompanyTestUtil.addCompany();
-
-		CompanyLocalServiceUtil.deleteCompany(company);
-	}
-
 	protected Layout addLayout() throws Exception {
 		Group group = GroupTestUtil.addGroup();
 
@@ -180,7 +167,7 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 		Map<Long, String[]> roleIdsToActionIds = new HashMap<>();
 
 		Role role = RoleLocalServiceUtil.getRole(
-			TestPropsValues.getCompanyId(), RoleConstants.GUEST);
+			TestPropsValues.getCompanyId(), RoleConstants.USER);
 
 		roleIdsToActionIds.put(
 			role.getRoleId(), new String[] {ActionKeys.CONFIGURATION});
@@ -312,9 +299,8 @@ public class BaseUpgradePortletIdTest extends BaseUpgradePortletId {
 
 	private static final String _INSTANCE_ID = "_INSTANCE_LhZwzy867qfr";
 
-	private static final String[] _PORTLET_IDS = {
-		"47", com.liferay.portlet.util.test.PortletKeys.TEST
-	};
+	private static final String[] _PORTLET_IDS =
+		{"47", com.liferay.portlet.util.test.PortletKeys.TEST};
 
 	private static final List<Portlet> _portlets = new ArrayList<>();
 

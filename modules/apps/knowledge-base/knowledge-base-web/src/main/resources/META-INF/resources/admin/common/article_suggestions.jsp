@@ -19,7 +19,11 @@
 <%
 KBArticle kbArticle = (KBArticle)request.getAttribute(KBWebKeys.KNOWLEDGE_BASE_KB_ARTICLE);
 
-boolean showAdminSuggestionView = SuggestionPermission.contains(permissionChecker, scopeGroupId, kbArticle, KBActionKeys.VIEW_SUGGESTIONS);
+boolean showAdminSuggestionView = false;
+
+if (AdminPermission.contains(permissionChecker, scopeGroupId, KBActionKeys.VIEW_SUGGESTIONS) || KBArticlePermission.contains(permissionChecker, kbArticle, KBActionKeys.UPDATE)) {
+	showAdminSuggestionView = true;
+}
 
 KBArticleURLHelper kbArticleURLHelper = new KBArticleURLHelper(renderRequest, renderResponse, templatePath);
 
@@ -27,11 +31,11 @@ int kbCommentsCount = 0;
 int pendingKBCommentsCount = 0;
 
 if (showAdminSuggestionView) {
-	kbCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(KBArticle.class.getName(), kbArticle.getClassPK());
-	pendingKBCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(KBArticle.class.getName(), kbArticle.getClassPK(), new int[] {KBCommentConstants.STATUS_IN_PROGRESS, KBCommentConstants.STATUS_NEW});
+	kbCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(KBArticle.class.getName(), kbArticle.getResourcePrimKey());
+	pendingKBCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(KBArticle.class.getName(), kbArticle.getResourcePrimKey(), new int[] {KBCommentConstants.STATUS_IN_PROGRESS, KBCommentConstants.STATUS_NEW});
 }
 else {
-	kbCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(themeDisplay.getUserId(), KBArticle.class.getName(), kbArticle.getClassPK());
+	kbCommentsCount = KBCommentLocalServiceUtil.getKBCommentsCount(themeDisplay.getUserId(), KBArticle.class.getName(), kbArticle.getResourcePrimKey());
 }
 
 RatingsType ratingsType = PortletRatingsDefinitionUtil.getRatingsType(themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(), KBArticle.class.getName());
@@ -75,20 +79,11 @@ if (ratingsType == null) {
 		</aui:form>
 	</div>
 
-	<liferay-ui:success
-		key="suggestionDeleted"
-		message="suggestion-deleted-successfully"
-	/>
+	<liferay-ui:success key="suggestionDeleted" message="suggestion-deleted-successfully" />
 
-	<liferay-ui:success
-		key="suggestionStatusUpdated"
-		message="suggestion-status-updated-successfully"
-	/>
+	<liferay-ui:success key="suggestionStatusUpdated" message="suggestion-status-updated-successfully" />
 
-	<liferay-ui:success
-		key="suggestionSaved"
-		message="suggestion-saved-successfully"
-	/>
+	<liferay-ui:success key="suggestionSaved" message="suggestion-saved-successfully" />
 
 	<c:choose>
 		<c:when test="<%= kbCommentsCount == 1 %>">
@@ -156,16 +151,15 @@ if (ratingsType == null) {
 				<liferay-ui:search-container
 					emptyResultsMessage="no-comments-found"
 					iteratorURL="<%= iteratorURL %>"
-					orderByComparator='<%= KnowledgeBaseUtil.getKBCommentOrderByComparator("modified-date", "desc") %>'
+					orderByComparator='<%= KBUtil.getKBCommentOrderByComparator("modified-date", "desc") %>'
 					total="<%= kbCommentsCount %>"
 				>
 					<liferay-ui:search-container-results
-						results="<%= KBCommentLocalServiceUtil.getKBComments(themeDisplay.getUserId(), KBArticle.class.getName(), kbArticle.getClassPK(), searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator()) %>"
+						results="<%= KBCommentLocalServiceUtil.getKBComments(themeDisplay.getUserId(), KBArticle.class.getName(), kbArticle.getResourcePrimKey(), searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator()) %>"
 					/>
 
 					<liferay-ui:search-container-row
 						className="com.liferay.knowledge.base.model.KBComment"
-						escapedModel="<%= true %>"
 						modelVar="kbComment"
 					>
 						<liferay-ui:search-container-column-text
@@ -173,7 +167,7 @@ if (ratingsType == null) {
 							name="comment"
 							orderable="<%= true %>"
 						>
-							<%= kbComment.getContent() %>
+							<%= HtmlUtil.escape(kbComment.getContent()) %>
 						</liferay-ui:search-container-column-text>
 
 						<liferay-ui:search-container-column-date
@@ -189,11 +183,13 @@ if (ratingsType == null) {
 							name="status"
 							orderable="<%= true %>"
 						>
-							<liferay-ui:message key="<%= KnowledgeBaseUtil.getStatusLabel(kbComment.getStatus()) %>" />
+							<liferay-ui:message key="<%= KBUtil.getStatusLabel(kbComment.getStatus()) %>" />
 						</liferay-ui:search-container-column-text>
 					</liferay-ui:search-container-row>
 
-					<liferay-ui:search-iterator markupView="lexicon" />
+					<liferay-ui:search-iterator
+						markupView="lexicon"
+					/>
 				</liferay-ui:search-container>
 			</c:if>
 		</c:otherwise>

@@ -15,6 +15,8 @@
 package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.exception.NoSuchRoleException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -58,13 +60,6 @@ public class VerifyRole extends VerifyProcess {
 			role.getRoleId(), ActionKeys.VIEW_SITE_ADMINISTRATION);
 	}
 
-	protected void deleteImplicitAssociations(Role role) throws Exception {
-		runSQL(
-			"delete from UserGroupGroupRole where roleId = " +
-				role.getRoleId());
-		runSQL("delete from UserGroupRole where roleId = " + role.getRoleId());
-	}
-
 	@Override
 	protected void doVerify() throws Exception {
 		long[] companyIds = PortalInstances.getCompanyIdsBySQL();
@@ -78,17 +73,6 @@ public class VerifyRole extends VerifyProcess {
 		try (LoggingTimer loggingTimer =
 				new LoggingTimer(String.valueOf(companyId))) {
 
-			RoleLocalServiceUtil.checkSystemRoles(companyId);
-
-			try {
-				Role organizationUserRole = RoleLocalServiceUtil.getRole(
-					companyId, RoleConstants.ORGANIZATION_USER);
-
-				deleteImplicitAssociations(organizationUserRole);
-			}
-			catch (NoSuchRoleException nsre) {
-			}
-
 			try {
 				Role powerUserRole = RoleLocalServiceUtil.getRole(
 					companyId, RoleConstants.POWER_USER);
@@ -96,17 +80,16 @@ public class VerifyRole extends VerifyProcess {
 				addViewSiteAdministrationPermission(powerUserRole);
 			}
 			catch (NoSuchRoleException nsre) {
-			}
 
-			try {
-				Role siteMemberRole = RoleLocalServiceUtil.getRole(
-					companyId, RoleConstants.SITE_MEMBER);
+				// LPS-52675
 
-				deleteImplicitAssociations(siteMemberRole);
-			}
-			catch (NoSuchRoleException nsre) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(nsre);
+				}
 			}
 		}
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(VerifyRole.class);
 
 }

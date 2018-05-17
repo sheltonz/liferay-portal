@@ -14,6 +14,9 @@
 
 package com.liferay.portal.test.rule;
 
+import com.liferay.petra.lang.CentralizedThreadLocal;
+import com.liferay.petra.lang.ClassLoaderPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.deploy.hot.HookHotDeployListener;
 import com.liferay.portal.deploy.hot.ServiceWrapperRegistry;
 import com.liferay.portal.kernel.deploy.hot.DependencyManagementThreadLocal;
@@ -24,18 +27,21 @@ import com.liferay.portal.kernel.process.ClassPathUtil;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.servlet.filters.invoker.InvokerFilterHelper;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
-import com.liferay.portal.kernel.util.ClassLoaderPool;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
+import com.liferay.portal.kernel.util.InfrastructureUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalLifecycleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.service.test.ServiceTestUtil;
 import com.liferay.portal.spring.context.PortletContextLoaderListener;
 import com.liferay.portal.test.mock.AutoDeployMockServletContext;
 import com.liferay.portal.util.InitUtil;
+import com.liferay.portal.util.PortalClassPathUtil;
 import com.liferay.portal.util.PropsUtil;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import java.net.MalformedURLException;
@@ -45,12 +51,17 @@ import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+
+import javax.sql.DataSource;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -60,6 +71,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.mock.web.MockServletContext;
 
 /**
@@ -104,9 +116,39 @@ public class PACLTestRule implements TestRule {
 		};
 	}
 
+	public static class PACLTestRuleThreadLocal {
+
+		public static boolean isDummyDataSourceEnabled() {
+			return _dummyDataSourceEnabled.get();
+		}
+
+		public static void setDummyDataSourceEnabled(
+			boolean dummyDataSourceEnabled) {
+
+			_dummyDataSourceEnabled.set(dummyDataSourceEnabled);
+		}
+
+		private static final ThreadLocal<Boolean> _dummyDataSourceEnabled =
+			new CentralizedThreadLocal<>(
+				PACLTestRuleThreadLocal.class + "._dummyDataSourceEnabled",
+				() -> Boolean.FALSE, false);
+
+	}
+
 	protected void afterClass(
-		Description description, HotDeployEvent hotDeployEvent,
-		PortletContextLoaderListener portletContextLoaderListener) {
+			Description description, HotDeployEvent hotDeployEvent,
+			PortletContextLoaderListener portletContextLoaderListener)
+		throws Exception {
+
+		if (PACLTestRuleThreadLocal.isDummyDataSourceEnabled()) {
+			LazyConnectionDataSourceProxy lazyConnectionDataSourceProxy =
+				(LazyConnectionDataSourceProxy)
+					InfrastructureUtil.getDataSource();
+
+			ReflectionTestUtil.setFieldValue(
+				lazyConnectionDataSourceProxy.getTargetDataSource(),
+				"_dataSource", _originalDataSource);
+		}
 
 		HotDeployUtil.fireUndeployEvent(hotDeployEvent);
 
@@ -129,9 +171,10 @@ public class PACLTestRule implements TestRule {
 	protected HotDeployEvent beforeClass(
 			Description description,
 			PortletContextLoaderListener portletContextLoaderListener)
-		throws ReflectiveOperationException {
+		throws Exception {
 
 		_testClass = _loadTestClass(description.getTestClass());
+
 		_instance = _testClass.newInstance();
 
 		ServletContext servletContext = ServletContextPool.get(
@@ -180,6 +223,16 @@ public class PACLTestRule implements TestRule {
 		finally {
 			ClassLoaderPool.unregister(hotDeployEvent.getServletContextName());
 			PortletClassLoaderUtil.setServletContextName(null);
+		}
+
+		if (PACLTestRuleThreadLocal.isDummyDataSourceEnabled()) {
+			LazyConnectionDataSourceProxy lazyConnectionDataSourceProxy =
+				(LazyConnectionDataSourceProxy)
+					InfrastructureUtil.getDataSource();
+
+			_originalDataSource = ReflectionTestUtil.getAndSetFieldValue(
+				lazyConnectionDataSourceProxy.getTargetDataSource(),
+				"_dataSource", _createDummyDataSource());
 		}
 
 		return hotDeployEvent;
@@ -231,11 +284,106 @@ public class PACLTestRule implements TestRule {
 		return Class.forName(clazz.getName(), true, classLoader);
 	}
 
+	private DataSource _createDummyDataSource() {
+		Object statment = ProxyUtil.newProxyInstance(
+			ClassLoader.getSystemClassLoader(),
+			new Class<?>[] {java.sql.Statement.class},
+			new InvocationHandler() {
+
+				@Override
+				public Object invoke(
+					Object proxy, Method method, Object[] args) {
+
+					String methodName = method.getName();
+
+					if (methodName.equals("execute")) {
+						return Boolean.TRUE;
+					}
+
+					if (methodName.equals("executeUpdate")) {
+						return Integer.MAX_VALUE;
+					}
+
+					return null;
+				}
+
+			});
+
+		Object preparedStatement = ProxyUtil.newProxyInstance(
+			ClassLoader.getSystemClassLoader(),
+			new Class<?>[] {PreparedStatement.class},
+			new InvocationHandler() {
+
+				@Override
+				public Object invoke(
+					Object proxy, Method method, Object[] args) {
+
+					String methodName = method.getName();
+
+					if (methodName.equals("execute")) {
+						return Boolean.TRUE;
+					}
+
+					return null;
+				}
+
+			});
+
+		Object connection = ProxyUtil.newProxyInstance(
+			ClassLoader.getSystemClassLoader(),
+			new Class<?>[] {Connection.class},
+			new InvocationHandler() {
+
+				@Override
+				public Object invoke(
+					Object proxy, Method method, Object[] args) {
+
+					String methodName = method.getName();
+
+					if (methodName.equals("createStatement")) {
+						return statment;
+					}
+
+					if (methodName.equals("prepareStatement")) {
+						return preparedStatement;
+					}
+
+					if (methodName.equals("getAutoCommit")) {
+						return Boolean.TRUE;
+					}
+
+					return null;
+				}
+
+			});
+
+		return (DataSource)ProxyUtil.newProxyInstance(
+			ClassLoader.getSystemClassLoader(),
+			new Class<?>[] {DataSource.class},
+			new InvocationHandler() {
+
+				@Override
+				public Object invoke(
+					Object proxy, Method method, Object[] args) {
+
+					String methodName = method.getName();
+
+					if (methodName.equals("getConnection")) {
+						return connection;
+					}
+
+					return null;
+				}
+
+			});
+	}
+
 	private static final String _PACKAGE_PATH =
 		"com.liferay.portal.security.pacl.test.";
 
 	static {
 		ClassPathUtil.initializeClassPaths(new MockServletContext());
+		PortalClassPathUtil.initializeClassPaths(new MockServletContext());
 
 		List<String> configLocations = ListUtil.fromArray(
 			PropsUtil.getArray(PropsKeys.SPRING_CONFIGS));
@@ -260,6 +408,7 @@ public class PACLTestRule implements TestRule {
 	}
 
 	private Object _instance;
+	private DataSource _originalDataSource;
 	private Class<?> _testClass;
 
 	private static class PACLClassLoader extends URLClassLoader {

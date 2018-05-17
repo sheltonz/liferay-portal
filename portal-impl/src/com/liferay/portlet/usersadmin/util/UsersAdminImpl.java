@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.usersadmin.util;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -73,7 +74,6 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.GroupNameComparator;
@@ -1060,7 +1060,7 @@ public class UsersAdminImpl implements UsersAdmin {
 		List<User> users = new ArrayList<>(documents.size());
 
 		for (Document document : documents) {
-			long userId = UserIndexer.getUserId(document);
+			long userId = GetterUtil.getLong(document.get(Field.USER_ID));
 
 			User user = UserLocalServiceUtil.fetchUser(userId);
 

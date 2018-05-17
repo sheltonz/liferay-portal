@@ -102,7 +102,7 @@
 </tr>
 <tr>
 	<td>DOCUMENT_INFO_RELATED_ASSETS_TITLE</td>
-	<td>//li[@class='asset-links-list-item']//a/span</td>
+	<td>//li[@class='asset-links-list-item']//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -167,8 +167,38 @@
 </tr>
 <!--DOCUMENT_DETAILS-->
 <tr>
+	<td>DOCUMENT_DETAILS_DATE</td>
+	<td>//div[contains(@class,'sidebar-body')]//div[contains(@class,'lfr-asset-icon') and contains(@class,'icon-calendar')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOCUMENT_DETAILS_DOWNLOAD</td>
+	<td>//span[@class='download-document']/span/a/span[contains(.,'Download (${key_dmDocumentSize})')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>DOCUMENT_DETAILS_DROPDOWN</td>
 	<td>//li/a[contains(@class,'dropdown-toggle')]/span[contains(.,'Details')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOCUMENT_DETAILS_IMAGE_PREVIEW</td>
+	<td>//div[contains(@class,'preview-file-image-container')]/img</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOCUMENT_DETAILS_TYPE</td>
+	<td>//div[contains(@class,'sidebar-body')]//dd[contains(.,'${key_dmDocumentType}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOCUMENT_DETAILS_UPLOADER</td>
+	<td>//div[contains(@class,'sidebar-body')]//dt[contains(.,'Created')]/../../..//dd[contains(.,'${key_dmDocumentUploader}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>DOCUMENT_DETAILS_URL</td>
+	<td>//div[contains(@class,'sidebar-body')]//span[@class='webdav-url']</td>
 	<td></td>
 </tr>
 <tr>
@@ -182,38 +212,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>DOCUMENT_DETAILS_UPLOADER</td>
-	<td>//div[@class='asset-details-content']/div[contains(@class,'icon-user') and contains(@class,'lfr-asset-icon')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DOCUMENT_DETAILS_DATE</td>
-	<td>//div[@class='asset-details-content']//div[contains(@class,'lfr-asset-icon') and contains(@class,'icon-calendar')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>DOCUMENT_DETAILS_WORKFLOW</td>
-	<td>//div[@class='asset-details-content']//span[contains(@class,'workflow-status')]</td>
+	<td>//div[contains(@class,'sidebar-body')]//span[contains(@class,'workflow-status')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DOCUMENT_DETAILS_WORKFLOW_PNG</td>
 	<td>portal/icons/document_detail_workflow.png</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DOCUMENT_DETAILS_DOWNLOAD</td>
-	<td>//span[@class='download-document']/span/a/span[contains(.,'Download (${key_dmDocumentSize}KB)')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DOCUMENT_DETAILS_URL</td>
-	<td>//div[@class='asset-details-content']//span[@class='webdav-url']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>DOCUMENT_DETAILS_IMAGE_PREVIEW</td>
-	<td>//div[contains(@class,'preview-file-image-container')]/img</td>
 	<td></td>
 </tr>
 <tr>
@@ -258,10 +263,20 @@
 	<td>//div[@class='lfr-ddm-container']//div[contains(.,'${key_bannerDescription}')]</td>
 	<td></td>
 </tr>
+<tr>
+	<td></td>
+	<td></td>
+	<td></td>
+</tr>
 <!--DETAILS_PANEL-->
 <tr>
 	<td>DETAILS_URL</td>
 	<td>//a[@class='show-url-file']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
 	<td></td>
 </tr>
 <!--METADATA_PANEL-->
@@ -298,16 +313,6 @@
 <tr>
 	<td>METADATA_PANEL_INTERGER</td>
 	<td>//div[@class='lfr-ddm-container']/div[contains(.,'${key_integerValue}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>METADATA_PANEL_LINK_TO_PAGE</td>
-	<td>//div[@class='lfr-ddm-container']/div[contains(.,'Link to Page') and contains(.,'${key_pageName}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>METADATA_PANEL_LINK_TO_PAGE</td>
-	<td>//div[@class='lfr-ddm-container']/div[contains(.,'Link to Page')]/a[contains(.,'${key_pageName}')]</td>
 	<td></td>
 </tr>
 <tr>

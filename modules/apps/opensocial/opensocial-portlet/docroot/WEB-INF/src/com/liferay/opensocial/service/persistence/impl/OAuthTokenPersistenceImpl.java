@@ -40,11 +40,13 @@ import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -238,7 +240,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (gadgetKey == null) {
 				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
 			}
-			else if (gadgetKey.equals(StringPool.BLANK)) {
+			else if (gadgetKey.equals("")) {
 				query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
 			}
 			else {
@@ -252,7 +254,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (serviceName == null) {
 				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
 			}
-			else if (serviceName.equals(StringPool.BLANK)) {
+			else if (serviceName.equals("")) {
 				query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
 			}
 			else {
@@ -349,7 +351,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		msg.append(", serviceName=");
 		msg.append(serviceName);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchOAuthTokenException(msg.toString());
 	}
@@ -405,7 +407,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		msg.append(", serviceName=");
 		msg.append(serviceName);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchOAuthTokenException(msg.toString());
 	}
@@ -500,7 +502,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		if (gadgetKey == null) {
 			query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
 		}
-		else if (gadgetKey.equals(StringPool.BLANK)) {
+		else if (gadgetKey.equals("")) {
 			query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
 		}
 		else {
@@ -514,7 +516,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		if (serviceName == null) {
 			query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
 		}
-		else if (serviceName.equals(StringPool.BLANK)) {
+		else if (serviceName.equals("")) {
 			query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
 		}
 		else {
@@ -656,7 +658,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (gadgetKey == null) {
 				query.append(_FINDER_COLUMN_G_S_GADGETKEY_1);
 			}
-			else if (gadgetKey.equals(StringPool.BLANK)) {
+			else if (gadgetKey.equals("")) {
 				query.append(_FINDER_COLUMN_G_S_GADGETKEY_3);
 			}
 			else {
@@ -670,7 +672,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (serviceName == null) {
 				query.append(_FINDER_COLUMN_G_S_SERVICENAME_1);
 			}
-			else if (serviceName.equals(StringPool.BLANK)) {
+			else if (serviceName.equals("")) {
 				query.append(_FINDER_COLUMN_G_S_SERVICENAME_3);
 			}
 			else {
@@ -781,7 +783,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			msg.append(", tokenName=");
 			msg.append(tokenName);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -860,7 +862,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (gadgetKey == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_GADGETKEY_1);
 			}
-			else if (gadgetKey.equals(StringPool.BLANK)) {
+			else if (gadgetKey.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_GADGETKEY_3);
 			}
 			else {
@@ -874,7 +876,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (serviceName == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_SERVICENAME_1);
 			}
-			else if (serviceName.equals(StringPool.BLANK)) {
+			else if (serviceName.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_SERVICENAME_3);
 			}
 			else {
@@ -890,7 +892,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (tokenName == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_TOKENNAME_1);
 			}
-			else if (tokenName.equals(StringPool.BLANK)) {
+			else if (tokenName.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_TOKENNAME_3);
 			}
 			else {
@@ -933,11 +935,15 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 						finderArgs, list);
 				}
 				else {
-					if ((list.size() > 1) && _log.isWarnEnabled()) {
-						_log.warn(
-							"OAuthTokenPersistenceImpl.fetchByU_G_S_M_T(long, String, String, long, String, boolean) with parameters (" +
-							StringUtil.merge(finderArgs) +
-							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"OAuthTokenPersistenceImpl.fetchByU_G_S_M_T(long, String, String, long, String, boolean) with parameters (" +
+								StringUtil.merge(finderArgs) +
+								") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
 					}
 
 					OAuthToken oAuthToken = list.get(0);
@@ -1031,7 +1037,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (gadgetKey == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_GADGETKEY_1);
 			}
-			else if (gadgetKey.equals(StringPool.BLANK)) {
+			else if (gadgetKey.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_GADGETKEY_3);
 			}
 			else {
@@ -1045,7 +1051,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (serviceName == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_SERVICENAME_1);
 			}
-			else if (serviceName.equals(StringPool.BLANK)) {
+			else if (serviceName.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_SERVICENAME_3);
 			}
 			else {
@@ -1061,7 +1067,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			if (tokenName == null) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_TOKENNAME_1);
 			}
-			else if (tokenName.equals(StringPool.BLANK)) {
+			else if (tokenName.equals("")) {
 				query.append(_FINDER_COLUMN_U_G_S_M_T_TOKENNAME_3);
 			}
 			else {
@@ -1200,7 +1206,7 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((OAuthTokenModelImpl)oAuthToken);
+		clearUniqueFindersCache((OAuthTokenModelImpl)oAuthToken, true);
 	}
 
 	@Override
@@ -1212,46 +1218,11 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 			entityCache.removeResult(OAuthTokenModelImpl.ENTITY_CACHE_ENABLED,
 				OAuthTokenImpl.class, oAuthToken.getPrimaryKey());
 
-			clearUniqueFindersCache((OAuthTokenModelImpl)oAuthToken);
+			clearUniqueFindersCache((OAuthTokenModelImpl)oAuthToken, true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		OAuthTokenModelImpl oAuthTokenModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					oAuthTokenModelImpl.getUserId(),
-					oAuthTokenModelImpl.getGadgetKey(),
-					oAuthTokenModelImpl.getServiceName(),
-					oAuthTokenModelImpl.getModuleId(),
-					oAuthTokenModelImpl.getTokenName()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_U_G_S_M_T, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_U_G_S_M_T, args,
-				oAuthTokenModelImpl);
-		}
-		else {
-			if ((oAuthTokenModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_U_G_S_M_T.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						oAuthTokenModelImpl.getUserId(),
-						oAuthTokenModelImpl.getGadgetKey(),
-						oAuthTokenModelImpl.getServiceName(),
-						oAuthTokenModelImpl.getModuleId(),
-						oAuthTokenModelImpl.getTokenName()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_U_G_S_M_T, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_U_G_S_M_T, args,
-					oAuthTokenModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		OAuthTokenModelImpl oAuthTokenModelImpl) {
 		Object[] args = new Object[] {
 				oAuthTokenModelImpl.getUserId(),
@@ -1261,12 +1232,30 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 				oAuthTokenModelImpl.getTokenName()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_U_G_S_M_T, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_U_G_S_M_T, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_U_G_S_M_T, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_U_G_S_M_T, args,
+			oAuthTokenModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		OAuthTokenModelImpl oAuthTokenModelImpl, boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					oAuthTokenModelImpl.getUserId(),
+					oAuthTokenModelImpl.getGadgetKey(),
+					oAuthTokenModelImpl.getServiceName(),
+					oAuthTokenModelImpl.getModuleId(),
+					oAuthTokenModelImpl.getTokenName()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_U_G_S_M_T, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_U_G_S_M_T, args);
+		}
 
 		if ((oAuthTokenModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_U_G_S_M_T.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					oAuthTokenModelImpl.getOriginalUserId(),
 					oAuthTokenModelImpl.getOriginalGadgetKey(),
 					oAuthTokenModelImpl.getOriginalServiceName(),
@@ -1352,8 +1341,6 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 
 	@Override
 	protected OAuthToken removeImpl(OAuthToken oAuthToken) {
-		oAuthToken = toUnwrappedModel(oAuthToken);
-
 		Session session = null;
 
 		try {
@@ -1384,9 +1371,23 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 
 	@Override
 	public OAuthToken updateImpl(OAuthToken oAuthToken) {
-		oAuthToken = toUnwrappedModel(oAuthToken);
-
 		boolean isNew = oAuthToken.isNew();
+
+		if (!(oAuthToken instanceof OAuthTokenModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(oAuthToken.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(oAuthToken);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in oAuthToken proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom OAuthToken implementation " +
+				oAuthToken.getClass());
+		}
 
 		OAuthTokenModelImpl oAuthTokenModelImpl = (OAuthTokenModelImpl)oAuthToken;
 
@@ -1435,8 +1436,23 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !OAuthTokenModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!OAuthTokenModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] {
+					oAuthTokenModelImpl.getGadgetKey(),
+					oAuthTokenModelImpl.getServiceName()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_S, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_S,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1465,40 +1481,12 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		entityCache.putResult(OAuthTokenModelImpl.ENTITY_CACHE_ENABLED,
 			OAuthTokenImpl.class, oAuthToken.getPrimaryKey(), oAuthToken, false);
 
-		clearUniqueFindersCache(oAuthTokenModelImpl);
-		cacheUniqueFindersCache(oAuthTokenModelImpl, isNew);
+		clearUniqueFindersCache(oAuthTokenModelImpl, false);
+		cacheUniqueFindersCache(oAuthTokenModelImpl);
 
 		oAuthToken.resetOriginalValues();
 
 		return oAuthToken;
-	}
-
-	protected OAuthToken toUnwrappedModel(OAuthToken oAuthToken) {
-		if (oAuthToken instanceof OAuthTokenImpl) {
-			return oAuthToken;
-		}
-
-		OAuthTokenImpl oAuthTokenImpl = new OAuthTokenImpl();
-
-		oAuthTokenImpl.setNew(oAuthToken.isNew());
-		oAuthTokenImpl.setPrimaryKey(oAuthToken.getPrimaryKey());
-
-		oAuthTokenImpl.setOAuthTokenId(oAuthToken.getOAuthTokenId());
-		oAuthTokenImpl.setCompanyId(oAuthToken.getCompanyId());
-		oAuthTokenImpl.setUserId(oAuthToken.getUserId());
-		oAuthTokenImpl.setUserName(oAuthToken.getUserName());
-		oAuthTokenImpl.setCreateDate(oAuthToken.getCreateDate());
-		oAuthTokenImpl.setModifiedDate(oAuthToken.getModifiedDate());
-		oAuthTokenImpl.setGadgetKey(oAuthToken.getGadgetKey());
-		oAuthTokenImpl.setServiceName(oAuthToken.getServiceName());
-		oAuthTokenImpl.setModuleId(oAuthToken.getModuleId());
-		oAuthTokenImpl.setAccessToken(oAuthToken.getAccessToken());
-		oAuthTokenImpl.setTokenName(oAuthToken.getTokenName());
-		oAuthTokenImpl.setTokenSecret(oAuthToken.getTokenSecret());
-		oAuthTokenImpl.setSessionHandle(oAuthToken.getSessionHandle());
-		oAuthTokenImpl.setExpiration(oAuthToken.getExpiration());
-
-		return oAuthTokenImpl;
 	}
 
 	/**
@@ -1650,14 +1638,14 @@ public class OAuthTokenPersistenceImpl extends BasePersistenceImpl<OAuthToken>
 		query.append(_SQL_SELECT_OAUTHTOKEN_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

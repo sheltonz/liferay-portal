@@ -15,15 +15,29 @@
 package com.liferay.portal.language;
 
 import com.liferay.portal.kernel.bean.PortalBeanLocatorUtil;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageWrapper;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.CompanyTestUtil;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.struts.mock.MockHttpServletRequest;
 
@@ -41,6 +55,90 @@ import org.junit.runner.RunWith;
 @RunWith(Enclosed.class)
 public class LanguageImplTest {
 
+	public static final class GetAvailableLocales {
+
+		@ClassRule
+		@Rule
+		public static final AggregateTestRule aggregateTestRule =
+			new LiferayIntegrationTestRule();
+
+		@Before
+		public void setUp() throws Exception {
+			_company = CompanyTestUtil.addCompany();
+		}
+
+		@Test
+		public void testCompanyThreadLocalIsDefaultWithNoArgs()
+			throws Exception {
+
+			long companyId = CompanyThreadLocal.getCompanyId();
+
+			try {
+				_resetCompanyLocales();
+
+				Assert.assertEquals(_locales, _language.getAvailableLocales());
+			}
+			finally {
+				CompanyThreadLocal.setCompanyId(companyId);
+			}
+		}
+
+		@Test
+		public void testGroupWithoutLocalesInheritsFromCompany()
+			throws Exception {
+
+			long companyId = CompanyThreadLocal.getCompanyId();
+
+			try {
+				_resetCompanyLocales();
+			}
+			finally {
+				CompanyThreadLocal.setCompanyId(companyId);
+			}
+
+			Assert.assertEquals(
+				_locales, _language.getAvailableLocales(_getGuestGroupId()));
+		}
+
+		@Test
+		public void testGroupWithSpecificLocales() throws Exception {
+			long groupId = _getGuestGroupId();
+
+			GroupTestUtil.updateDisplaySettings(
+				groupId, _locales, LocaleUtil.US);
+
+			Assert.assertEquals(
+				_locales, _language.getAvailableLocales(groupId));
+		}
+
+		private long _getGuestGroupId() throws PortalException {
+			Group group = _groupLocalService.getGroup(
+				_company.getCompanyId(), GroupConstants.GUEST);
+
+			return group.getGroupId();
+		}
+
+		private void _resetCompanyLocales() throws Exception {
+			CompanyTestUtil.resetCompanyLocales(
+				_company.getCompanyId(), _locales, LocaleUtil.US);
+		}
+
+		@Inject
+		private static GroupLocalService _groupLocalService;
+
+		@Inject
+		private static Language _language;
+
+		private static final Set<Locale> _locales = new HashSet<>(
+			Arrays.asList(
+				LocaleUtil.BRAZIL, LocaleUtil.HUNGARY, LocaleUtil.JAPAN,
+				LocaleUtil.US));
+
+		@DeleteAfterTestRun
+		private Company _company;
+
+	}
+
 	public static final class WhenFormattingFromLocale {
 
 		@ClassRule
@@ -55,18 +153,24 @@ public class LanguageImplTest {
 		}
 
 		@Test
+		public void testFormatWithKeyNull() {
+			Assert.assertEquals(
+				null,
+				_languageImpl.format(
+					LocaleThreadLocal.getDefaultLocale(), null, "31"));
+		}
+
+		@Test
 		public void testFormatWithLocaleNull() {
 			Locale defaultLocale = LocaleThreadLocal.getDefaultLocale();
 
 			Locale nullableLocale = null;
 
 			try {
-				String expectedValue = _languageImpl.format(
-					nullableLocale, _LANG_KEY_WITH_ARGUMENT, "31");
-				String actualValue = _languageImpl.format(
-					nullableLocale, _LANG_KEY_WITH_ARGUMENT, "31");
-
-				Assert.assertEquals(expectedValue, actualValue);
+				Assert.assertEquals(
+					_LANG_KEY_WITH_ARGUMENT,
+					_languageImpl.format(
+						nullableLocale, _LANG_KEY_WITH_ARGUMENT, "31"));
 			}
 			finally {
 				LocaleThreadLocal.setDefaultLocale(defaultLocale);
@@ -164,8 +268,7 @@ public class LanguageImplTest {
 
 			String value = _languageImpl.format(
 				mockLanguageServletRequest.getRequest(),
-				_LANG_KEY_WITH_ARGUMENT,
-				new LanguageWrapper("a", "31", "a"));
+				_LANG_KEY_WITH_ARGUMENT, new LanguageWrapper("a", "31", "a"));
 
 			Assert.assertEquals("a31a Hours", value);
 		}
@@ -225,8 +328,7 @@ public class LanguageImplTest {
 
 			String value = _languageImpl.format(
 				mockLanguageServletRequest.getRequest(),
-				_LANG_KEY_WITH_ARGUMENTS,
-				new Object[] {"A", "B"});
+				_LANG_KEY_WITH_ARGUMENTS, new Object[] {"A", "B"});
 
 			Assert.assertEquals("A has invited you to join B.", value);
 		}

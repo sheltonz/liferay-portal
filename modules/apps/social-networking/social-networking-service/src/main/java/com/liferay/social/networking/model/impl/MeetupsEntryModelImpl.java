@@ -22,6 +22,7 @@ import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import com.liferay.social.networking.model.MeetupsEntry;
 import com.liferay.social.networking.model.MeetupsEntryModel;
@@ -325,7 +325,7 @@ public class MeetupsEntryModelImpl extends BaseModelImpl<MeetupsEntry>
 			return user.getUuid();
 		}
 		catch (PortalException pe) {
-			return StringPool.BLANK;
+			return "";
 		}
 	}
 
@@ -340,7 +340,7 @@ public class MeetupsEntryModelImpl extends BaseModelImpl<MeetupsEntry>
 	@Override
 	public String getUserName() {
 		if (_userName == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _userName;
@@ -381,7 +381,7 @@ public class MeetupsEntryModelImpl extends BaseModelImpl<MeetupsEntry>
 	@Override
 	public String getTitle() {
 		if (_title == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _title;
@@ -396,7 +396,7 @@ public class MeetupsEntryModelImpl extends BaseModelImpl<MeetupsEntry>
 	@Override
 	public String getDescription() {
 		if (_description == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _description;
@@ -780,7 +780,7 @@ public class MeetupsEntryModelImpl extends BaseModelImpl<MeetupsEntry>
 
 	private static final ClassLoader _classLoader = MeetupsEntry.class.getClassLoader();
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
-			MeetupsEntry.class
+			MeetupsEntry.class, ModelWrapper.class
 		};
 	private long _meetupsEntryId;
 	private long _companyId;

@@ -19,13 +19,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>PANEL_HEADING_COLLAPSED</td>
-	<td>//div[contains(@class,'panel') and contains(@class,'collapsed')]/span[normalize-space(text())='${key_panelHeading}'] | //div[contains(@class,'panel') and contains(@role,'tablist')]//a[contains(@class,'collapsed') and normalize-space(text())='${key_panelHeading}'] | //div[contains(@class,'panel-heading') and @role='tab']//a[contains(@class,'collapsed') and normalize-space(text())='${key_panelHeading}']</td>
+	<td>PANEL</td>
+	<td>//div[@class='panel-heading']//a[normalize-space(text())='${key_panel}']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>PANEL_HEADING_EXPANDED</td>
-	<td>//div[contains(@class,'panel') and contains(@role,'group')]//a[not(contains(@class,'collapsed')) and contains(.,'${key_panelHeading}')] | //div[contains(@class,'panel') and not(contains(@class,'collapsed'))]//span[contains(.,'${key_panelHeading}')] | //div[contains(@class,'panel-group')]//a[contains(@aria-expanded,'true') and contains(.,'${key_panelHeading}')]</td>
+	<td>PANEL_COLLAPSED</td>
+	<td>//div[@class='panel-heading']//a[normalize-space(text())='${key_panel}'][@aria-expanded='false' or contains(@class,'collapsed')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PANEL_EXPANDED</td>
+	<td>//div[@class='panel-heading']//a[normalize-space(text())='${key_panel}'][@aria-expanded='true' and not(contains(@class,'collapsed'))]</td>
 	<td></td>
 </tr>
 <tr>
@@ -42,7 +47,7 @@
 <!--ENTRY-->
 <tr>
 	<td>ENTRY_ATTACHMENTS</td>
-	<td>//div[@id='attachmentsHeader']//a</td>
+	<td>//div[contains(@id,'attachmentsHeader')]//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -58,6 +63,11 @@
 <tr>
 	<td>ENTRY_CONFIGURATION</td>
 	<td>//div[@id='configurationHeader']//a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ENTRY_REPORT_PARAMETERS</td>
+	<td>//div[contains(@id,'report-parametersHeader')]//a</td>
 	<td></td>
 </tr>
 <tr>

@@ -39,9 +39,9 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.PasswordPolicyPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -49,6 +49,9 @@ import com.liferay.portal.model.impl.PasswordPolicyImpl;
 import com.liferay.portal.model.impl.PasswordPolicyModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -232,7 +235,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -321,7 +324,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -370,7 +373,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -462,7 +465,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -631,7 +634,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
 		}
 		else {
@@ -770,7 +773,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
 		}
 		else {
@@ -936,7 +939,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -998,7 +1001,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3_SQL);
 		}
 		else {
@@ -1195,7 +1198,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1292,7 +1295,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -1348,7 +1351,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -1443,7 +1446,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1621,7 +1624,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
 		}
 		else {
@@ -1765,7 +1768,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
 		}
 		else {
@@ -1937,7 +1940,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -2004,7 +2007,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1_SQL);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3_SQL);
 		}
 		else {
@@ -2271,7 +2274,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -2322,7 +2325,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPasswordPolicyException(msg.toString());
 	}
@@ -2959,7 +2962,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			msg.append(", defaultPolicy=");
 			msg.append(defaultPolicy);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -3007,7 +3010,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			PasswordPolicy passwordPolicy = (PasswordPolicy)result;
 
 			if ((companyId != passwordPolicy.getCompanyId()) ||
-					(defaultPolicy != passwordPolicy.getDefaultPolicy())) {
+					(defaultPolicy != passwordPolicy.isDefaultPolicy())) {
 				result = null;
 			}
 		}
@@ -3043,11 +3046,15 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 						finderArgs, list);
 				}
 				else {
-					if ((list.size() > 1) && _log.isWarnEnabled()) {
-						_log.warn(
-							"PasswordPolicyPersistenceImpl.fetchByC_DP(long, boolean, boolean) with parameters (" +
-							StringUtil.merge(finderArgs) +
-							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"PasswordPolicyPersistenceImpl.fetchByC_DP(long, boolean, boolean) with parameters (" +
+								StringUtil.merge(finderArgs) +
+								") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
 					}
 
 					PasswordPolicy passwordPolicy = list.get(0);
@@ -3057,7 +3064,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 					cacheResult(passwordPolicy);
 
 					if ((passwordPolicy.getCompanyId() != companyId) ||
-							(passwordPolicy.getDefaultPolicy() != defaultPolicy)) {
+							(passwordPolicy.isDefaultPolicy() != defaultPolicy)) {
 						finderCache.putResult(FINDER_PATH_FETCH_BY_C_DP,
 							finderArgs, passwordPolicy);
 					}
@@ -3189,7 +3196,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			msg.append(", name=");
 			msg.append(name);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -3254,7 +3261,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (name == null) {
 				query.append(_FINDER_COLUMN_C_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -3361,7 +3368,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			if (name == null) {
 				query.append(_FINDER_COLUMN_C_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_C_N_NAME_3);
 			}
 			else {
@@ -3411,6 +3418,24 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 
 	public PasswordPolicyPersistenceImpl() {
 		setModelClass(PasswordPolicy.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("uuid", "uuid_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -3426,7 +3451,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 
 		finderCache.putResult(FINDER_PATH_FETCH_BY_C_DP,
 			new Object[] {
-				passwordPolicy.getCompanyId(), passwordPolicy.getDefaultPolicy()
+				passwordPolicy.getCompanyId(), passwordPolicy.isDefaultPolicy()
 			}, passwordPolicy);
 
 		finderCache.putResult(FINDER_PATH_FETCH_BY_C_N,
@@ -3486,7 +3511,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((PasswordPolicyModelImpl)passwordPolicy);
+		clearUniqueFindersCache((PasswordPolicyModelImpl)passwordPolicy, true);
 	}
 
 	@Override
@@ -3498,75 +3523,49 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			entityCache.removeResult(PasswordPolicyModelImpl.ENTITY_CACHE_ENABLED,
 				PasswordPolicyImpl.class, passwordPolicy.getPrimaryKey());
 
-			clearUniqueFindersCache((PasswordPolicyModelImpl)passwordPolicy);
+			clearUniqueFindersCache((PasswordPolicyModelImpl)passwordPolicy,
+				true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		PasswordPolicyModelImpl passwordPolicyModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					passwordPolicyModelImpl.getCompanyId(),
-					passwordPolicyModelImpl.getDefaultPolicy()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_C_DP, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_C_DP, args,
-				passwordPolicyModelImpl);
-
-			args = new Object[] {
-					passwordPolicyModelImpl.getCompanyId(),
-					passwordPolicyModelImpl.getName()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_C_N, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_C_N, args,
-				passwordPolicyModelImpl);
-		}
-		else {
-			if ((passwordPolicyModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_C_DP.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						passwordPolicyModelImpl.getCompanyId(),
-						passwordPolicyModelImpl.getDefaultPolicy()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_C_DP, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_C_DP, args,
-					passwordPolicyModelImpl);
-			}
-
-			if ((passwordPolicyModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_C_N.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						passwordPolicyModelImpl.getCompanyId(),
-						passwordPolicyModelImpl.getName()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_C_N, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_C_N, args,
-					passwordPolicyModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		PasswordPolicyModelImpl passwordPolicyModelImpl) {
 		Object[] args = new Object[] {
 				passwordPolicyModelImpl.getCompanyId(),
-				passwordPolicyModelImpl.getDefaultPolicy()
+				passwordPolicyModelImpl.isDefaultPolicy()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_C_DP, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_C_DP, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_C_DP, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_C_DP, args,
+			passwordPolicyModelImpl, false);
+
+		args = new Object[] {
+				passwordPolicyModelImpl.getCompanyId(),
+				passwordPolicyModelImpl.getName()
+			};
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_C_N, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_C_N, args,
+			passwordPolicyModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		PasswordPolicyModelImpl passwordPolicyModelImpl, boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					passwordPolicyModelImpl.getCompanyId(),
+					passwordPolicyModelImpl.isDefaultPolicy()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_DP, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_DP, args);
+		}
 
 		if ((passwordPolicyModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_C_DP.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					passwordPolicyModelImpl.getOriginalCompanyId(),
 					passwordPolicyModelImpl.getOriginalDefaultPolicy()
 				};
@@ -3575,17 +3574,19 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_DP, args);
 		}
 
-		args = new Object[] {
-				passwordPolicyModelImpl.getCompanyId(),
-				passwordPolicyModelImpl.getName()
-			};
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					passwordPolicyModelImpl.getCompanyId(),
+					passwordPolicyModelImpl.getName()
+				};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_C_N, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_C_N, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_N, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_N, args);
+		}
 
 		if ((passwordPolicyModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_C_N.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					passwordPolicyModelImpl.getOriginalCompanyId(),
 					passwordPolicyModelImpl.getOriginalName()
 				};
@@ -3672,8 +3673,6 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 
 	@Override
 	protected PasswordPolicy removeImpl(PasswordPolicy passwordPolicy) {
-		passwordPolicy = toUnwrappedModel(passwordPolicy);
-
 		Session session = null;
 
 		try {
@@ -3704,9 +3703,23 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 
 	@Override
 	public PasswordPolicy updateImpl(PasswordPolicy passwordPolicy) {
-		passwordPolicy = toUnwrappedModel(passwordPolicy);
-
 		boolean isNew = passwordPolicy.isNew();
+
+		if (!(passwordPolicy instanceof PasswordPolicyModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(passwordPolicy.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(passwordPolicy);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in passwordPolicy proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom PasswordPolicy implementation " +
+				passwordPolicy.getClass());
+		}
 
 		PasswordPolicyModelImpl passwordPolicyModelImpl = (PasswordPolicyModelImpl)passwordPolicy;
 
@@ -3762,8 +3775,35 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !PasswordPolicyModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!PasswordPolicyModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { passwordPolicyModelImpl.getUuid() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				args);
+
+			args = new Object[] {
+					passwordPolicyModelImpl.getUuid(),
+					passwordPolicyModelImpl.getCompanyId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				args);
+
+			args = new Object[] { passwordPolicyModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -3827,61 +3867,12 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			PasswordPolicyImpl.class, passwordPolicy.getPrimaryKey(),
 			passwordPolicy, false);
 
-		clearUniqueFindersCache(passwordPolicyModelImpl);
-		cacheUniqueFindersCache(passwordPolicyModelImpl, isNew);
+		clearUniqueFindersCache(passwordPolicyModelImpl, false);
+		cacheUniqueFindersCache(passwordPolicyModelImpl);
 
 		passwordPolicy.resetOriginalValues();
 
 		return passwordPolicy;
-	}
-
-	protected PasswordPolicy toUnwrappedModel(PasswordPolicy passwordPolicy) {
-		if (passwordPolicy instanceof PasswordPolicyImpl) {
-			return passwordPolicy;
-		}
-
-		PasswordPolicyImpl passwordPolicyImpl = new PasswordPolicyImpl();
-
-		passwordPolicyImpl.setNew(passwordPolicy.isNew());
-		passwordPolicyImpl.setPrimaryKey(passwordPolicy.getPrimaryKey());
-
-		passwordPolicyImpl.setMvccVersion(passwordPolicy.getMvccVersion());
-		passwordPolicyImpl.setUuid(passwordPolicy.getUuid());
-		passwordPolicyImpl.setPasswordPolicyId(passwordPolicy.getPasswordPolicyId());
-		passwordPolicyImpl.setCompanyId(passwordPolicy.getCompanyId());
-		passwordPolicyImpl.setUserId(passwordPolicy.getUserId());
-		passwordPolicyImpl.setUserName(passwordPolicy.getUserName());
-		passwordPolicyImpl.setCreateDate(passwordPolicy.getCreateDate());
-		passwordPolicyImpl.setModifiedDate(passwordPolicy.getModifiedDate());
-		passwordPolicyImpl.setDefaultPolicy(passwordPolicy.isDefaultPolicy());
-		passwordPolicyImpl.setName(passwordPolicy.getName());
-		passwordPolicyImpl.setDescription(passwordPolicy.getDescription());
-		passwordPolicyImpl.setChangeable(passwordPolicy.isChangeable());
-		passwordPolicyImpl.setChangeRequired(passwordPolicy.isChangeRequired());
-		passwordPolicyImpl.setMinAge(passwordPolicy.getMinAge());
-		passwordPolicyImpl.setCheckSyntax(passwordPolicy.isCheckSyntax());
-		passwordPolicyImpl.setAllowDictionaryWords(passwordPolicy.isAllowDictionaryWords());
-		passwordPolicyImpl.setMinAlphanumeric(passwordPolicy.getMinAlphanumeric());
-		passwordPolicyImpl.setMinLength(passwordPolicy.getMinLength());
-		passwordPolicyImpl.setMinLowerCase(passwordPolicy.getMinLowerCase());
-		passwordPolicyImpl.setMinNumbers(passwordPolicy.getMinNumbers());
-		passwordPolicyImpl.setMinSymbols(passwordPolicy.getMinSymbols());
-		passwordPolicyImpl.setMinUpperCase(passwordPolicy.getMinUpperCase());
-		passwordPolicyImpl.setRegex(passwordPolicy.getRegex());
-		passwordPolicyImpl.setHistory(passwordPolicy.isHistory());
-		passwordPolicyImpl.setHistoryCount(passwordPolicy.getHistoryCount());
-		passwordPolicyImpl.setExpireable(passwordPolicy.isExpireable());
-		passwordPolicyImpl.setMaxAge(passwordPolicy.getMaxAge());
-		passwordPolicyImpl.setWarningTime(passwordPolicy.getWarningTime());
-		passwordPolicyImpl.setGraceLimit(passwordPolicy.getGraceLimit());
-		passwordPolicyImpl.setLockout(passwordPolicy.isLockout());
-		passwordPolicyImpl.setMaxFailure(passwordPolicy.getMaxFailure());
-		passwordPolicyImpl.setLockoutDuration(passwordPolicy.getLockoutDuration());
-		passwordPolicyImpl.setRequireUnlock(passwordPolicy.isRequireUnlock());
-		passwordPolicyImpl.setResetFailureCount(passwordPolicy.getResetFailureCount());
-		passwordPolicyImpl.setResetTicketMaxAge(passwordPolicy.getResetTicketMaxAge());
-
-		return passwordPolicyImpl;
 	}
 
 	/**
@@ -4033,14 +4024,14 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		query.append(_SQL_SELECT_PASSWORDPOLICY_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

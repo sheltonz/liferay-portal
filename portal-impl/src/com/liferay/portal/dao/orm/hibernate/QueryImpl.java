@@ -22,8 +22,11 @@ import com.liferay.portal.kernel.dao.orm.ScrollableResults;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
 import com.liferay.portal.kernel.security.pacl.NotPrivileged;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 
 import java.io.Serializable;
+
+import java.math.BigDecimal;
 
 import java.sql.Timestamp;
 
@@ -139,6 +142,24 @@ public class QueryImpl implements Query {
 		catch (Exception e) {
 			throw ExceptionTranslator.translate(e);
 		}
+	}
+
+	@Override
+	public Query setBigDecimal(int pos, BigDecimal value) {
+		_query.setBigDecimal(pos, value);
+
+		return this;
+	}
+
+	@Override
+	public Query setBigDecimal(String name, BigDecimal value) {
+		if (!_strictName && (Arrays.binarySearch(_names, name) < 0)) {
+			return this;
+		}
+
+		_query.setBigDecimal(name, value);
+
+		return this;
 	}
 
 	@Override
@@ -350,6 +371,21 @@ public class QueryImpl implements Query {
 		_query.setTimestamp(name, value);
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBundler sb = new StringBundler(7);
+
+		sb.append("{names=");
+		sb.append(Arrays.toString(_names));
+		sb.append(", _query=");
+		sb.append(String.valueOf(_query));
+		sb.append(", _strictName=");
+		sb.append(_strictName);
+		sb.append("}");
+
+		return sb.toString();
 	}
 
 	@NotPrivileged

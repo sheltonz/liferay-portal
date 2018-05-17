@@ -51,6 +51,7 @@ if (PropsValues.PORTAL_JAAS_ENABLE && (jUserName != null)) {
 				<meta content="no-cache" http-equiv="Cache-Control" />
 				<meta content="no-cache" http-equiv="Pragma" />
 				<meta content="0" http-equiv="Expires" />
+
 				<script src="<%= themeDisplay.getCDNHost() + themeDisplay.getPathJavaScript() %>/misc/xp_progress.js" type="text/javascript"></script>
 			</head>
 
@@ -67,6 +68,7 @@ if (PropsValues.PORTAL_JAAS_ENABLE && (jUserName != null)) {
 								<font face="Verdana, Tahoma, Arial" size="3">
 									<strong><liferay-ui:message key="processing-login" /></strong>
 								</font>
+
 								<br /><br />
 
 								<script type="text/javascript">

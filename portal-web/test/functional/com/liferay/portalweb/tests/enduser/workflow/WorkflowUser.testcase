@@ -1,5 +1,6 @@
 <definition component-name="portal-workflow">
 	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<set-up>
@@ -29,12 +30,18 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoControlPanelConfiguration">
-			<var name="portlet" value="Workflow Configuration" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Workflow" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Schemes" />
 		</execute>
 
 		<execute macro="Workflow#configureWorkflow">
-			<var name="workflowDefinition" value="Single Approver (Version 1)" />
+			<var name="workflowDefinition" value="Single Approver" />
 			<var name="workflowResourceValue" value="User" />
 		</execute>
 
@@ -53,7 +60,9 @@
 			<var name="userEmailAddress" value="test@liferay.com" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -63,7 +72,9 @@
 
 		<execute macro="User#viewNoUsersFoundCP" />
 
-		<execute macro="ProductMenu#gotoUserMyAccount">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="My Account" />
+			<var name="panel" value="User" />
 			<var name="portlet" value="My Workflow Tasks" />
 		</execute>
 
@@ -79,7 +90,9 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -95,6 +108,55 @@
 			<var name="userLastName" value="userln" />
 			<var name="userLoginEmailAddress" value="user@liferay.com" />
 			<var name="userScreenName" value="usersn" />
+		</execute>
+	</command>
+
+	<command name="ViewUserPreview" priority="4">
+		<description message="This is a use case for LPS-69190." />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Workflow" />
+		</execute>
+
+		<execute macro="Navigator#gotoNavItem">
+			<var name="navItem" value="Schemes" />
+		</execute>
+
+		<execute macro="Workflow#configureWorkflow">
+			<var name="workflowDefinition" value="Single Approver" />
+			<var name="workflowResourceValue" value="User" />
+		</execute>
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="WorkflowAsset#createNewUserAccount">
+			<var name="userEmailAddress" value="user@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
+		</execute>
+
+		<execute macro="User#loginUserPG">
+			<var name="password" value="test" />
+			<var name="userEmailAddress" value="test@liferay.com" />
+		</execute>
+
+		<execute macro="WorkflowAsset#gotoViaNotification">
+			<var name="assetType" value="User" />
+		</execute>
+
+		<execute macro="WorkflowAsset#viewUserDetails">
+			<var name="userEmailAddress" value="user@liferay.com" />
+		</execute>
+
+		<execute macro="Workflow#gotoPreviewView" />
+
+		<execute macro="WorkflowAsset#viewUserDetails">
+			<var name="userEmailAddress" value="user@liferay.com" />
 		</execute>
 	</command>
 </definition>

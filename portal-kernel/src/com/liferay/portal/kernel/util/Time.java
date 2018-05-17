@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 
 import java.text.Format;
@@ -191,8 +192,6 @@ public class Time {
 		long milliseconds, Locale locale, TimeZone timeZone,
 		Format dateTimeFormat) {
 
-		Format timeFormat = FastDateFormatFactoryUtil.getTime(locale, timeZone);
-
 		int daysBetween = DateUtil.getDaysBetween(
 			new Date(milliseconds), new Date(), timeZone);
 
@@ -212,9 +211,12 @@ public class Time {
 		}
 		else if ((millisAgo < Time.DAY) || (daysBetween == 0)) {
 			return LanguageUtil.format(
-				locale, "x-hours-ago", (millisAgo / Time.HOUR), false);
+				locale, "x-hours-ago", millisAgo / Time.HOUR, false);
 		}
 		else if (daysBetween == 1) {
+			Format timeFormat = FastDateFormatFactoryUtil.getTime(
+				locale, timeZone);
+
 			return LanguageUtil.format(
 				locale, "yesterday-at-x", timeFormat.format(milliseconds),
 				false);

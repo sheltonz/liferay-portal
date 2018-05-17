@@ -309,7 +309,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns all the social activity limits where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching social activity limits
 	*/
 	public java.util.List<SocialActivityLimit> findByC_C(long classNameId,
@@ -323,7 +323,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity limits
 	* @param end the upper bound of the range of social activity limits (not inclusive)
 	* @return the range of matching social activity limits
@@ -339,7 +339,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity limits
 	* @param end the upper bound of the range of social activity limits (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -357,7 +357,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of social activity limits
 	* @param end the upper bound of the range of social activity limits (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -373,7 +373,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns the first social activity limit in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity limit
 	* @throws NoSuchActivityLimitException if a matching social activity limit could not be found
@@ -386,7 +386,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns the first social activity limit in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching social activity limit, or <code>null</code> if a matching social activity limit could not be found
 	*/
@@ -397,7 +397,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns the last social activity limit in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity limit
 	* @throws NoSuchActivityLimitException if a matching social activity limit could not be found
@@ -410,7 +410,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns the last social activity limit in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching social activity limit, or <code>null</code> if a matching social activity limit could not be found
 	*/
@@ -422,7 +422,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	*
 	* @param activityLimitId the primary key of the current social activity limit
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next social activity limit
 	* @throws NoSuchActivityLimitException if a social activity limit with the primary key could not be found
@@ -436,7 +436,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Removes all the social activity limits where classNameId = &#63; and classPK = &#63; from the database.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	*/
 	public void removeByC_C(long classNameId, long classPK);
 
@@ -444,7 +444,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* Returns the number of social activity limits where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching social activity limits
 	*/
 	public int countByC_C(long classNameId, long classPK);
@@ -455,7 +455,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* @param groupId the group ID
 	* @param userId the user ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param activityType the activity type
 	* @param activityCounterName the activity counter name
 	* @return the matching social activity limit
@@ -463,8 +463,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	*/
 	public SocialActivityLimit findByG_U_C_C_A_A(long groupId, long userId,
 		long classNameId, long classPK, int activityType,
-		java.lang.String activityCounterName)
-		throws NoSuchActivityLimitException;
+		String activityCounterName) throws NoSuchActivityLimitException;
 
 	/**
 	* Returns the social activity limit where groupId = &#63; and userId = &#63; and classNameId = &#63; and classPK = &#63; and activityType = &#63; and activityCounterName = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
@@ -472,14 +471,14 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* @param groupId the group ID
 	* @param userId the user ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param activityType the activity type
 	* @param activityCounterName the activity counter name
 	* @return the matching social activity limit, or <code>null</code> if a matching social activity limit could not be found
 	*/
 	public SocialActivityLimit fetchByG_U_C_C_A_A(long groupId, long userId,
 		long classNameId, long classPK, int activityType,
-		java.lang.String activityCounterName);
+		String activityCounterName);
 
 	/**
 	* Returns the social activity limit where groupId = &#63; and userId = &#63; and classNameId = &#63; and classPK = &#63; and activityType = &#63; and activityCounterName = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
@@ -487,7 +486,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* @param groupId the group ID
 	* @param userId the user ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param activityType the activity type
 	* @param activityCounterName the activity counter name
 	* @param retrieveFromCache whether to retrieve from the finder cache
@@ -495,7 +494,7 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	*/
 	public SocialActivityLimit fetchByG_U_C_C_A_A(long groupId, long userId,
 		long classNameId, long classPK, int activityType,
-		java.lang.String activityCounterName, boolean retrieveFromCache);
+		String activityCounterName, boolean retrieveFromCache);
 
 	/**
 	* Removes the social activity limit where groupId = &#63; and userId = &#63; and classNameId = &#63; and classPK = &#63; and activityType = &#63; and activityCounterName = &#63; from the database.
@@ -503,15 +502,14 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* @param groupId the group ID
 	* @param userId the user ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param activityType the activity type
 	* @param activityCounterName the activity counter name
 	* @return the social activity limit that was removed
 	*/
 	public SocialActivityLimit removeByG_U_C_C_A_A(long groupId, long userId,
 		long classNameId, long classPK, int activityType,
-		java.lang.String activityCounterName)
-		throws NoSuchActivityLimitException;
+		String activityCounterName) throws NoSuchActivityLimitException;
 
 	/**
 	* Returns the number of social activity limits where groupId = &#63; and userId = &#63; and classNameId = &#63; and classPK = &#63; and activityType = &#63; and activityCounterName = &#63;.
@@ -519,13 +517,13 @@ public interface SocialActivityLimitPersistence extends BasePersistence<SocialAc
 	* @param groupId the group ID
 	* @param userId the user ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param activityType the activity type
 	* @param activityCounterName the activity counter name
 	* @return the number of matching social activity limits
 	*/
 	public int countByG_U_C_C_A_A(long groupId, long userId, long classNameId,
-		long classPK, int activityType, java.lang.String activityCounterName);
+		long classPK, int activityType, String activityCounterName);
 
 	/**
 	* Caches the social activity limit in the entity cache if it is enabled.

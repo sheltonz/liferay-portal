@@ -15,13 +15,11 @@
 package com.liferay.portal.convert.documentlibrary;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
-import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
 import com.liferay.document.library.kernel.store.Store;
 import com.liferay.document.library.kernel.util.DLPreviewableProcessor;
 import com.liferay.document.library.kernel.util.comparator.FileVersionVersionComparator;
-import com.liferay.message.boards.kernel.model.MBMessage;
-import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.convert.BaseConvertProcess;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
@@ -39,7 +37,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.util.MaintenanceUtil;
@@ -172,9 +169,10 @@ public class DocumentLibraryConvertProcess
 		storeFactory.setStore(targetStoreClassName);
 
 		MaintenanceUtil.appendStatus(
-			"Please set " + PropsKeys.DL_STORE_IMPL +
-				" in your portal-ext.properties to use " +
-					targetStoreClassName);
+			StringBundler.concat(
+				"Please set ", PropsKeys.DL_STORE_IMPL,
+				" in your portal-ext.properties to use ",
+				targetStoreClassName));
 
 		PropsValues.DL_STORE_IMPL = targetStoreClassName;
 	}
@@ -301,46 +299,9 @@ public class DocumentLibraryConvertProcess
 		actionableDynamicQuery.performActions();
 	}
 
-	protected void migrateMB() throws PortalException {
-		int count = MBMessageLocalServiceUtil.getMBMessagesCount();
-
-		MaintenanceUtil.appendStatus(
-			"Migrating message boards attachments in " + count + " messages");
-
-		ActionableDynamicQuery actionableDynamicQuery =
-			MBMessageLocalServiceUtil.getActionableDynamicQuery();
-
-		actionableDynamicQuery.setPerformActionMethod(
-			new ActionableDynamicQuery.PerformActionMethod<MBMessage>() {
-
-				@Override
-				public void performAction(MBMessage mbMessage)
-					throws PortalException {
-
-					for (FileEntry fileEntry :
-							mbMessage.getAttachmentsFileEntries()) {
-
-						DLFileEntry dlFileEntry =
-							(DLFileEntry)fileEntry.getModel();
-
-						migrateDLFileEntry(
-							mbMessage.getCompanyId(),
-							DLFolderConstants.getDataRepositoryId(
-								dlFileEntry.getRepositoryId(),
-								dlFileEntry.getFolderId()),
-							new LiferayFileEntry(dlFileEntry));
-					}
-				}
-
-			});
-
-		actionableDynamicQuery.performActions();
-	}
-
 	protected void migratePortlets() throws Exception {
 		migrateImages();
 		migrateDL();
-		migrateMB();
 
 		Collection<DLStoreConvertProcess> dlStoreConvertProcesses =
 			_getDLStoreConvertProcesses();

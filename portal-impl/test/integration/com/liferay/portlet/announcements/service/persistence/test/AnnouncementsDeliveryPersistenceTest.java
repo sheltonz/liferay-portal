@@ -28,15 +28,14 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -143,12 +142,12 @@ public class AnnouncementsDeliveryPersistenceTest {
 			newAnnouncementsDelivery.getUserId());
 		Assert.assertEquals(existingAnnouncementsDelivery.getType(),
 			newAnnouncementsDelivery.getType());
-		Assert.assertEquals(existingAnnouncementsDelivery.getEmail(),
-			newAnnouncementsDelivery.getEmail());
-		Assert.assertEquals(existingAnnouncementsDelivery.getSms(),
-			newAnnouncementsDelivery.getSms());
-		Assert.assertEquals(existingAnnouncementsDelivery.getWebsite(),
-			newAnnouncementsDelivery.getWebsite());
+		Assert.assertEquals(existingAnnouncementsDelivery.isEmail(),
+			newAnnouncementsDelivery.isEmail());
+		Assert.assertEquals(existingAnnouncementsDelivery.isSms(),
+			newAnnouncementsDelivery.isSms());
+		Assert.assertEquals(existingAnnouncementsDelivery.isWebsite(),
+			newAnnouncementsDelivery.isWebsite());
 	}
 
 	@Test
@@ -160,9 +159,9 @@ public class AnnouncementsDeliveryPersistenceTest {
 
 	@Test
 	public void testCountByU_T() throws Exception {
-		_persistence.countByU_T(RandomTestUtil.nextLong(), StringPool.BLANK);
+		_persistence.countByU_T(RandomTestUtil.nextLong(), "");
 
-		_persistence.countByU_T(0L, StringPool.NULL);
+		_persistence.countByU_T(0L, "null");
 
 		_persistence.countByU_T(0L, (String)null);
 	}

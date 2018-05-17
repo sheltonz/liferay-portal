@@ -14,12 +14,21 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.kernel.servlet.HttpMethods;
+import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.StringUtil;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import java.util.Collection;
+
 import javax.portlet.ClientDataRequest;
+import javax.portlet.PortletException;
+
+import javax.servlet.http.Part;
 
 /**
  * @author Brian Wing Shun Chan
@@ -38,6 +47,11 @@ public abstract class ClientDataRequestImpl
 	}
 
 	@Override
+	public long getContentLengthLong() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getContentType() {
 		return getHttpServletRequest().getContentType();
 	}
@@ -48,7 +62,19 @@ public abstract class ClientDataRequestImpl
 	}
 
 	@Override
+	public Part getPart(String name) throws IOException, PortletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Collection<Part> getParts() throws IOException, PortletException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public InputStream getPortletInputStream() throws IOException {
+		_checkContentType();
+
 		return getHttpServletRequest().getInputStream();
 	}
 
@@ -57,6 +83,8 @@ public abstract class ClientDataRequestImpl
 		throws IOException, UnsupportedEncodingException {
 
 		_calledGetReader = true;
+
+		_checkContentType();
 
 		return getHttpServletRequest().getReader();
 	}
@@ -70,6 +98,16 @@ public abstract class ClientDataRequestImpl
 		}
 
 		getHttpServletRequest().setCharacterEncoding(enc);
+	}
+
+	private void _checkContentType() {
+		if (StringUtil.equalsIgnoreCase(getMethod(), HttpMethods.POST) &&
+			StringUtil.equalsIgnoreCase(
+				getContentType(),
+				ContentTypes.APPLICATION_X_WWW_FORM_URLENCODED)) {
+
+			throw new IllegalStateException();
+		}
 	}
 
 	private boolean _calledGetReader;

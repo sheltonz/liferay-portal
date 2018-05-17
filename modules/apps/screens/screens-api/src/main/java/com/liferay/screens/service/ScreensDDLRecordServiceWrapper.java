@@ -34,26 +34,29 @@ public class ScreensDDLRecordServiceWrapper implements ScreensDDLRecordService,
 	}
 
 	@Override
+	public com.liferay.portal.kernel.json.JSONObject getDDLRecord(
+		long ddlRecordId, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _screensDDLRecordService.getDDLRecord(ddlRecordId, locale);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.json.JSONArray getDDLRecords(
-		long ddlRecordSetId, java.util.Locale locale, int start, int end)
+		long ddlRecordSetId, java.util.Locale locale, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.lists.model.DDLRecord> obc)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _screensDDLRecordService.getDDLRecords(ddlRecordSetId, locale,
-			start, end);
+			start, end, obc);
 	}
 
 	@Override
 	public com.liferay.portal.kernel.json.JSONArray getDDLRecords(
 		long ddlRecordSetId, long userId, java.util.Locale locale, int start,
-		int end) throws com.liferay.portal.kernel.exception.PortalException {
-		return _screensDDLRecordService.getDDLRecords(ddlRecordSetId, userId,
-			locale, start, end);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.json.JSONObject getDDLRecord(
-		long ddlRecordId, java.util.Locale locale)
+		int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.dynamic.data.lists.model.DDLRecord> obc)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _screensDDLRecordService.getDDLRecord(ddlRecordId, locale);
+		return _screensDDLRecordService.getDDLRecords(ddlRecordSetId, userId,
+			locale, start, end, obc);
 	}
 
 	@Override
@@ -75,7 +78,7 @@ public class ScreensDDLRecordServiceWrapper implements ScreensDDLRecordService,
 	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
+	public String getOSGiServiceIdentifier() {
 		return _screensDDLRecordService.getOSGiServiceIdentifier();
 	}
 

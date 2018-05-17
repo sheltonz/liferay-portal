@@ -132,11 +132,15 @@ public class ChannelHubManagerImpl implements ChannelHubManager {
 	public void destroyChannel(long companyId, long userId)
 		throws ChannelException {
 
-		ChannelHub channelHub = getChannelHub(companyId);
+		ChannelHub channelHub = fetchChannelHub(companyId);
 
-		channelHub.destroyChannel(userId);
+		if (channelHub != null) {
+			channelHub.destroyChannel(userId);
+		}
 
-		if (!ClusterInvokeThreadLocal.isEnabled()) {
+		if (!ClusterExecutorUtil.isEnabled() ||
+			!ClusterInvokeThreadLocal.isEnabled()) {
+
 			return;
 		}
 
@@ -145,6 +149,8 @@ public class ChannelHubManagerImpl implements ChannelHubManager {
 
 		ClusterRequest clusterRequest = ClusterRequest.createMulticastRequest(
 			methodHandler, true);
+
+		clusterRequest.setFireAndForget(true);
 
 		try {
 			ClusterExecutorUtil.execute(clusterRequest);
@@ -176,7 +182,7 @@ public class ChannelHubManagerImpl implements ChannelHubManager {
 		ChannelHub channelHub = _channelHubs.get(companyId);
 
 		if (channelHub == null) {
-			synchronized(_channelHubs) {
+			synchronized (_channelHubs) {
 				channelHub = _channelHubs.get(companyId);
 
 				if (channelHub == null) {
@@ -333,11 +339,15 @@ public class ChannelHubManagerImpl implements ChannelHubManager {
 			long companyId, long userId, NotificationEvent notificationEvent)
 		throws ChannelException {
 
-		ChannelHub channelHub = getChannelHub(companyId);
+		ChannelHub channelHub = fetchChannelHub(companyId);
 
-		channelHub.sendNotificationEvent(userId, notificationEvent);
+		if (channelHub != null) {
+			channelHub.sendNotificationEvent(userId, notificationEvent);
+		}
 
-		if (!ClusterInvokeThreadLocal.isEnabled()) {
+		if (!ClusterExecutorUtil.isEnabled() ||
+			!ClusterInvokeThreadLocal.isEnabled()) {
+
 			return;
 		}
 

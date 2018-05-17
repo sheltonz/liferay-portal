@@ -1,5 +1,6 @@
 <definition component-name="portal-wcm">
 	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="Web Content Display" />
 
 	<set-up>
@@ -21,16 +22,29 @@
 
 				<execute macro="Site#tearDownCP" />
 
-				<execute macro="Page#tearDownPG" />
+				<execute macro="Page#tearDownCP" />
 			</else>
 		</if>
 	</tear-down>
 
 	<command name="IFrameDemo" priority="4">
-		<execute macro="Page#add">
+		<property name="testray.component.names" value="IFrame Portlet" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="IFrame Page" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
 			<var name="columnName" value="1 Column" />
 			<var name="pageName" value="IFrame Page" />
-			<var name="sitePageType" value="Empty Page" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -46,24 +60,26 @@
 		</execute>
 
 		<execute macro="IFrame#addCP">
-			<var name="sourceURL" value="http://www.nba.com" />
+			<var name="sourceURL" value="http://iscaliforniaonfire.com" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="IFrame Page" />
 		</execute>
 
-		<execute function="Pause" locator1="2000" />
+		<execute function="SelectFrame" locator1="IFrame#IFRAME_PORTLET" />
 
-		<take-screenshot />
-
-		<execute function="SikuliAssertElementPresent" locator1="IFramePortlet#SCREENSHOTS_NBA_LOGO_PNG" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="Embedded#EMBEDDED_TEXT_UPDATED" value1="updated" />
 	</command>
 
 	<command name="SalesDemo" priority="4">
+		<property name="testray.component.names" value="Web Content Administration,Web Content Display" />
+
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Web Content" />
 		</execute>
 
@@ -78,12 +94,17 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="SitePageNavigator#gotoEditPage">
-			<var name="page" value="Welcome" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
 		</execute>
 
-		<execute macro="Page#editPageLayoutColumn">
+		<execute macro="SitePages#configurePage">
 			<var name="columnName" value="2 Columns (50/50)" />
+			<var name="pageName" value="Welcome" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -100,29 +121,33 @@
 			<var name="webContentTitle" value="DHS Title" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#addCP">
-			<var name="userEmailAddress" value="test1@liferay.com" />
-			<var name="userFirstName" value="test1" />
-			<var name="userLastName" value="last" />
-			<var name="userScreenName" value="test1" />
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userFirstName" value="userfn" />
+			<var name="userLastName" value="userln" />
+			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#editPasswordCP">
-			<var name="userEmailAddress" value="test1@liferay.com" />
-			<var name="userScreenName" value="test1" />
+			<var name="userEmailAddress" value="userea@liferay.com" />
+			<var name="userScreenName" value="usersn" />
 		</execute>
 
 		<execute macro="User#logoutAndLoginPG">
-			<var name="userLoginEmailAddress" value="test1@liferay.com" />
-			<var name="userLoginFullName" value="Test1 Last" />
+			<var name="userLoginEmailAddress" value="userea@liferay.com" />
+			<var name="userLoginFullName" value="userfn userln" />
 		</execute>
 
 		<execute macro="WebContent#viewNoEditWCViaWCD" />
@@ -133,7 +158,13 @@
 			<var name="webContentContent" value="DHS Content" />
 		</execute>
 
-		<execute macro="Page#add">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="Sales Page" />
 		</execute>
 

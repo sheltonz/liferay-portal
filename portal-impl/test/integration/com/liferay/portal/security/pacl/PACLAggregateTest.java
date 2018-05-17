@@ -14,22 +14,24 @@
 
 package com.liferay.portal.security.pacl;
 
-import com.liferay.portal.kernel.process.ProcessCallable;
-import com.liferay.portal.kernel.process.ProcessChannel;
-import com.liferay.portal.kernel.process.ProcessConfig;
-import com.liferay.portal.kernel.process.ProcessConfig.Builder;
-import com.liferay.portal.kernel.process.ProcessException;
-import com.liferay.portal.kernel.process.local.LocalProcessExecutor;
-import com.liferay.portal.kernel.process.local.LocalProcessLauncher.ProcessContext;
-import com.liferay.portal.kernel.process.log.ProcessOutputStream;
+import com.liferay.petra.log4j.Log4JUtil;
+import com.liferay.petra.process.ProcessCallable;
+import com.liferay.petra.process.ProcessChannel;
+import com.liferay.petra.process.ProcessConfig;
+import com.liferay.petra.process.ProcessConfig.Builder;
+import com.liferay.petra.process.ProcessException;
+import com.liferay.petra.process.local.LocalProcessExecutor;
+import com.liferay.petra.process.local.LocalProcessLauncher.ProcessContext;
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.resiliency.mpi.MPIHelperUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.ci.AutoBalanceTestCase;
 import com.liferay.portal.kernel.test.junit.BridgeJUnitTestRunner;
 import com.liferay.portal.kernel.test.junit.BridgeJUnitTestRunner.BridgeRunListener;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.ReflectionUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.test.log.CaptureAppender;
@@ -40,7 +42,6 @@ import com.liferay.portal.test.rule.callback.LogAssertionTestCallback;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PropsImpl;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.util.log4j.Log4JUtil;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -58,6 +59,7 @@ import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
@@ -72,6 +74,7 @@ import java.util.concurrent.Future;
 
 import javax.naming.Context;
 
+import org.junit.Assume;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.Result;
@@ -91,21 +94,16 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 	public void testPACLTests() throws Exception {
 		LocalProcessExecutor localProcessExecutor = new LocalProcessExecutor();
 
-		try {
-			List<Class<?>> classes = scanTestClasses();
+		List<Class<?>> classes = scanTestClasses();
 
-			ProcessChannel<Result> processChannel =
-				localProcessExecutor.execute(
-					createProcessConfig(),
-					new PACLTestsProcessCallable(classes));
+		Assume.assumeFalse("No PACL tests available", classes.isEmpty());
 
-			Future<Result> future = processChannel.getProcessNoticeableFuture();
+		ProcessChannel<Result> processChannel = localProcessExecutor.execute(
+			createProcessConfig(), new PACLTestsProcessCallable(classes));
 
-			future.get();
-		}
-		finally {
-			localProcessExecutor.destroy();
-		}
+		Future<Result> future = processChannel.getProcessNoticeableFuture();
+
+		future.get();
 	}
 
 	protected ProcessConfig createProcessConfig() {
@@ -120,7 +118,6 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 		URL url = PACLAggregateTest.class.getResource("security.policy");
 
 		arguments.add("-Djava.security.policy==" + url.getFile());
-		arguments.add("-Dliferay.mode=test");
 
 		boolean junitDebug = Boolean.getBoolean("jvm.debug");
 
@@ -129,9 +126,29 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 			arguments.add("-Djvm.debug=true");
 		}
 
+		arguments.add("-Dliferay.mode=test");
+		arguments.add("-Dsun.zip.disableMemoryMapping=true");
+
+		String aspectjAgent = System.getProperty("aspectj.agent");
+
+		if (aspectjAgent != null) {
+			arguments.add(aspectjAgent);
+			arguments.add("-Daspectj.agent=" + aspectjAgent);
+
+			String aspectjConfiguration = System.getProperty(
+				"org.aspectj.weaver.loadtime.configuration");
+
+			if (aspectjConfiguration != null) {
+				arguments.add(
+					"-Dorg.aspectj.weaver.loadtime.configuration=" +
+						aspectjConfiguration);
+			}
+		}
+
 		arguments.add(
-			"-D" + PropsKeys.LIFERAY_LIB_PORTAL_DIR + "=" +
-				PropsValues.LIFERAY_LIB_PORTAL_DIR);
+			StringBundler.concat(
+				"-D", PropsKeys.LIFERAY_LIB_PORTAL_DIR, "=",
+				PropsValues.LIFERAY_LIB_PORTAL_DIR));
 		arguments.add(
 			"-Dportal:" + PropsKeys.CLUSTER_LINK_AUTODETECT_ADDRESS +
 				StringPool.EQUAL);
@@ -225,7 +242,7 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 					uri.getHost() + StringPool.COLON + uri.getPort())) {
 
 				return Collections.singletonList(
-					new Proxy(Type.SOCKS, new InetSocketAddress(0)));
+					new Proxy(Type.HTTP, new InetSocketAddress(0)));
 			}
 
 			return Collections.singletonList(Proxy.NO_PROXY);
@@ -280,18 +297,27 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 			System.setProperty("catalina.base", ".");
 
 			List<CaptureAppender> captureAppenders = null;
+			IOException ioException = null;
 
-			Path tempStatePath = null;
+			String originalTempDirName = System.getProperty(
+				SystemProperties.TMP_DIR);
+
+			Path newTempDirPath = Paths.get(originalTempDirName, "PACL");
 
 			try {
-				tempStatePath = Files.createTempDirectory(null);
+				Files.createDirectories(newTempDirPath);
+
+				System.setProperty(
+					SystemProperties.TMP_DIR, newTempDirPath.toString());
+
+				Path tempStatePath = Files.createTempDirectory(
+					newTempDirPath, null);
 
 				System.setProperty(
 					"portal:" + PropsKeys.MODULE_FRAMEWORK_STATE_DIR,
 					tempStatePath.toString());
 
-				com.liferay.portal.kernel.util.PropsUtil.setProps(
-					new PropsImpl());
+				PropsUtil.setProps(new PropsImpl());
 
 				SystemProperties.set(
 					"log4j.configure.on.startup", StringPool.FALSE);
@@ -307,6 +333,8 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 					_classes.toArray(new Class<?>[_classes.size()]));
 			}
 			catch (IOException ioe) {
+				ioException = ioe;
+
 				throw new ProcessException(ioe);
 			}
 			finally {
@@ -316,10 +344,13 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 
 				MPIHelperUtil.shutdown();
 
-				if (tempStatePath != null) {
+				System.setProperty(
+					SystemProperties.TMP_DIR, originalTempDirName);
+
+				if (newTempDirPath != null) {
 					try {
 						Files.walkFileTree(
-							tempStatePath,
+							newTempDirPath,
 							new SimpleFileVisitor<Path>() {
 
 								@Override
@@ -327,7 +358,7 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 										Path path, IOException ioe)
 									throws IOException {
 
-									Files.delete(path);
+									Files.deleteIfExists(path);
 
 									return FileVisitResult.CONTINUE;
 								}
@@ -338,7 +369,7 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 										BasicFileAttributes basicFileAttributes)
 									throws IOException {
 
-									Files.delete(path);
+									Files.deleteIfExists(path);
 
 									return FileVisitResult.CONTINUE;
 								}
@@ -346,6 +377,10 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 							});
 					}
 					catch (IOException ioe) {
+						if (ioException != null) {
+							ioe.addSuppressed(ioException);
+						}
+
 						throw new ProcessException(ioe);
 					}
 
@@ -375,11 +410,8 @@ public class PACLAggregateTest extends AutoBalanceTestCase {
 
 		@Override
 		protected void bridge(final String methodName, final Object argument) {
-			ProcessOutputStream processOutputStream =
-				ProcessContext.getProcessOutputStream();
-
 			try {
-				processOutputStream.writeProcessCallable(
+				ProcessContext.writeProcessCallable(
 					new ProcessCallable<Serializable>() {
 
 						@Override

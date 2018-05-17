@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.TreeModel;
 
@@ -24,9 +26,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
 /**
+ * @author     Shinn Lok
  * @deprecated As of 7.0.0, moved to {@link
  *             com.liferay.portal.kernel.tree.TreePathUtil}
- * @author Shinn Lok
  */
 @Deprecated
 public class TreePathUtil {

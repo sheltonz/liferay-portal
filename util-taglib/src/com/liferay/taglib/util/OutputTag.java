@@ -33,7 +33,12 @@ public class OutputTag extends PositionTagSupport {
 	public static StringBundler getData(
 		ServletRequest servletRequest, String webKey) {
 
-		OutputData outputData = _getOutputData(servletRequest);
+		OutputData outputData = (OutputData)servletRequest.getAttribute(
+			WebKeys.OUTPUT_DATA);
+
+		if (outputData == null) {
+			return null;
+		}
 
 		return outputData.getMergedData(webKey);
 	}
@@ -144,7 +149,9 @@ public class OutputTag extends PositionTagSupport {
 
 			if (!subcontent.contains(attributeName)) {
 				content = StringUtil.insert(
-					content, " " + attributeName + "=" + attributeValue,
+					content,
+					StringBundler.concat(
+						" ", attributeName, "=", attributeValue),
 					x + tagName.length() + 1);
 			}
 		}

@@ -14,8 +14,8 @@
 
 package com.liferay.portal.security.pacl.test;
 
-import com.liferay.blogs.kernel.service.BlogsEntryLocalService;
-import com.liferay.blogs.kernel.service.BlogsEntryLocalServiceUtil;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.PortletClassLoaderUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
@@ -60,10 +60,10 @@ public class ClassLoaderTest {
 	@Test
 	public void testGet1() throws Exception {
 		try {
-			BlogsEntryLocalService blogsEntryLocalService =
-				BlogsEntryLocalServiceUtil.getService();
+			DLFileEntryLocalService dlFileEntryLocalService =
+				DLFileEntryLocalServiceUtil.getService();
 
-			Class<?> clazz = blogsEntryLocalService.getClass();
+			Class<?> clazz = dlFileEntryLocalService.getClass();
 
 			clazz.getClassLoader();
 
@@ -157,7 +157,7 @@ public class ClassLoaderTest {
 
 	@Test
 	public void testGet11() throws Exception {
-		PortalRuntimePermission.checkGetClassLoader("pacl-test-portlet");
+		PortalRuntimePermission.checkGetClassLoader("pacl-1-test-portlet");
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class ClassLoaderTest {
 	@Test
 	public void testGet15() throws Exception {
 		try {
-			PortletClassLoaderUtil.getClassLoader("1_WAR_chatportlet");
+			PortletClassLoaderUtil.getClassLoader("2_WAR_pacl_testportlet");
 
 			Assert.fail();
 		}
@@ -212,7 +212,7 @@ public class ClassLoaderTest {
 	@Test
 	public void testGet17() throws Exception {
 		try {
-			PortletClassLoaderUtil.getClassLoader("chat-portlet");
+			PortletClassLoaderUtil.getClassLoader("pacl-2-test-portlet");
 
 			Assert.fail();
 		}
@@ -222,7 +222,13 @@ public class ClassLoaderTest {
 
 	@Test
 	public void testGet18() throws Exception {
-		PortletClassLoaderUtil.getClassLoader("pacl-test-portlet");
+		try {
+			PortletClassLoaderUtil.getClassLoader("pacl-1-test-portlet");
+
+			Assert.fail();
+		}
+		catch (SecurityException se) {
+		}
 	}
 
 	@Test

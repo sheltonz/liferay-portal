@@ -27,10 +27,10 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Michael C. Han
+ * @author Tibor Lipusz
  */
 @Component(
-	immediate = true, property = {"type=CLOUD"},
-	service = SolrClientFactory.class
+	immediate = true, property = "type=CLOUD", service = SolrClientFactory.class
 )
 public class CloudSolrClientFactory implements SolrClientFactory {
 
@@ -40,15 +40,26 @@ public class CloudSolrClientFactory implements SolrClientFactory {
 			HttpClientFactory httpClientFactory)
 		throws Exception {
 
+		String defaultCollection = solrConfiguration.defaultCollection();
+
+		if (Validator.isNull(defaultCollection)) {
+			throw new IllegalStateException("Default collection is null");
+		}
+
 		String zkHost = solrConfiguration.zkHost();
 
 		if (Validator.isNull(zkHost)) {
-			throw new IllegalStateException("Must configure Zookeeper host");
+			throw new IllegalStateException("Zookeeper host is null");
 		}
 
 		HttpClient httpClient = httpClientFactory.createInstance();
 
-		return new CloudSolrClient(zkHost, httpClient);
+		CloudSolrClient cloudSolrClient = new CloudSolrClient(
+			zkHost, httpClient);
+
+		cloudSolrClient.setDefaultCollection(defaultCollection);
+
+		return cloudSolrClient;
 	}
 
 }

@@ -22,15 +22,14 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import com.liferay.social.kernel.exception.NoSuchActivityAchievementException;
 import com.liferay.social.kernel.model.SocialActivityAchievement;
@@ -147,8 +146,8 @@ public class SocialActivityAchievementPersistenceTest {
 			newSocialActivityAchievement.getCreateDate());
 		Assert.assertEquals(existingSocialActivityAchievement.getName(),
 			newSocialActivityAchievement.getName());
-		Assert.assertEquals(existingSocialActivityAchievement.getFirstInGroup(),
-			newSocialActivityAchievement.getFirstInGroup());
+		Assert.assertEquals(existingSocialActivityAchievement.isFirstInGroup(),
+			newSocialActivityAchievement.isFirstInGroup());
 	}
 
 	@Test
@@ -168,9 +167,9 @@ public class SocialActivityAchievementPersistenceTest {
 
 	@Test
 	public void testCountByG_N() throws Exception {
-		_persistence.countByG_N(RandomTestUtil.nextLong(), StringPool.BLANK);
+		_persistence.countByG_N(RandomTestUtil.nextLong(), "");
 
-		_persistence.countByG_N(0L, StringPool.NULL);
+		_persistence.countByG_N(0L, "null");
 
 		_persistence.countByG_N(0L, (String)null);
 	}
@@ -186,9 +185,9 @@ public class SocialActivityAchievementPersistenceTest {
 	@Test
 	public void testCountByG_U_N() throws Exception {
 		_persistence.countByG_U_N(RandomTestUtil.nextLong(),
-			RandomTestUtil.nextLong(), StringPool.BLANK);
+			RandomTestUtil.nextLong(), "");
 
-		_persistence.countByG_U_N(0L, 0L, StringPool.NULL);
+		_persistence.countByG_U_N(0L, 0L, "null");
 
 		_persistence.countByG_U_N(0L, 0L, (String)null);
 	}

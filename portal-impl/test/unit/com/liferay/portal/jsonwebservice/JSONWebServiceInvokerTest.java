@@ -16,13 +16,18 @@ package com.liferay.portal.jsonwebservice;
 
 import com.liferay.portal.jsonwebservice.action.JSONWebServiceInvokerAction;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebServiceAction;
+import com.liferay.portal.kernel.service.LayoutLocalService;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import java.util.Collections;
@@ -53,6 +58,29 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
+		final Method getDefaultPlidMethod = LayoutLocalService.class.getMethod(
+			"getDefaultPlid", long.class, boolean.class);
+
+		ReflectionTestUtil.setFieldValue(
+			LayoutLocalServiceUtil.class, "_service",
+			ProxyUtil.newProxyInstance(
+				LayoutLocalService.class.getClassLoader(),
+				new Class<?>[] {LayoutLocalService.class},
+				new InvocationHandler() {
+
+					@Override
+					public Object invoke(
+						Object proxy, Method method, Object[] args) {
+
+						if (getDefaultPlidMethod.equals(method)) {
+							return 0L;
+						}
+
+						throw new UnsupportedOperationException();
+					}
+
+				}));
+
 		mockStatic(PropsUtil.class);
 
 		when(
@@ -89,7 +117,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 
 		String json = toJSON(map);
 
-		json = "[" + json + ", " + json + "]";
+		json = StringBundler.concat("[", json, ", ", json, "]");
 
 		JSONWebServiceAction jsonWebServiceAction = prepareInvokerAction(json);
 
@@ -101,6 +129,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertTrue(result instanceof List);
+
 		Assert.assertEquals(
 			"[\"Welcome 173 to Jupiter\",\"Welcome 173 to Jupiter\"]",
 			toJSON(invokerResult));
@@ -269,6 +298,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 			(JSONWebServiceInvokerAction.InvokerResult)result;
 
 		Assert.assertTrue(invokerResult.getResult() instanceof Map);
+
 		Assert.assertEquals(
 			toMap("{\"id\":173,\"world\":\"Welcome 173 to Jupiter\"}"),
 			toMap(toJSON(result)));
@@ -351,6 +381,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertTrue(result instanceof Map);
+
 		Assert.assertEquals(
 			"{\"height\":177,\"id\":173,\"name\":\"John Doe\",\"value\":" +
 				"\"foo!\",\"world\":\"Welcome 173 to Jupiter\"}",
@@ -428,6 +459,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertTrue(result instanceof List);
+
 		Assert.assertEquals(
 			"[{\"id\":1},{\"id\":2},{\"id\":3}]", toJSON(invokerResult));
 	}
@@ -513,9 +545,9 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		json = invokerResult.toJSONString();
 
 		Assert.assertEquals(2, StringUtil.count(json, "\"array\":[1,2,3]"));
-		Assert.assertFalse(json.contains("\"secret\""));
-		Assert.assertTrue(json.contains("\"new1\":{"));
-		Assert.assertTrue(json.contains("\"new2\":\"world\""));
+		Assert.assertFalse(json, json.contains("\"secret\""));
+		Assert.assertTrue(json, json.contains("\"new1\":{"));
+		Assert.assertTrue(json, json.contains("\"new2\":\"world\""));
 	}
 
 	@Test
@@ -541,9 +573,9 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 
 		json = invokerResult.toJSONString();
 
-		Assert.assertTrue(json.contains("\"array\":[1,2,3]"));
-		Assert.assertFalse(json.contains("\"secret\""));
-		Assert.assertTrue(json.contains("\"new\":\"world\""));
+		Assert.assertTrue(json, json.contains("\"array\":[1,2,3]"));
+		Assert.assertFalse(json, json.contains("\"secret\""));
+		Assert.assertTrue(json, json.contains("\"new\":\"world\""));
 	}
 
 	@Test
@@ -619,6 +651,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		params.put("ints", new int[] {1, 2});
 
 		Map<String, Integer> map2 = new HashMap<>(1);
+
 		map2.put("key", Integer.valueOf(122));
 
 		params.put("map", map2);
@@ -772,6 +805,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertEquals("Welcome 173 to Jupiter", result);
+
 		Assert.assertEquals(
 			"\"Welcome 173 to Jupiter\"", toJSON(invokerResult));
 	}
@@ -800,6 +834,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertEquals("Welcome 173 to Jupiter", result);
+
 		Assert.assertEquals(
 			"\"Welcome 173 to Jupiter\"", toJSON(invokerResult));
 	}
@@ -827,6 +862,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertEquals("Welcome 173 to Jupiter", result);
+
 		Assert.assertEquals(
 			"\"Welcome 173 to Jupiter\"", toJSON(invokerResult));
 	}
@@ -854,6 +890,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 		result = invokerResult.getResult();
 
 		Assert.assertEquals("Welcome 173 to null", result);
+
 		Assert.assertEquals("\"Welcome 173 to null\"", toJSON(invokerResult));
 	}
 
@@ -945,7 +982,7 @@ public class JSONWebServiceInvokerTest extends BaseJSONWebServiceTestCase {
 
 		String jsonResult = toJSON(invokerResult);
 
-		Assert.assertFalse(jsonResult.contains("secret"));
+		Assert.assertFalse(jsonResult, jsonResult.contains("secret"));
 	}
 
 	protected JSONWebServiceAction prepareInvokerAction(String content)

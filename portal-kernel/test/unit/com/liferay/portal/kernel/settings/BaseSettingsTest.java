@@ -43,8 +43,9 @@ public class BaseSettingsTest extends PowerMockito {
 	@Test
 	public void testGetModifiableSettingsForUnmodifiableBaseSettings() {
 		ModifiableSettings modifiableSettings = new MemorySettings();
+
 		BaseSettings baseSettings = new ParameterMapSettings(
-			Collections.<String, String[]> emptyMap(), modifiableSettings);
+			Collections.<String, String[]>emptyMap(), modifiableSettings);
 
 		Assert.assertFalse(baseSettings instanceof ModifiableSettings);
 		Assert.assertSame(
@@ -76,9 +77,8 @@ public class BaseSettingsTest extends PowerMockito {
 
 	private static final String _DEFAULT_VALUE = "defaultValue";
 
-	private static final String[] _DEFAULT_VALUES = {
-		"defaultValue0", "defaultValue1"
-	};
+	private static final String[] _DEFAULT_VALUES =
+		{"defaultValue0", "defaultValue1"};
 
 	private static final String _KEY = "key";
 

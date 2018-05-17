@@ -87,18 +87,23 @@
 </tr>
 <!--CHILD_PAGE-->
 <tr>
+	<td>CHILD_PAGE_CONTENT</td>
+	<td>//li[contains(@class,'list-group')]//p</td>
+	<td></td>
+</tr>
+<tr>
 	<td>CHILD_PAGE_HEADER</td>
 	<td>//div[@class='sidenav-content']/h4</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CHILD_PAGE_TITLE</td>
-	<td>//div[@class='list-group-item-content']//a[contains(.,'${key_wikiChildPageTitle}')]</td>
+	<td>//li[@class='list-group-item']//a[contains(.,'${key_wikiChildPageTitle}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CHILD_PAGE_GENERIC</td>
-	<td>//div[@class='list-group-item-content']//a</td>
+	<td>//li[@class='list-group-item']//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -176,12 +181,12 @@
 </tr>
 <tr>
 	<td>DESCRIPTIVE_VIEW_ENTRY_TITLE</td>
-	<td>//li[@data-qa-id='row']/div[contains(@class,'content')]/h4[contains(.,'${key_wikiPageTitle}')]/a</td>
+	<td>//li[@data-qa-id='row']/*[@data-qa-id='rowItemContent']/h4[contains(.,'${key_wikiPageTitle}')]/a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DESCRIPTIVE_VIEW_ACTIONS</td>
-	<td>//li[contains(.,'${key_wikiPageTitle}')]//span/*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
+	<td>//li[contains(.,'${key_wikiPageTitle}')]//a[span/*[name()='svg'][contains(@class,'icon-ellipsis')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -228,7 +233,7 @@
 </tr>
 <tr>
 	<td>HISTORY_VERSIONS_ACTIONS</td>
-	<td>//tr[contains(.,'${key_wikiPageRevision}')]/td[8]//span/*[name()='svg'][contains(@class,'icon-ellipsis-v')]</td>
+	<td>//tr[contains(.,'${key_wikiPageRevision}')]/td[8]//a[span/*[name()='svg'][contains(@class,'icon-ellipsis-v')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -289,7 +294,7 @@
 </tr>
 <tr>
 	<td>COMPARE_VERSIONS_VERSION_ACTIONS</td>
-	<td>//h4[contains(.,'${key_wikiPageVersion}')]/..//span/*[name()='svg'][contains(@class,'icon-ellipsis-v')]</td>
+	<td>//li[@class='list-group-item']/div[contains(.,'${key_wikiPageVersion}')]/..//div//a[span/*[name()='svg'][contains(@class,'icon-ellipsis')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -428,6 +433,11 @@
 <tr>
 	<td>SEARCH_RESULT_TITLE</td>
 	<td>//div[@data-title='${key_wikiPageTitle}']//span[@class='entry-title']</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
 	<td></td>
 </tr>
 </tbody>

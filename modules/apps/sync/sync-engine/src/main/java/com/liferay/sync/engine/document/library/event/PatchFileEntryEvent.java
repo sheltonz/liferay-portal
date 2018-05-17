@@ -14,10 +14,14 @@
 
 package com.liferay.sync.engine.document.library.event;
 
+import com.liferay.sync.engine.document.library.event.constants.EventURLPaths;
 import com.liferay.sync.engine.document.library.handler.Handler;
 import com.liferay.sync.engine.document.library.handler.PatchFileEntryHandler;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Paths;
 
 import java.util.Map;
 
@@ -29,7 +33,7 @@ public class PatchFileEntryEvent extends BaseEvent {
 	public PatchFileEntryEvent(
 		long syncAccountId, Map<String, Object> parameters) {
 
-		super(syncAccountId, _URL_PATH, parameters);
+		super(syncAccountId, EventURLPaths.PATCH_FILE_ENTRY, parameters);
 
 		_handler = new PatchFileEntryHandler(this);
 	}
@@ -43,6 +47,9 @@ public class PatchFileEntryEvent extends BaseEvent {
 	protected void processRequest() throws Exception {
 		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
 
+		syncFile.setPreviousModifiedTime(
+			FileUtil.getLastModifiedTime(
+				Paths.get(syncFile.getFilePathName())));
 		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
 		syncFile.setUiEvent(SyncFile.UI_EVENT_UPLOADING);
 
@@ -50,9 +57,6 @@ public class PatchFileEntryEvent extends BaseEvent {
 
 		processAsynchronousRequest();
 	}
-
-	private static final String _URL_PATH =
-		"/sync-web.syncdlobject/patch-file-entry";
 
 	private final Handler<Void> _handler;
 

@@ -55,7 +55,7 @@ import java.rmi.RemoteException;
  */
 @ProviderType
 public class ScreensAssetEntryServiceSoap {
-	public static java.lang.String getAssetEntries(
+	public static String getAssetEntries(
 		com.liferay.asset.kernel.service.persistence.AssetEntryQuery assetEntryQuery,
 		String locale) throws RemoteException {
 		try {
@@ -71,13 +71,43 @@ public class ScreensAssetEntryServiceSoap {
 		}
 	}
 
-	public static java.lang.String getAssetEntries(long companyId,
-		long groupId, java.lang.String portletItemName, String locale, int max)
+	public static String getAssetEntries(long companyId, long groupId,
+		String portletItemName, String locale, int max)
 		throws RemoteException {
 		try {
 			com.liferay.portal.kernel.json.JSONArray returnValue = ScreensAssetEntryServiceUtil.getAssetEntries(companyId,
 					groupId, portletItemName,
 					LocaleUtil.fromLanguageId(locale), max);
+
+			return returnValue.toString();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static String getAssetEntry(long entryId, String locale)
+		throws RemoteException {
+		try {
+			com.liferay.portal.kernel.json.JSONObject returnValue = ScreensAssetEntryServiceUtil.getAssetEntry(entryId,
+					LocaleUtil.fromLanguageId(locale));
+
+			return returnValue.toString();
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static String getAssetEntry(String className, long classPK,
+		String locale) throws RemoteException {
+		try {
+			com.liferay.portal.kernel.json.JSONObject returnValue = ScreensAssetEntryServiceUtil.getAssetEntry(className,
+					classPK, LocaleUtil.fromLanguageId(locale));
 
 			return returnValue.toString();
 		}

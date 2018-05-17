@@ -20,7 +20,9 @@ import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 
 /**
  * @author Preston Crary
+ * @deprecated As of 7.0.0, with no direct replacement
  */
+@Deprecated
 public abstract class BaseResourcePermissionChecker
 	implements ResourcePermissionChecker {
 
@@ -31,11 +33,10 @@ public abstract class BaseResourcePermissionChecker
 		Group group = GroupLocalServiceUtil.fetchGroup(classPK);
 
 		if ((group != null) && group.isStagingGroup()) {
-			classPK = group.getLiveGroupId();
+			group = group.getLiveGroup();
 		}
 
-		return permissionChecker.hasPermission(
-			classPK, name, classPK, actionId);
+		return permissionChecker.hasPermission(group, name, classPK, actionId);
 	}
 
 	public static boolean contains(

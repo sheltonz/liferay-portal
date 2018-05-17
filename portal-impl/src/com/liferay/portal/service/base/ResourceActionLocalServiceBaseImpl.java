@@ -37,9 +37,11 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.service.BaseLocalServiceImpl;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
+import com.liferay.portal.kernel.service.persistence.CompanyPersistence;
 import com.liferay.portal.kernel.service.persistence.ResourceActionPersistence;
 import com.liferay.portal.kernel.service.persistence.ResourcePermissionFinder;
 import com.liferay.portal.kernel.service.persistence.ResourcePermissionPersistence;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 
@@ -92,6 +94,7 @@ public abstract class ResourceActionLocalServiceBaseImpl
 	 * @return the new resource action
 	 */
 	@Override
+	@Transactional(enabled = false)
 	public ResourceAction createResourceAction(long resourceActionId) {
 		return resourceActionPersistence.create(resourceActionId);
 	}
@@ -370,6 +373,43 @@ public abstract class ResourceActionLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the company local service.
+	 *
+	 * @return the company local service
+	 */
+	public com.liferay.portal.kernel.service.CompanyLocalService getCompanyLocalService() {
+		return companyLocalService;
+	}
+
+	/**
+	 * Sets the company local service.
+	 *
+	 * @param companyLocalService the company local service
+	 */
+	public void setCompanyLocalService(
+		com.liferay.portal.kernel.service.CompanyLocalService companyLocalService) {
+		this.companyLocalService = companyLocalService;
+	}
+
+	/**
+	 * Returns the company persistence.
+	 *
+	 * @return the company persistence
+	 */
+	public CompanyPersistence getCompanyPersistence() {
+		return companyPersistence;
+	}
+
+	/**
+	 * Sets the company persistence.
+	 *
+	 * @param companyPersistence the company persistence
+	 */
+	public void setCompanyPersistence(CompanyPersistence companyPersistence) {
+		this.companyPersistence = companyPersistence;
+	}
+
+	/**
 	 * Returns the resource permission local service.
 	 *
 	 * @return the resource permission local service
@@ -484,6 +524,10 @@ public abstract class ResourceActionLocalServiceBaseImpl
 	protected ResourceActionPersistence resourceActionPersistence;
 	@BeanReference(type = com.liferay.counter.kernel.service.CounterLocalService.class)
 	protected com.liferay.counter.kernel.service.CounterLocalService counterLocalService;
+	@BeanReference(type = com.liferay.portal.kernel.service.CompanyLocalService.class)
+	protected com.liferay.portal.kernel.service.CompanyLocalService companyLocalService;
+	@BeanReference(type = CompanyPersistence.class)
+	protected CompanyPersistence companyPersistence;
 	@BeanReference(type = com.liferay.portal.kernel.service.ResourcePermissionLocalService.class)
 	protected com.liferay.portal.kernel.service.ResourcePermissionLocalService resourcePermissionLocalService;
 	@BeanReference(type = ResourcePermissionPersistence.class)

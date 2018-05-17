@@ -14,9 +14,7 @@
 	<command name="isElementPresentClickNavigation">
 		<execute function="WaitForSPARefresh" />
 
-		<execute argument1="//nav[@id='navigation']" selenium="clickAt" />
-
-		<execute argument1="xPath=(//li[contains(@class,'lfr-nav-deletable')])[1]/a/span" selenium="waitForVisible" />
+		<execute argument1="//div[@id='navigationCollapse']" selenium="clickAt" />
 
 		<execute selenium="isElementPresent" />
 	</command>

@@ -14,19 +14,19 @@
 
 package com.liferay.portal.repository.temporaryrepository;
 
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.repository.DocumentRepository;
 import com.liferay.portal.kernel.repository.RepositoryFactory;
+import com.liferay.portal.kernel.repository.UndeployedExternalRepositoryException;
 import com.liferay.portal.kernel.repository.capabilities.BulkOperationCapability;
+import com.liferay.portal.kernel.repository.capabilities.PortalCapabilityLocator;
 import com.liferay.portal.kernel.repository.capabilities.TemporaryFileEntriesCapability;
 import com.liferay.portal.kernel.repository.capabilities.WorkflowCapability;
 import com.liferay.portal.kernel.repository.registry.BaseRepositoryDefiner;
 import com.liferay.portal.kernel.repository.registry.CapabilityRegistry;
 import com.liferay.portal.kernel.repository.registry.RepositoryFactoryRegistry;
-import com.liferay.portal.repository.capabilities.LiferayBulkOperationCapability;
-import com.liferay.portal.repository.capabilities.MinimalWorkflowCapability;
-import com.liferay.portal.repository.capabilities.TemporaryFileEntriesCapabilityImpl;
-import com.liferay.portal.repository.capabilities.util.DLFileEntryServiceAdapter;
-import com.liferay.portal.repository.capabilities.util.DLFolderServiceAdapter;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 
 /**
  * @author Iván Zaera
@@ -50,23 +50,30 @@ public class TemporaryFileEntryRepositoryDefiner extends BaseRepositoryDefiner {
 	public void registerCapabilities(
 		CapabilityRegistry<DocumentRepository> capabilityRegistry) {
 
-		DocumentRepository documentRepository = capabilityRegistry.getTarget();
+		if (_portalCapabilityLocator == null) {
+			ReflectionUtil.throwException(
+				new UndeployedExternalRepositoryException(
+					StringBundler.concat(
+						"Repository definer ",
+						TemporaryFileEntryRepositoryDefiner.class.getName(),
+						" is not initialized")));
+		}
 
-		DLFileEntryServiceAdapter dlFileEntryServiceAdapter =
-			DLFileEntryServiceAdapter.create(documentRepository);
+		DocumentRepository documentRepository = capabilityRegistry.getTarget();
 
 		capabilityRegistry.addExportedCapability(
 			BulkOperationCapability.class,
-			new LiferayBulkOperationCapability(
-				documentRepository, dlFileEntryServiceAdapter,
-				DLFolderServiceAdapter.create(documentRepository)));
+			_portalCapabilityLocator.getBulkOperationCapability(
+				documentRepository));
 		capabilityRegistry.addExportedCapability(
 			TemporaryFileEntriesCapability.class,
-			new TemporaryFileEntriesCapabilityImpl(documentRepository));
+			_portalCapabilityLocator.getTemporaryFileEntriesCapability(
+				documentRepository));
 
 		capabilityRegistry.addSupportedCapability(
 			WorkflowCapability.class,
-			new MinimalWorkflowCapability(dlFileEntryServiceAdapter));
+			_portalCapabilityLocator.getWorkflowCapability(
+				documentRepository, WorkflowCapability.OperationMode.MINIMAL));
 	}
 
 	@Override
@@ -79,6 +86,18 @@ public class TemporaryFileEntryRepositoryDefiner extends BaseRepositoryDefiner {
 	public void setRepositoryFactory(RepositoryFactory repositoryFactory) {
 		_repositoryFactory = repositoryFactory;
 	}
+
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
+	protected PortalCapabilityLocator portalCapabilityLocator;
+
+	private static volatile PortalCapabilityLocator _portalCapabilityLocator =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			PortalCapabilityLocator.class,
+			TemporaryFileEntryRepositoryDefiner.class,
+			"_portalCapabilityLocator", false, true);
 
 	private RepositoryFactory _repositoryFactory;
 

@@ -36,8 +36,10 @@ import java.util.Date;
  * @see Subscription
  * @see com.liferay.portal.model.impl.SubscriptionImpl
  * @see com.liferay.portal.model.impl.SubscriptionModelImpl
+ * @deprecated
  * @generated
  */
+@Deprecated
 @ProviderType
 public interface SubscriptionModel extends AttachedModel, BaseModel<Subscription>,
 	GroupedModel, MVCCModel, ShardedModel {
@@ -231,17 +233,17 @@ public interface SubscriptionModel extends AttachedModel, BaseModel<Subscription
 	public void setClassNameId(long classNameId);
 
 	/**
-	 * Returns the class p k of this subscription.
+	 * Returns the class pk of this subscription.
 	 *
-	 * @return the class p k of this subscription
+	 * @return the class pk of this subscription
 	 */
 	@Override
 	public long getClassPK();
 
 	/**
-	 * Sets the class p k of this subscription.
+	 * Sets the class pk of this subscription.
 	 *
-	 * @param classPK the class p k of this subscription
+	 * @param classPK the class pk of this subscription
 	 */
 	@Override
 	public void setClassPK(long classPK);

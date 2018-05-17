@@ -43,12 +43,11 @@ import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapper;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapperFactory;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
@@ -57,6 +56,9 @@ import com.liferay.portlet.documentlibrary.model.impl.DLFolderImpl;
 import com.liferay.portlet.documentlibrary.model.impl.DLFolderModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -237,7 +239,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -325,7 +327,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -374,7 +376,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -466,7 +468,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -602,7 +604,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -681,7 +683,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			msg.append(", groupId=");
 			msg.append(groupId);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -744,7 +746,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -851,7 +853,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -1049,7 +1051,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1146,7 +1148,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -1202,7 +1204,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -1296,7 +1298,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1438,7 +1440,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1697,7 +1699,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("groupId=");
 		msg.append(groupId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -1746,7 +1748,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("groupId=");
 		msg.append(groupId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -2557,7 +2559,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -2606,7 +2608,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -3068,7 +3070,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("repositoryId=");
 		msg.append(repositoryId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -3119,7 +3121,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append("repositoryId=");
 		msg.append(repositoryId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -3592,7 +3594,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -3648,7 +3650,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -4495,7 +4497,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -4551,7 +4553,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -4841,7 +4843,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			msg.append(", mountPoint=");
 			msg.append(mountPoint);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -4889,7 +4891,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			DLFolder dlFolder = (DLFolder)result;
 
 			if ((repositoryId != dlFolder.getRepositoryId()) ||
-					(mountPoint != dlFolder.getMountPoint())) {
+					(mountPoint != dlFolder.isMountPoint())) {
 				result = null;
 			}
 		}
@@ -4925,11 +4927,15 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 						list);
 				}
 				else {
-					if ((list.size() > 1) && _log.isWarnEnabled()) {
-						_log.warn(
-							"DLFolderPersistenceImpl.fetchByR_M(long, boolean, boolean) with parameters (" +
-							StringUtil.merge(finderArgs) +
-							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"DLFolderPersistenceImpl.fetchByR_M(long, boolean, boolean) with parameters (" +
+								StringUtil.merge(finderArgs) +
+								") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
 					}
 
 					DLFolder dlFolder = list.get(0);
@@ -4939,7 +4945,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 					cacheResult(dlFolder);
 
 					if ((dlFolder.getRepositoryId() != repositoryId) ||
-							(dlFolder.getMountPoint() != mountPoint)) {
+							(dlFolder.isMountPoint() != mountPoint)) {
 						finderCache.putResult(FINDER_PATH_FETCH_BY_R_M,
 							finderArgs, dlFolder);
 					}
@@ -5267,7 +5273,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -5323,7 +5329,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -5727,7 +5733,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (name == null) {
 				query.append(_FINDER_COLUMN_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_P_N_NAME_3);
 			}
 			else {
@@ -5822,7 +5828,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", name=");
 		msg.append(name);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -5878,7 +5884,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", name=");
 		msg.append(name);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -5974,7 +5980,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (name == null) {
 			query.append(_FINDER_COLUMN_P_N_NAME_1);
 		}
-		else if (name.equals(StringPool.BLANK)) {
+		else if (name.equals("")) {
 			query.append(_FINDER_COLUMN_P_N_NAME_3);
 		}
 		else {
@@ -6116,7 +6122,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (name == null) {
 				query.append(_FINDER_COLUMN_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_P_N_NAME_3);
 			}
 			else {
@@ -6298,7 +6304,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFolder dlFolder : list) {
 					if ((groupId != dlFolder.getGroupId()) ||
-							(mountPoint != dlFolder.getMountPoint()) ||
+							(mountPoint != dlFolder.isMountPoint()) ||
 							(parentFolderId != dlFolder.getParentFolderId())) {
 						list = null;
 
@@ -6417,7 +6423,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -6478,7 +6484,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", parentFolderId=");
 		msg.append(parentFolderId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -7195,7 +7201,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			msg.append(", name=");
 			msg.append(name);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -7265,7 +7271,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (name == null) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -7379,7 +7385,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (name == null) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -7681,7 +7687,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -7749,7 +7755,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -8020,9 +8026,9 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFolder dlFolder : list) {
 					if ((groupId != dlFolder.getGroupId()) ||
-							(mountPoint != dlFolder.getMountPoint()) ||
+							(mountPoint != dlFolder.isMountPoint()) ||
 							(parentFolderId != dlFolder.getParentFolderId()) ||
-							(hidden != dlFolder.getHidden())) {
+							(hidden != dlFolder.isHidden())) {
 						list = null;
 
 						break;
@@ -8149,7 +8155,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", hidden=");
 		msg.append(hidden);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -8217,7 +8223,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", hidden=");
 		msg.append(hidden);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -9046,12 +9052,10 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFolder dlFolder : list) {
 					if ((groupId != dlFolder.getGroupId()) ||
-							(mountPoint != dlFolder.getMountPoint()) ||
+							(mountPoint != dlFolder.isMountPoint()) ||
 							!StringUtil.wildcardMatches(
-								dlFolder.getTreePath(), treePath,
-								CharPool.UNDERLINE, CharPool.PERCENT,
-								CharPool.BACK_SLASH, true) ||
-							(hidden != dlFolder.getHidden())) {
+								dlFolder.getTreePath(), treePath, '_', '%',
+								'\\', true) || (hidden != dlFolder.isHidden())) {
 						list = null;
 
 						break;
@@ -9082,7 +9086,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (treePath == null) {
 				query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 			}
-			else if (treePath.equals(StringPool.BLANK)) {
+			else if (treePath.equals("")) {
 				query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 			}
 			else {
@@ -9192,7 +9196,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", hidden=");
 		msg.append(hidden);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -9260,7 +9264,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", hidden=");
 		msg.append(hidden);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -9365,7 +9369,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (treePath == null) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 		}
-		else if (treePath.equals(StringPool.BLANK)) {
+		else if (treePath.equals("")) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 		}
 		else {
@@ -9561,7 +9565,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (treePath == null) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 		}
-		else if (treePath.equals(StringPool.BLANK)) {
+		else if (treePath.equals("")) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 		}
 		else {
@@ -9717,7 +9721,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (treePath == null) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 		}
-		else if (treePath.equals(StringPool.BLANK)) {
+		else if (treePath.equals("")) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 		}
 		else {
@@ -9903,7 +9907,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if (treePath == null) {
 				query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 			}
-			else if (treePath.equals(StringPool.BLANK)) {
+			else if (treePath.equals("")) {
 				query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 			}
 			else {
@@ -9981,7 +9985,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		if (treePath == null) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_1);
 		}
-		else if (treePath.equals(StringPool.BLANK)) {
+		else if (treePath.equals("")) {
 			query.append(_FINDER_COLUMN_G_M_T_H_TREEPATH_3);
 		}
 		else {
@@ -10180,7 +10184,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 				for (DLFolder dlFolder : list) {
 					if ((groupId != dlFolder.getGroupId()) ||
 							(parentFolderId != dlFolder.getParentFolderId()) ||
-							(hidden != dlFolder.getHidden()) ||
+							(hidden != dlFolder.isHidden()) ||
 							(status != dlFolder.getStatus())) {
 						list = null;
 
@@ -10308,7 +10312,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -10376,7 +10380,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -11236,9 +11240,9 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			if ((list != null) && !list.isEmpty()) {
 				for (DLFolder dlFolder : list) {
 					if ((groupId != dlFolder.getGroupId()) ||
-							(mountPoint != dlFolder.getMountPoint()) ||
+							(mountPoint != dlFolder.isMountPoint()) ||
 							(parentFolderId != dlFolder.getParentFolderId()) ||
-							(hidden != dlFolder.getHidden()) ||
+							(hidden != dlFolder.isHidden()) ||
 							(status != dlFolder.getStatus())) {
 						list = null;
 
@@ -11374,7 +11378,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -11447,7 +11451,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFolderException(msg.toString());
 	}
@@ -12194,6 +12198,25 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 	public DLFolderPersistenceImpl() {
 		setModelClass(DLFolder.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("uuid", "uuid_");
+			dbColumnNames.put("hidden", "hidden_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -12210,7 +12233,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			new Object[] { dlFolder.getUuid(), dlFolder.getGroupId() }, dlFolder);
 
 		finderCache.putResult(FINDER_PATH_FETCH_BY_R_M,
-			new Object[] { dlFolder.getRepositoryId(), dlFolder.getMountPoint() },
+			new Object[] { dlFolder.getRepositoryId(), dlFolder.isMountPoint() },
 			dlFolder);
 
 		finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N,
@@ -12271,7 +12294,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((DLFolderModelImpl)dlFolder);
+		clearUniqueFindersCache((DLFolderModelImpl)dlFolder, true);
 	}
 
 	@Override
@@ -12283,97 +12306,56 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			entityCache.removeResult(DLFolderModelImpl.ENTITY_CACHE_ENABLED,
 				DLFolderImpl.class, dlFolder.getPrimaryKey());
 
-			clearUniqueFindersCache((DLFolderModelImpl)dlFolder);
+			clearUniqueFindersCache((DLFolderModelImpl)dlFolder, true);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(
-		DLFolderModelImpl dlFolderModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					dlFolderModelImpl.getUuid(), dlFolderModelImpl.getGroupId()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-				dlFolderModelImpl);
-
-			args = new Object[] {
-					dlFolderModelImpl.getRepositoryId(),
-					dlFolderModelImpl.getMountPoint()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_R_M, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_R_M, args,
-				dlFolderModelImpl);
-
-			args = new Object[] {
-					dlFolderModelImpl.getGroupId(),
-					dlFolderModelImpl.getParentFolderId(),
-					dlFolderModelImpl.getName()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
-				dlFolderModelImpl);
-		}
-		else {
-			if ((dlFolderModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						dlFolderModelImpl.getUuid(),
-						dlFolderModelImpl.getGroupId()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-					dlFolderModelImpl);
-			}
-
-			if ((dlFolderModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_R_M.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						dlFolderModelImpl.getRepositoryId(),
-						dlFolderModelImpl.getMountPoint()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_R_M, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_R_M, args,
-					dlFolderModelImpl);
-			}
-
-			if ((dlFolderModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_G_P_N.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						dlFolderModelImpl.getGroupId(),
-						dlFolderModelImpl.getParentFolderId(),
-						dlFolderModelImpl.getName()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
-					dlFolderModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(DLFolderModelImpl dlFolderModelImpl) {
+	protected void cacheUniqueFindersCache(DLFolderModelImpl dlFolderModelImpl) {
 		Object[] args = new Object[] {
 				dlFolderModelImpl.getUuid(), dlFolderModelImpl.getGroupId()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
+			dlFolderModelImpl, false);
+
+		args = new Object[] {
+				dlFolderModelImpl.getRepositoryId(),
+				dlFolderModelImpl.isMountPoint()
+			};
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_R_M, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_R_M, args,
+			dlFolderModelImpl, false);
+
+		args = new Object[] {
+				dlFolderModelImpl.getGroupId(),
+				dlFolderModelImpl.getParentFolderId(),
+				dlFolderModelImpl.getName()
+			};
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
+			dlFolderModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		DLFolderModelImpl dlFolderModelImpl, boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					dlFolderModelImpl.getUuid(), dlFolderModelImpl.getGroupId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+		}
 
 		if ((dlFolderModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					dlFolderModelImpl.getOriginalUuid(),
 					dlFolderModelImpl.getOriginalGroupId()
 				};
@@ -12382,17 +12364,19 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
 		}
 
-		args = new Object[] {
-				dlFolderModelImpl.getRepositoryId(),
-				dlFolderModelImpl.getMountPoint()
-			};
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					dlFolderModelImpl.getRepositoryId(),
+					dlFolderModelImpl.isMountPoint()
+				};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_R_M, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_R_M, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_R_M, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_R_M, args);
+		}
 
 		if ((dlFolderModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_R_M.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					dlFolderModelImpl.getOriginalRepositoryId(),
 					dlFolderModelImpl.getOriginalMountPoint()
 				};
@@ -12401,18 +12385,20 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 			finderCache.removeResult(FINDER_PATH_FETCH_BY_R_M, args);
 		}
 
-		args = new Object[] {
-				dlFolderModelImpl.getGroupId(),
-				dlFolderModelImpl.getParentFolderId(),
-				dlFolderModelImpl.getName()
-			};
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.getParentFolderId(),
+					dlFolderModelImpl.getName()
+				};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_N, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_G_P_N, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_N, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_G_P_N, args);
+		}
 
 		if ((dlFolderModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_G_P_N.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					dlFolderModelImpl.getOriginalGroupId(),
 					dlFolderModelImpl.getOriginalParentFolderId(),
 					dlFolderModelImpl.getOriginalName()
@@ -12499,8 +12485,6 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 	@Override
 	protected DLFolder removeImpl(DLFolder dlFolder) {
-		dlFolder = toUnwrappedModel(dlFolder);
-
 		dlFolderToDLFileEntryTypeTableMapper.deleteLeftPrimaryKeyTableMappings(dlFolder.getPrimaryKey());
 
 		Session session = null;
@@ -12533,9 +12517,23 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 	@Override
 	public DLFolder updateImpl(DLFolder dlFolder) {
-		dlFolder = toUnwrappedModel(dlFolder);
-
 		boolean isNew = dlFolder.isNew();
+
+		if (!(dlFolder instanceof DLFolderModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(dlFolder.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(dlFolder);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in dlFolder proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFolder implementation " +
+				dlFolder.getClass());
+		}
 
 		DLFolderModelImpl dlFolderModelImpl = (DLFolderModelImpl)dlFolder;
 
@@ -12590,8 +12588,116 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !DLFolderModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!DLFolderModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { dlFolderModelImpl.getUuid() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getUuid(),
+					dlFolderModelImpl.getCompanyId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				args);
+
+			args = new Object[] { dlFolderModelImpl.getGroupId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_GROUPID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID,
+				args);
+
+			args = new Object[] { dlFolderModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			args = new Object[] { dlFolderModelImpl.getRepositoryId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_REPOSITORYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_REPOSITORYID,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.getParentFolderId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_P,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getRepositoryId(),
+					dlFolderModelImpl.getParentFolderId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_R_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_R_P,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getParentFolderId(),
+					dlFolderModelImpl.getName()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_P_N, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_P_N,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.isMountPoint(),
+					dlFolderModelImpl.getParentFolderId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_M_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_M_P,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.isMountPoint(),
+					dlFolderModelImpl.getParentFolderId(),
+					dlFolderModelImpl.isHidden()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_M_P_H, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_M_P_H,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.getParentFolderId(),
+					dlFolderModelImpl.isHidden(), dlFolderModelImpl.getStatus()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_H_S, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_P_H_S,
+				args);
+
+			args = new Object[] {
+					dlFolderModelImpl.getGroupId(),
+					dlFolderModelImpl.isMountPoint(),
+					dlFolderModelImpl.getParentFolderId(),
+					dlFolderModelImpl.isHidden(), dlFolderModelImpl.getStatus()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_M_P_H_S, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_M_P_H_S,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -12759,7 +12865,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 				args = new Object[] {
 						dlFolderModelImpl.getGroupId(),
-						dlFolderModelImpl.getMountPoint(),
+						dlFolderModelImpl.isMountPoint(),
 						dlFolderModelImpl.getParentFolderId()
 					};
 
@@ -12783,9 +12889,9 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 				args = new Object[] {
 						dlFolderModelImpl.getGroupId(),
-						dlFolderModelImpl.getMountPoint(),
+						dlFolderModelImpl.isMountPoint(),
 						dlFolderModelImpl.getParentFolderId(),
-						dlFolderModelImpl.getHidden()
+						dlFolderModelImpl.isHidden()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_G_M_P_H, args);
@@ -12809,7 +12915,7 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 				args = new Object[] {
 						dlFolderModelImpl.getGroupId(),
 						dlFolderModelImpl.getParentFolderId(),
-						dlFolderModelImpl.getHidden(),
+						dlFolderModelImpl.isHidden(),
 						dlFolderModelImpl.getStatus()
 					};
 
@@ -12834,9 +12940,9 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 
 				args = new Object[] {
 						dlFolderModelImpl.getGroupId(),
-						dlFolderModelImpl.getMountPoint(),
+						dlFolderModelImpl.isMountPoint(),
 						dlFolderModelImpl.getParentFolderId(),
-						dlFolderModelImpl.getHidden(),
+						dlFolderModelImpl.isHidden(),
 						dlFolderModelImpl.getStatus()
 					};
 
@@ -12849,49 +12955,12 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		entityCache.putResult(DLFolderModelImpl.ENTITY_CACHE_ENABLED,
 			DLFolderImpl.class, dlFolder.getPrimaryKey(), dlFolder, false);
 
-		clearUniqueFindersCache(dlFolderModelImpl);
-		cacheUniqueFindersCache(dlFolderModelImpl, isNew);
+		clearUniqueFindersCache(dlFolderModelImpl, false);
+		cacheUniqueFindersCache(dlFolderModelImpl);
 
 		dlFolder.resetOriginalValues();
 
 		return dlFolder;
-	}
-
-	protected DLFolder toUnwrappedModel(DLFolder dlFolder) {
-		if (dlFolder instanceof DLFolderImpl) {
-			return dlFolder;
-		}
-
-		DLFolderImpl dlFolderImpl = new DLFolderImpl();
-
-		dlFolderImpl.setNew(dlFolder.isNew());
-		dlFolderImpl.setPrimaryKey(dlFolder.getPrimaryKey());
-
-		dlFolderImpl.setUuid(dlFolder.getUuid());
-		dlFolderImpl.setFolderId(dlFolder.getFolderId());
-		dlFolderImpl.setGroupId(dlFolder.getGroupId());
-		dlFolderImpl.setCompanyId(dlFolder.getCompanyId());
-		dlFolderImpl.setUserId(dlFolder.getUserId());
-		dlFolderImpl.setUserName(dlFolder.getUserName());
-		dlFolderImpl.setCreateDate(dlFolder.getCreateDate());
-		dlFolderImpl.setModifiedDate(dlFolder.getModifiedDate());
-		dlFolderImpl.setRepositoryId(dlFolder.getRepositoryId());
-		dlFolderImpl.setMountPoint(dlFolder.isMountPoint());
-		dlFolderImpl.setParentFolderId(dlFolder.getParentFolderId());
-		dlFolderImpl.setTreePath(dlFolder.getTreePath());
-		dlFolderImpl.setName(dlFolder.getName());
-		dlFolderImpl.setDescription(dlFolder.getDescription());
-		dlFolderImpl.setLastPostDate(dlFolder.getLastPostDate());
-		dlFolderImpl.setDefaultFileEntryTypeId(dlFolder.getDefaultFileEntryTypeId());
-		dlFolderImpl.setHidden(dlFolder.isHidden());
-		dlFolderImpl.setRestrictionType(dlFolder.getRestrictionType());
-		dlFolderImpl.setLastPublishDate(dlFolder.getLastPublishDate());
-		dlFolderImpl.setStatus(dlFolder.getStatus());
-		dlFolderImpl.setStatusByUserId(dlFolder.getStatusByUserId());
-		dlFolderImpl.setStatusByUserName(dlFolder.getStatusByUserName());
-		dlFolderImpl.setStatusDate(dlFolder.getStatusDate());
-
-		return dlFolderImpl;
 	}
 
 	/**
@@ -13042,14 +13111,14 @@ public class DLFolderPersistenceImpl extends BasePersistenceImpl<DLFolder>
 		query.append(_SQL_SELECT_DLFOLDER_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

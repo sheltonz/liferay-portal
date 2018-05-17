@@ -35,13 +35,16 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.PortletPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.model.impl.PortletModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -296,7 +299,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPortletException(msg.toString());
 	}
@@ -345,7 +348,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchPortletException(msg.toString());
 	}
@@ -622,7 +625,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 			msg.append(", portletId=");
 			msg.append(portletId);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -687,7 +690,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 			if (portletId == null) {
 				query.append(_FINDER_COLUMN_C_P_PORTLETID_1);
 			}
-			else if (portletId.equals(StringPool.BLANK)) {
+			else if (portletId.equals("")) {
 				query.append(_FINDER_COLUMN_C_P_PORTLETID_3);
 			}
 			else {
@@ -794,7 +797,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 			if (portletId == null) {
 				query.append(_FINDER_COLUMN_C_P_PORTLETID_1);
 			}
-			else if (portletId.equals(StringPool.BLANK)) {
+			else if (portletId.equals("")) {
 				query.append(_FINDER_COLUMN_C_P_PORTLETID_3);
 			}
 			else {
@@ -844,6 +847,25 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 
 	public PortletPersistenceImpl() {
 		setModelClass(Portlet.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("id", "id_");
+			dbColumnNames.put("active", "active_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -912,7 +934,7 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((PortletModelImpl)portlet);
+		clearUniqueFindersCache((PortletModelImpl)portlet, true);
 	}
 
 	@Override
@@ -924,50 +946,36 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 			entityCache.removeResult(PortletModelImpl.ENTITY_CACHE_ENABLED,
 				PortletImpl.class, portlet.getPrimaryKey());
 
-			clearUniqueFindersCache((PortletModelImpl)portlet);
+			clearUniqueFindersCache((PortletModelImpl)portlet, true);
 		}
 	}
 
-	protected void cacheUniqueFindersCache(PortletModelImpl portletModelImpl,
-		boolean isNew) {
-		if (isNew) {
+	protected void cacheUniqueFindersCache(PortletModelImpl portletModelImpl) {
+		Object[] args = new Object[] {
+				portletModelImpl.getCompanyId(), portletModelImpl.getPortletId()
+			};
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_C_P, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_C_P, args, portletModelImpl,
+			false);
+	}
+
+	protected void clearUniqueFindersCache(PortletModelImpl portletModelImpl,
+		boolean clearCurrent) {
+		if (clearCurrent) {
 			Object[] args = new Object[] {
 					portletModelImpl.getCompanyId(),
 					portletModelImpl.getPortletId()
 				};
 
-			finderCache.putResult(FINDER_PATH_COUNT_BY_C_P, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_C_P, args,
-				portletModelImpl);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_P, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_C_P, args);
 		}
-		else {
-			if ((portletModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_C_P.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						portletModelImpl.getCompanyId(),
-						portletModelImpl.getPortletId()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_C_P, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_C_P, args,
-					portletModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(PortletModelImpl portletModelImpl) {
-		Object[] args = new Object[] {
-				portletModelImpl.getCompanyId(), portletModelImpl.getPortletId()
-			};
-
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_C_P, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_C_P, args);
 
 		if ((portletModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_C_P.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					portletModelImpl.getOriginalCompanyId(),
 					portletModelImpl.getOriginalPortletId()
 				};
@@ -1048,8 +1056,6 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 
 	@Override
 	protected Portlet removeImpl(Portlet portlet) {
-		portlet = toUnwrappedModel(portlet);
-
 		Session session = null;
 
 		try {
@@ -1080,9 +1086,23 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 
 	@Override
 	public Portlet updateImpl(Portlet portlet) {
-		portlet = toUnwrappedModel(portlet);
-
 		boolean isNew = portlet.isNew();
+
+		if (!(portlet instanceof PortletModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(portlet.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(portlet);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in portlet proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Portlet implementation " +
+				portlet.getClass());
+		}
 
 		PortletModelImpl portletModelImpl = (PortletModelImpl)portlet;
 
@@ -1109,8 +1129,20 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !PortletModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!PortletModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { portletModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1135,32 +1167,12 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		entityCache.putResult(PortletModelImpl.ENTITY_CACHE_ENABLED,
 			PortletImpl.class, portlet.getPrimaryKey(), portlet, false);
 
-		clearUniqueFindersCache(portletModelImpl);
-		cacheUniqueFindersCache(portletModelImpl, isNew);
+		clearUniqueFindersCache(portletModelImpl, false);
+		cacheUniqueFindersCache(portletModelImpl);
 
 		portlet.resetOriginalValues();
 
 		return portlet;
-	}
-
-	protected Portlet toUnwrappedModel(Portlet portlet) {
-		if (portlet instanceof PortletImpl) {
-			return portlet;
-		}
-
-		PortletImpl portletImpl = new PortletImpl();
-
-		portletImpl.setNew(portlet.isNew());
-		portletImpl.setPrimaryKey(portlet.getPrimaryKey());
-
-		portletImpl.setMvccVersion(portlet.getMvccVersion());
-		portletImpl.setId(portlet.getId());
-		portletImpl.setCompanyId(portlet.getCompanyId());
-		portletImpl.setPortletId(portlet.getPortletId());
-		portletImpl.setRoles(portlet.getRoles());
-		portletImpl.setActive(portlet.isActive());
-
-		return portletImpl;
 	}
 
 	/**
@@ -1310,14 +1322,14 @@ public class PortletPersistenceImpl extends BasePersistenceImpl<Portlet>
 		query.append(_SQL_SELECT_PORTLET_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

@@ -27,15 +27,14 @@ import com.liferay.portal.kernel.service.persistence.CompanyPersistence;
 import com.liferay.portal.kernel.service.persistence.CompanyUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -153,26 +152,26 @@ public class CompanyPersistenceTest {
 		Assert.assertEquals(existingCompany.getHomeURL(),
 			newCompany.getHomeURL());
 		Assert.assertEquals(existingCompany.getLogoId(), newCompany.getLogoId());
-		Assert.assertEquals(existingCompany.getSystem(), newCompany.getSystem());
+		Assert.assertEquals(existingCompany.isSystem(), newCompany.isSystem());
 		Assert.assertEquals(existingCompany.getMaxUsers(),
 			newCompany.getMaxUsers());
-		Assert.assertEquals(existingCompany.getActive(), newCompany.getActive());
+		Assert.assertEquals(existingCompany.isActive(), newCompany.isActive());
 	}
 
 	@Test
 	public void testCountByWebId() throws Exception {
-		_persistence.countByWebId(StringPool.BLANK);
+		_persistence.countByWebId("");
 
-		_persistence.countByWebId(StringPool.NULL);
+		_persistence.countByWebId("null");
 
 		_persistence.countByWebId((String)null);
 	}
 
 	@Test
 	public void testCountByMx() throws Exception {
-		_persistence.countByMx(StringPool.BLANK);
+		_persistence.countByMx("");
 
-		_persistence.countByMx(StringPool.NULL);
+		_persistence.countByMx("null");
 
 		_persistence.countByMx((String)null);
 	}

@@ -21,6 +21,7 @@ import com.liferay.sync.engine.document.library.util.FileEventUtil;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.session.Session;
 import com.liferay.sync.engine.session.SessionManager;
+import com.liferay.sync.engine.session.rate.limiter.RateLimitedInputStream;
 import com.liferay.sync.engine.util.JSONUtil;
 import com.liferay.sync.engine.util.StreamUtil;
 
@@ -69,7 +70,9 @@ public class DownloadFilesHandler extends BaseHandler {
 	protected void doHandleResponse(HttpResponse httpResponse)
 		throws Exception {
 
-		final Session session = SessionManager.getSession(getSyncAccountId());
+		long syncAccountId = getSyncAccountId();
+
+		final Session session = SessionManager.getSession(syncAccountId);
 
 		Header header = httpResponse.getFirstHeader("Sync-JWT");
 
@@ -96,6 +99,9 @@ public class DownloadFilesHandler extends BaseHandler {
 
 			};
 
+			inputStream = new RateLimitedInputStream(
+				inputStream, syncAccountId);
+
 			ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
 			ZipEntry zipEntry = null;
@@ -104,7 +110,8 @@ public class DownloadFilesHandler extends BaseHandler {
 				String zipEntryName = zipEntry.getName();
 
 				if (zipEntryName.equals("errors.json")) {
-					JsonNode rootJsonNode = JSONUtil.readTree(zipInputStream);
+					JsonNode rootJsonNode = JSONUtil.readTree(
+						new CloseShieldInputStream(zipInputStream));
 
 					Iterator<Map.Entry<String, JsonNode>> fields =
 						rootJsonNode.fields();
@@ -126,13 +133,19 @@ public class DownloadFilesHandler extends BaseHandler {
 					break;
 				}
 
-				DownloadFileHandler downloadFileHandler = handlers.remove(
+				DownloadFileHandler downloadFileHandler = handlers.get(
 					zipEntryName);
+
+				if (downloadFileHandler == null) {
+					continue;
+				}
 
 				SyncFile syncFile =
 					(SyncFile)downloadFileHandler.getParameterValue("syncFile");
 
 				if (downloadFileHandler.isUnsynced(syncFile)) {
+					handlers.remove(zipEntryName);
+
 					continue;
 				}
 
@@ -159,6 +172,8 @@ public class DownloadFilesHandler extends BaseHandler {
 					}
 				}
 				finally {
+					handlers.remove(zipEntryName);
+
 					downloadFileHandler.removeEvent();
 				}
 			}

@@ -48,6 +48,7 @@ public class RepositoryModelCreateDateComparator<T>
 
 	public RepositoryModelCreateDateComparator(boolean ascending) {
 		_ascending = ascending;
+
 		_orderByModel = false;
 	}
 
@@ -66,15 +67,15 @@ public class RepositoryModelCreateDateComparator<T>
 		Date createDate2 = getCreateDate(t2);
 
 		if (_orderByModel) {
-			if (((t1 instanceof DLFolder) || (t1 instanceof Folder)) &&
-				((t2 instanceof DLFolder) || (t2 instanceof Folder))) {
+			if ((t1 instanceof DLFolder || t1 instanceof Folder) &&
+				(t2 instanceof DLFolder || t2 instanceof Folder)) {
 
 				value = DateUtil.compareTo(createDate1, createDate2);
 			}
-			else if ((t1 instanceof DLFolder) || (t1 instanceof Folder)) {
+			else if (t1 instanceof DLFolder || t1 instanceof Folder) {
 				value = -1;
 			}
-			else if ((t2 instanceof DLFolder) || (t2 instanceof Folder)) {
+			else if (t2 instanceof DLFolder || t2 instanceof Folder) {
 				value = 1;
 			}
 			else {

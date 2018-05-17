@@ -41,10 +41,12 @@
 
 			<aui:model-context bean="<%= null %>" model="<%= WallEntry.class %>" />
 
-			<aui:input name="comments" />
+			<aui:input name="comments">
+				<aui:validator name="required" />
+			</aui:input>
 
 			<aui:button-row>
-				<aui:button cssClass="btn-lg" type="submit" value="post" />
+				<aui:button type="submit" value="post" />
 			</aui:button-row>
 		</aui:form>
 
@@ -150,6 +152,7 @@
 										iconCssClass="icon-copy"
 										label="<%= true %>"
 										message="wall-to-wall"
+										method="get"
 										url="<%= wallToWallHREF %>"
 									/>
 								</c:if>
@@ -178,6 +181,7 @@
 									iconCssClass="icon-comments"
 									label="<%= true %>"
 									message="<%= postMessage %>"
+									method="get"
 									url="<%= postHREF %>"
 								/>
 
@@ -207,7 +211,9 @@
 			<div class="separator"><!-- --></div>
 
 			<div class="taglib-search-iterator-page-iterator-bottom">
-				<liferay-ui:search-paginator searchContainer="<%= searchContainer %>" />
+				<liferay-ui:search-paginator
+					searchContainer="<%= searchContainer %>"
+				/>
 			</div>
 		</c:if>
 

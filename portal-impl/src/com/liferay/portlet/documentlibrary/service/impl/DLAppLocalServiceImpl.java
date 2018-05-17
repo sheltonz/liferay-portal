@@ -15,11 +15,10 @@
 package com.liferay.portlet.documentlibrary.service.impl;
 
 import com.liferay.document.library.kernel.exception.NoSuchFileEntryException;
-import com.liferay.document.library.kernel.model.DLFileEntryType;
-import com.liferay.document.library.kernel.model.DLFileEntryTypeConstants;
 import com.liferay.document.library.kernel.model.DLFileRank;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
@@ -45,10 +44,10 @@ import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFolder;
+import com.liferay.portal.util.RepositoryUtil;
 import com.liferay.portlet.documentlibrary.service.base.DLAppLocalServiceBaseImpl;
 import com.liferay.portlet.documentlibrary.util.DLAppUtil;
 
@@ -260,9 +259,10 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 		if (Validator.isNull(mimeType) ||
 			mimeType.equals(ContentTypes.APPLICATION_OCTET_STREAM)) {
 
-			String extension = DLAppUtil.getExtension(title, sourceFileName);
-
 			if (size == 0) {
+				String extension = DLAppUtil.getExtension(
+					title, sourceFileName);
+
 				mimeType = MimeTypesUtil.getExtensionContentType(extension);
 			}
 			else {
@@ -305,14 +305,20 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	 * @param  fileEntryId the primary key of the file entry
 	 * @param  serviceContext the service context to be applied
 	 * @return the file rank
+	 *
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *            com.liferay.document.library.file.rank.service.DLFileRankLocalService#addFileRank}
 	 */
+	@Deprecated
 	@Override
 	public DLFileRank addFileRank(
 		long repositoryId, long companyId, long userId, long fileEntryId,
 		ServiceContext serviceContext) {
 
-		return dlFileRankLocalService.addFileRank(
-			repositoryId, companyId, userId, fileEntryId, serviceContext);
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by " +
+				"com.liferay.document.library.file.rank.service." +
+					"DLFileRankLocalService#addFileRank");
 	}
 
 	/**
@@ -424,10 +430,17 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	 * only supported by the Liferay repository.
 	 *
 	 * @param fileEntryId the primary key of the file entry
+	 *
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *            com.liferay.document.library.file.rank.service.DLFileRankLocalService#deleteFileRanksByFileEntryId}
 	 */
+	@Deprecated
 	@Override
 	public void deleteFileRanksByFileEntryId(long fileEntryId) {
-		dlFileRankLocalService.deleteFileRanksByFileEntryId(fileEntryId);
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by " +
+				"com.liferay.document.library.file.rank.service." +
+					"DLFileRankLocalService#deleteFileRanksByFileEntryId");
 	}
 
 	/**
@@ -435,10 +448,17 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	 * supported by the Liferay repository.
 	 *
 	 * @param userId the primary key of the user
+	 *
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *            com.liferay.document.library.file.rank.service.DLFileRankLocalService#deleteFileRanksByUserId}
 	 */
+	@Deprecated
 	@Override
 	public void deleteFileRanksByUserId(long userId) {
-		dlFileRankLocalService.deleteFileRanksByUserId(userId);
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by " +
+				"com.liferay.document.library.file.rank.service." +
+					"DLFileRankLocalService#deleteFileRanksByUserId");
 	}
 
 	/**
@@ -589,16 +609,15 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 			}
 		}
 
-		StringBundler msg = new StringBundler(6);
+		StringBundler sb = new StringBundler(5);
 
-		msg.append("No DLFileEntry exists with the key {");
-		msg.append("uuid=");
-		msg.append(uuid);
-		msg.append(", groupId=");
-		msg.append(groupId);
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		sb.append("No DLFileEntry exists with the key {uuid=");
+		sb.append(uuid);
+		sb.append(", groupId=");
+		sb.append(groupId);
+		sb.append(StringPool.CLOSE_CURLY_BRACE);
 
-		throw new NoSuchFileEntryException(msg.toString());
+		throw new NoSuchFileEntryException(sb.toString());
 	}
 
 	/**
@@ -608,10 +627,17 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	 * @param  repositoryId the primary key of the repository
 	 * @param  userId the primary key of the user
 	 * @return the file ranks from the user
+	 *
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *            com.liferay.document.library.file.rank.service.DLFileRankLocalService#getFileRanks}
 	 */
+	@Deprecated
 	@Override
 	public List<DLFileRank> getFileRanks(long repositoryId, long userId) {
-		return dlFileRankLocalService.getFileRanks(repositoryId, userId);
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by " +
+				"com.liferay.document.library.file.rank.service." +
+					"DLFileRankLocalService#getFileRanks");
 	}
 
 	/**
@@ -792,15 +818,6 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	public void subscribeFileEntryType(
 			long userId, long groupId, long fileEntryTypeId)
 		throws PortalException {
-
-		if (fileEntryTypeId ==
-				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
-
-			fileEntryTypeId = groupId;
-		}
-
-		subscriptionLocalService.addSubscription(
-			userId, groupId, DLFileEntryType.class.getName(), fileEntryTypeId);
 	}
 
 	/**
@@ -814,13 +831,6 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	@Override
 	public void subscribeFolder(long userId, long groupId, long folderId)
 		throws PortalException {
-
-		if (folderId == DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			folderId = groupId;
-		}
-
-		subscriptionLocalService.addSubscription(
-			userId, groupId, DLFolder.class.getName(), folderId);
 	}
 
 	/**
@@ -835,15 +845,6 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	public void unsubscribeFileEntryType(
 			long userId, long groupId, long fileEntryTypeId)
 		throws PortalException {
-
-		if (fileEntryTypeId ==
-				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_BASIC_DOCUMENT) {
-
-			fileEntryTypeId = groupId;
-		}
-
-		subscriptionLocalService.deleteSubscription(
-			userId, DLFileEntryType.class.getName(), fileEntryTypeId);
 	}
 
 	/**
@@ -857,13 +858,6 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	@Override
 	public void unsubscribeFolder(long userId, long groupId, long folderId)
 		throws PortalException {
-
-		if (folderId == DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
-			folderId = groupId;
-		}
-
-		subscriptionLocalService.deleteSubscription(
-			userId, DLFolder.class.getName(), folderId);
 	}
 
 	/**
@@ -1058,9 +1052,10 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 		if (Validator.isNull(mimeType) ||
 			mimeType.equals(ContentTypes.APPLICATION_OCTET_STREAM)) {
 
-			String extension = DLAppUtil.getExtension(title, sourceFileName);
-
 			if (size == 0) {
+				String extension = DLAppUtil.getExtension(
+					title, sourceFileName);
+
 				mimeType = MimeTypesUtil.getExtensionContentType(extension);
 			}
 			else {
@@ -1108,14 +1103,20 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	 * @param  fileEntryId the primary key of the file rank's file entry
 	 * @param  serviceContext the service context to be applied
 	 * @return the file rank
+	 *
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *            com.liferay.document.library.file.rank.service.DLFileRankLocalService#updateFileRank}
 	 */
+	@Deprecated
 	@Override
 	public DLFileRank updateFileRank(
 		long repositoryId, long companyId, long userId, long fileEntryId,
 		ServiceContext serviceContext) {
 
-		return dlFileRankLocalService.updateFileRank(
-			repositoryId, companyId, userId, fileEntryId, serviceContext);
+		throw new UnsupportedOperationException(
+			"This method is deprecated and replaced by " +
+				"com.liferay.document.library.file.rank.service." +
+					"DLFileRankLocalService#updateFileRank");
 	}
 
 	/**
@@ -1163,8 +1164,8 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 	}
 
 	/**
-	 * Deprecated as of 7.0.0, replaced by {@link #updateFileShortcuts(long,
-	 * long)}
+	 * @deprecated As of 7.0.0, replaced by {@link #updateFileShortcuts(long,
+	 *             long)}
 	 */
 	@Deprecated
 	@Override
@@ -1374,9 +1375,13 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 
 		long repositoryId = localRepository.getRepositoryId();
 
-		dlAppHelperLocalService.deleteRepositoryFileEntries(repositoryId);
+		if (!RepositoryUtil.isExternalRepository(
+				localRepository.getRepositoryId())) {
 
-		localRepository.deleteAll();
+			dlAppHelperLocalService.deleteRepositoryFileEntries(repositoryId);
+
+			localRepository.deleteAll();
+		}
 
 		repositoryLocalService.deleteRepository(repositoryId);
 	}

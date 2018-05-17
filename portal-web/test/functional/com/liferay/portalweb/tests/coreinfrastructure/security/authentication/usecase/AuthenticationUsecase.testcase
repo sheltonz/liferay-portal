@@ -1,5 +1,6 @@
 <definition component-name="portal-security">
 	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="Authentication" />
 
 	<set-up>
@@ -19,77 +20,302 @@
 			<else>
 				<execute macro="PortalSettings#tearDownAuthenticationCP" />
 
-				<execute macro="Page#tearDownPG" />
+				<execute macro="Page#tearDownCP" />
 			</else>
 		</if>
 	</tear-down>
 
-	<command name="AuthenticationCAS" priority="4">
-		<property name="web.plugins.includes" value="cas-web" />
+	<command name="ImportLDAPUserWithBlankPassword" priority="3">
+		<description message="This is a use case for LPS-65498." />
 
-		<var name="userEmailAddress" value="userea@liferay.com" />
-		<var name="userFirstName" value="userfn" />
-		<var name="userLastName" value="userln" />
-		<var name="userScreenName" value="usersn" />
+		<property name="apacheds.blank.user.password.enabled" value="true" />
+		<property name="apacheds.enabled" value="true" />
+		<property name="test.name.skip.portal.instance" value="AuthenticationUsecase#ImportLDAPUserWithBlankPassword" />
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Search" />
+		</execute>
+
+		<execute macro="SearchAdministration#executeSearchActions">
+			<var name="actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Instance Settings" />
+		</execute>
+
+		<for list="ldap--enabled,ldapImportEnabled,importOnStartup,ldap--passwordPolicyEnabled" param="enableCheckboxKey">
+			<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+			<execute macro="PortalSettings#enableLDAPSetting">
+				<var name="enableCheckboxKey" value="${enableCheckboxKey}" />
+			</execute>
+
+			<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+			<execute macro="FormFields#viewCheckboxChecked">
+				<var name="fieldName" value="${enableCheckboxKey}" />
+			</execute>
+		</for>
+
+		<execute macro="PortalSettings#addLDAPServer">
+			<var name="LDAPServerName" value="ApacheDS Server" />
+		</execute>
+
+		<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+		<execute macro="PortalSettings#editLDAPServer">
+			<var name="LDAPServerName" value="ApacheDS Server" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="System Settings" />
+		</execute>
+
+		<execute macro="SystemSettings#gotoConfiguration">
+			<var name="configurationCategory" value="LDAP" />
+			<var name="configurationName" value="LDAP Import" />
+			<var name="configurationScope" value="Virtual Instance Scope" />
+		</execute>
+
+		<execute macro="FormFields#enableCheckbox">
+			<var name="fieldName" value="importEnabled" />
+		</execute>
+
+		<execute macro="SystemSettings#saveConfiguration" />
+
+		<execute function="AssertConsoleTextNotPresent" value1="Unable to encrypt blank password" />
+
+		<execute macro="Portlet#shutdownServer" />
+
+		<execute macro="Portlet#startServer">
+			<var name="deleteLiferayHome" value="false" />
+		</execute>
+
+		<execute macro="User#firstLoginPG" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
-		<execute macro="User#addCP">
-			<var name="userEmailAddress" value="${userEmailAddress}" />
-			<var name="userFirstName" value="${userFirstName}" />
-			<var name="userLastName" value="${userLastName}" />
-			<var name="userScreenName" value="${userScreenName}" />
+		<execute macro="User#viewCP">
+			<var name="userEmailAddress" value="ldapuseremail@liferay.com" />
+			<var name="userFirstName" value="ldapusergivenname" />
+			<var name="userLastName" value="ldapusersn" />
+			<var name="userScreenName" value="ldapusercn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute function="AssertConsoleTextNotPresent" value1="Unable to encrypt blank password" />
+	</command>
+
+	<command name="ResetFieldsValueForImportedLDAPUser" priority="4">
+		<description message="This is a use case for LPS-30529 and LPS-77948." />
+
+		<property name="apacheds.enabled" value="true" />
+		<property name="test.name.skip.portal.instance" value="AuthenticationUsecase#ResetFieldsValueForImportedLDAPUser" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Instance Settings" />
+		</execute>
+
+		<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+		<execute macro="PortalSettings#addLDAPServer">
+			<var name="LDAPServerName" value="ApacheDS Server" />
+		</execute>
+
+		<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+		<execute macro="PortalSettings#editLDAPServer">
+			<var name="LDAPServerName" value="ApacheDS Server" />
+		</execute>
+
+		<execute macro="PortalSettings#testLDAPConnection" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Instance Settings" />
+		</execute>
+
+		<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+		<execute macro="PortalSettings#enableLDAPSetting">
+			<var name="enableCheckboxKey" value="ENABLED" />
+		</execute>
+
+		<for list="ENABLED,EXPORT_ENABLED,IMPORT_ENABLED,IMPORT_ON_STARTUP_ENABLED," param="enableCheckboxKey">
+			<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+			<execute macro="PortalSettings#enableLDAPSetting">
+				<var name="enableCheckboxKey" value="${enableCheckboxKey}" />
+			</execute>
+
+			<execute macro="PortalSettingsNavigator#gotoLDAP" />
+
+			<execute macro="FormFields#viewCheckboxChecked">
+				<var name="fieldName" value="ldap--enabled" />
+			</execute>
+		</for>
+
+		<execute macro="Portlet#shutdownServer" />
+
+		<execute macro="Portlet#startServer">
+			<var name="deleteLiferayHome" value="false" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Search" />
+		</execute>
+
+		<execute macro="SearchAdministration#executeSearchActions">
+			<var name="actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<var name="pauseCount" value="0" />
+
+		<while>
+			<and>
+				<condition function="IsElementNotPresent" locator1="UsersAndOrganizations#USER_TABLE_SCREEN_NAME">
+					<var name="key_userScreenName" value="ldapusercn" />
+				</condition>
+
+				<not>
+					<equals arg1="${pauseCount}" arg2="20" />
+				</not>
+			</and>
+			<then>
+				<execute function="Refresh" />
+
+				<execute function="Pause" locator1="30000" />
+
+				<var method="MathUtil#sum('${pauseCount}', '1')" name="pauseCount" />
+
+				<echo message="Pause count: ${pauseCount}" />
+			</then>
+		</while>
+
+		<if>
+			<equals arg1="${pauseCount}" arg2="20" />
+			<then>
+				<fail message="LDAP imported user timed out after 10 minutes." />
+			</then>
+		</if>
+
+		<execute macro="User#viewCP">
+			<var name="userEmailAddress" value="ldapuseremail@liferay.com" />
+			<var name="userFirstName" value="ldapusergivenname" />
+			<var name="userLastName" value="ldapusersn" />
+			<var name="userScreenName" value="ldapusercn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="User#editUserGenderCP">
+			<var name="userGender" value="Female" />
+			<var name="userName" value="ldapusergivenname ldapusersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="User#editUserJobTitleCP">
+			<var name="userJobTitle" value="QA" />
+			<var name="userName" value="ldapusergivenname ldapusersn" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
+		<execute macro="User#editUserSuffixCP">
+			<var name="userName" value="ldapusergivenname ldapusersn" />
+			<var name="userSuffix" value="Phd" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#editPasswordCP">
-			<var name="userEmailAddress" value="${userEmailAddress}" />
-			<var name="userScreenName" value="${userScreenName}" />
+			<var name="userEmailAddress" value="ldapuseremail@liferay.com" />
+			<var name="userScreenName" value="ldapusercn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelConfiguration">
-			<var name="portlet" value="Instance Settings" />
+		<execute macro="User#logoutAndLoginPG">
+			<var name="userLoginEmailAddress" value="ldapuseremail@liferay.com" />
+			<var name="userLoginFullName" value="ldapusergivenname ldapusersn" />
 		</execute>
 
-		<execute macro="PortalSettings#editConfigurationAuthenticationGeneral">
-			<var name="authenticationMethod" value="By Screen Name" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="My Account" />
+			<var name="panel" value="User" />
+			<var name="portlet" value="Account Settings" />
 		</execute>
 
-		<execute macro="PortalSettings#editConfigurationAuthenticationCAS">
-			<var name="casLoginURL" value="http://localhost:8080/cas-web/login" />
-			<var name="casLogoutURL" value="http://localhost:8080/cas-web/logout" />
-			<var name="casServerURL" value="http://localhost:8080/cas-web" />
+		<!-- LPS-77948 -->
+
+		<!-- <execute function="AssertElementPresent" locator1="UsersAndOrganizationsEditUser#DETAILS_GENDER_SELECTED" value1="Female">
+			<var name="key_userGender" value="Female" />
+		</execute> -->
+
+		<execute function="AssertTextEquals" locator1="UsersAndOrganizationsEditUser#DETAILS_JOB_TITLE_FIELD" value1="QA" />
+
+		<!-- LPS-77948 -->
+
+		<!-- <execute function="AssertElementPresent" locator1="UsersAndOrganizationsEditUser#DETAILS_SUFFIX_SELECTED" value1="Phd">
+			<var name="key_userSuffix" value="Phd" />
+		</execute> -->
+	</command>
+
+	<command name="ViewHiddenSecurityCredential" priority="4">
+		<description message="This is a use case for LPS-73381." />
+
+		<property name="test.name.skip.portal.instance" value="AuthenticationUsecase#ViewHiddenSecurityCredential" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="System Settings" />
 		</execute>
 
-		<execute macro="User#logoutPG" />
+		<execute macro="SystemSettings#gotoConfiguration">
+			<var name="configurationCategory" value="LDAP" />
+			<var name="configurationName" value="LDAP Servers" />
+			<var name="configurationScope" value="Virtual Instance Scope" />
+		</execute>
 
-		<execute function="AssertTextEquals" locator1="CAS#APP_NAME_HEADER" value1="Central Authentication Service (CAS)" />
-		<execute function="AssertTextEquals" locator1="CAS#LOGOUT_SUCCESSFUL_HEADER" value1="Logout successful" />
-		<execute function="AssertTextEquals" locator1="CAS#LOGOUT_SUCCESSFUL_MESSAGE_1" value1="You have successfully logged out of the Central Authentication Service." />
-		<execute function="AssertTextEquals" locator1="CAS#LOGOUT_SUCCESSFUL_MESSAGE_2" value1="For security reasons, exit your web browser." />
-
-		<execute macro="Navigator#openURL" />
-
-		<execute function="AssertClick" locator1="UserBar#USER_SIGN_IN" value1="Sign In" />
-
-		<execute function="Type" locator1="CAS#NETID_FIELD" value1="${userScreenName}" />
-		<execute function="Type" locator1="CAS#PASSWORD_FIELD" value1="${userScreenName}" />
-		<execute function="AssertClick" locator1="CAS#LOGIN_BUTTON" value1="LOGIN" />
-
-		<var name="key_pageName" value="Welcome" />
-
-		<execute function="AssertTextEquals" locator1="Home#PAGE" value1="Welcome" />
-
-		<execute macro="User#logoutPG" />
-
-		<execute macro="User#loginPG">
-			<var name="authenticationMethod" value="By Screen Name" />
-			<var name="userScreenName" value="test" />
+		<execute macro="SystemSettings#editSecurityCredential">
+			<var name="securityCredential" value="123456" />
 		</execute>
 	</command>
 </definition>

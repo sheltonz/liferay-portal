@@ -83,7 +83,7 @@ public class NettyUtilTest {
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertTrue(logRecords.isEmpty());
+			Assert.assertTrue(logRecords.toString(), logRecords.isEmpty());
 		}
 	}
 
@@ -122,7 +122,7 @@ public class NettyUtilTest {
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertEquals(1, logRecords.size());
+			Assert.assertEquals(logRecords.toString(), 1, logRecords.size());
 
 			LogRecord logRecord = logRecords.get(0);
 
@@ -186,7 +186,7 @@ public class NettyUtilTest {
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertTrue(logRecords.isEmpty());
+			Assert.assertTrue(logRecords.toString(), logRecords.isEmpty());
 		}
 
 		// Normal finish with log
@@ -213,7 +213,7 @@ public class NettyUtilTest {
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertEquals(1, logRecords.size());
+			Assert.assertEquals(logRecords.toString(), 1, logRecords.size());
 
 			LogRecord logRecord = logRecords.get(0);
 
@@ -242,11 +242,12 @@ public class NettyUtilTest {
 			scheduledFuture.get(1, TimeUnit.HOURS);
 
 			Assert.assertFalse(scheduledFuture.isCancelled());
+
 			Assert.assertTrue(defaultNoticeableFuture.isCancelled());
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertTrue(logRecords.isEmpty());
+			Assert.assertTrue(logRecords.toString(), logRecords.isEmpty());
 		}
 
 		// Timeout cancel with log
@@ -268,11 +269,12 @@ public class NettyUtilTest {
 			scheduledFuture.get(1, TimeUnit.HOURS);
 
 			Assert.assertFalse(scheduledFuture.isCancelled());
+
 			Assert.assertTrue(defaultNoticeableFuture.isCancelled());
 
 			List<LogRecord> logRecords = captureHandler.getLogRecords();
 
-			Assert.assertEquals(1, logRecords.size());
+			Assert.assertEquals(logRecords.toString(), 1, logRecords.size());
 
 			LogRecord logRecord = logRecords.get(0);
 
@@ -319,6 +321,18 @@ public class NettyUtilTest {
 			return new SingleThreadEventLoop(this, threadFactory, true) {
 
 				@Override
+				public ScheduledFuture<?> schedule(
+					Runnable command, long delay, TimeUnit unit) {
+
+					ScheduledFuture<?> scheduledFuture = super.schedule(
+						command, delay, unit);
+
+					_reference.set(scheduledFuture);
+
+					return scheduledFuture;
+				}
+
+				@Override
 				protected void run() {
 					while (!confirmShutdown()) {
 						Runnable task = takeTask();
@@ -329,18 +343,6 @@ public class NettyUtilTest {
 							updateLastExecutionTime();
 						}
 					}
-				}
-
-				@Override
-				public ScheduledFuture<?> schedule(
-					Runnable command, long delay, TimeUnit unit) {
-
-					ScheduledFuture<?> scheduledFuture = super.schedule(
-						command, delay, unit);
-
-					_reference.set(scheduledFuture);
-
-					return scheduledFuture;
 				}
 
 			};

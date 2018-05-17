@@ -16,7 +16,8 @@ package com.liferay.screens.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.osgi.util.ServiceTrackerFactory;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -49,7 +50,7 @@ public class ScreensAssetEntryServiceUtil {
 	}
 
 	public static com.liferay.portal.kernel.json.JSONArray getAssetEntries(
-		long companyId, long groupId, java.lang.String portletItemName,
+		long companyId, long groupId, String portletItemName,
 		java.util.Locale locale, int max)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
@@ -57,12 +58,24 @@ public class ScreensAssetEntryServiceUtil {
 			locale, max);
 	}
 
+	public static com.liferay.portal.kernel.json.JSONObject getAssetEntry(
+		long entryId, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getAssetEntry(entryId, locale);
+	}
+
+	public static com.liferay.portal.kernel.json.JSONObject getAssetEntry(
+		String className, long classPK, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getAssetEntry(className, classPK, locale);
+	}
+
 	/**
 	* Returns the OSGi service identifier.
 	*
 	* @return the OSGi service identifier
 	*/
-	public static java.lang.String getOSGiServiceIdentifier() {
+	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
 	}
 
@@ -70,6 +83,17 @@ public class ScreensAssetEntryServiceUtil {
 		return _serviceTracker.getService();
 	}
 
-	private static ServiceTracker<ScreensAssetEntryService, ScreensAssetEntryService> _serviceTracker =
-		ServiceTrackerFactory.open(ScreensAssetEntryService.class);
+	private static ServiceTracker<ScreensAssetEntryService, ScreensAssetEntryService> _serviceTracker;
+
+	static {
+		Bundle bundle = FrameworkUtil.getBundle(ScreensAssetEntryService.class);
+
+		ServiceTracker<ScreensAssetEntryService, ScreensAssetEntryService> serviceTracker =
+			new ServiceTracker<ScreensAssetEntryService, ScreensAssetEntryService>(bundle.getBundleContext(),
+				ScreensAssetEntryService.class, null);
+
+		serviceTracker.open();
+
+		_serviceTracker = serviceTracker;
+	}
 }

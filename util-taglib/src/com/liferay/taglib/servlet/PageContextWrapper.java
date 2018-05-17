@@ -15,6 +15,9 @@
 package com.liferay.taglib.servlet;
 
 import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.taglib.BodyContentWrapper;
 
 import java.io.IOException;
@@ -34,6 +37,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.ErrorData;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.el.ExpressionEvaluator;
+import javax.servlet.jsp.el.VariableResolver;
 import javax.servlet.jsp.tagext.BodyContent;
 
 /**
@@ -48,6 +53,10 @@ public class PageContextWrapper extends PageContext {
 
 	@Override
 	public Object findAttribute(String name) {
+		if (_JSP_PAGE_CONTEXT_FORCE_GET_ATTRIBUTE) {
+			return _pageContext.getAttribute(name);
+		}
+
 		return _pageContext.findAttribute(name);
 	}
 
@@ -98,7 +107,7 @@ public class PageContextWrapper extends PageContext {
 	 */
 	@Deprecated
 	@Override
-	public javax.servlet.jsp.el.ExpressionEvaluator getExpressionEvaluator() {
+	public ExpressionEvaluator getExpressionEvaluator() {
 		return _pageContext.getExpressionEvaluator();
 	}
 
@@ -142,7 +151,7 @@ public class PageContextWrapper extends PageContext {
 	 */
 	@Deprecated
 	@Override
-	public javax.servlet.jsp.el.VariableResolver getVariableResolver() {
+	public VariableResolver getVariableResolver() {
 		return _pageContext.getVariableResolver();
 	}
 
@@ -234,6 +243,10 @@ public class PageContextWrapper extends PageContext {
 	public void setAttribute(String name, Object value, int scope) {
 		_pageContext.setAttribute(name, value, scope);
 	}
+
+	private static final boolean _JSP_PAGE_CONTEXT_FORCE_GET_ATTRIBUTE =
+		GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.JSP_PAGE_CONTEXT_FORCE_GET_ATTRIBUTE));
 
 	private final PageContext _pageContext;
 

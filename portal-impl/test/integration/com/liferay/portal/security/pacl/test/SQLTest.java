@@ -19,13 +19,16 @@ import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.test.rule.PACLTestRule;
+import com.liferay.portal.test.rule.PACLTestRule.PACLTestRuleThreadLocal;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +41,16 @@ public class SQLTest {
 	@ClassRule
 	@Rule
 	public static final PACLTestRule paclTestRule = new PACLTestRule();
+
+	@BeforeClass
+	public static void setUpClass() {
+		PACLTestRuleThreadLocal.setDummyDataSourceEnabled(true);
+	}
+
+	@AfterClass
+	public static void tearDownClass() {
+		PACLTestRuleThreadLocal.setDummyDataSourceEnabled(false);
+	}
 
 	@Test
 	public void testCreate1() throws Exception {
@@ -228,7 +241,7 @@ public class SQLTest {
 
 	@Test
 	public void testReplace1() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -248,7 +261,7 @@ public class SQLTest {
 
 	@Test
 	public void testReplace2() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -268,7 +281,7 @@ public class SQLTest {
 
 	@Test
 	public void testReplace3() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -283,7 +296,7 @@ public class SQLTest {
 
 	@Test
 	public void testReplace4() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -381,7 +394,7 @@ public class SQLTest {
 
 	@Test
 	public void testTruncate1() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -400,7 +413,7 @@ public class SQLTest {
 
 	@Test
 	public void testTruncate2() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -419,7 +432,7 @@ public class SQLTest {
 
 	@Test
 	public void testTruncate3() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -433,7 +446,7 @@ public class SQLTest {
 
 	@Test
 	public void testTruncate4() throws Exception {
-		if (!isMySQL()) {
+		if (!isMariaDBOrMySQL()) {
 			return;
 		}
 
@@ -604,10 +617,12 @@ public class SQLTest {
 		}
 	}
 
-	protected boolean isMySQL() {
+	protected boolean isMariaDBOrMySQL() {
 		DB db = DBManagerUtil.getDB();
 
-		if (db.getDBType() == DBType.MYSQL) {
+		DBType dbType = db.getDBType();
+
+		if ((dbType == DBType.MARIADB) || (dbType == DBType.MYSQL)) {
 			return true;
 		}
 

@@ -21,6 +21,8 @@ import com.liferay.exportimport.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.NoSuchGroupException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupConstants;
@@ -49,6 +51,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.service.base.GroupServiceBaseImpl;
 import com.liferay.portal.util.PropsValues;
@@ -201,8 +204,10 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 		if (group.getCompanyId() != permissionChecker.getCompanyId()) {
 			throw new NoSuchGroupException(
-				"Group " + groupId + " does not belong in company " +
-					permissionChecker.getCompanyId());
+				StringBundler.concat(
+					"Group ", String.valueOf(groupId),
+					" does not belong in company ",
+					String.valueOf(permissionChecker.getCompanyId())));
 		}
 	}
 
@@ -212,8 +217,8 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 	 * <p>
 	 * The group is unstaged and its assets and resources including layouts,
 	 * membership requests, subscriptions, teams, blogs, bookmarks, calendar
-	 * events, image gallery, journals, message boards, polls, shopping related
-	 * entities, and wikis are also deleted.
+	 * events, image gallery, journals, message boards, polls, and wikis are
+	 * also deleted.
 	 * </p>
 	 *
 	 * @param  groupId the primary key of the group
@@ -357,6 +362,79 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 		return filterGroups(
 			groupLocalService.getGroups(companyId, parentGroupId, site));
+	}
+
+	/**
+	 * Returns all the groups that are direct children of the parent group.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  parentGroupId the primary key of the parent group
+	 * @param  site whether the group is to be associated with a main site
+	 * @param  start the lower bound of the range of results
+	 * @param  end the upper bound of the range of results (not inclusive)
+	 * @return the matching groups, or <code>null</code> if no matches were
+	 *         found
+	 * @throws PortalException if a portal exception occurred
+	 */
+	@Override
+	public List<Group> getGroups(
+			long companyId, long parentGroupId, boolean site, int start,
+			int end)
+		throws PortalException {
+
+		return filterGroups(
+			groupLocalService.getGroups(
+				companyId, parentGroupId, site, start, end));
+	}
+
+	/**
+	 * Returns the number of groups that are direct children of the parent
+	 * group.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  parentGroupId the primary key of the parent group
+	 * @param  site whether the group is to be associated with a main site
+	 * @return the number of matching groups
+	 */
+	@Override
+	public int getGroupsCount(long companyId, long parentGroupId, boolean site)
+		throws PortalException {
+
+		if (parentGroupId == 0) {
+			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
+		}
+		else {
+			GroupPermissionUtil.check(
+				getPermissionChecker(), parentGroupId, ActionKeys.VIEW);
+		}
+
+		return groupLocalService.getGroupsCount(companyId, parentGroupId, site);
+	}
+
+	/**
+	 * Returns the number of groups that are direct children of the parent group
+	 * with the matching className.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  className the class name of the group
+	 * @param  parentGroupId the primary key of the parent group
+	 * @return the number of matching groups
+	 */
+	@Override
+	public int getGroupsCount(
+			long companyId, String className, long parentGroupId)
+		throws PortalException {
+
+		if (parentGroupId == 0) {
+			GroupPermissionUtil.check(getPermissionChecker(), ActionKeys.VIEW);
+		}
+		else {
+			GroupPermissionUtil.check(
+				getPermissionChecker(), parentGroupId, ActionKeys.VIEW);
+		}
+
+		return groupLocalService.getGroupsCount(
+			companyId, className, parentGroupId);
 	}
 
 	/**
@@ -602,7 +680,9 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 			if (ArrayUtil.contains(classNames, Group.class.getName())) {
 				for (Group group : userBag.getUserGroups()) {
-					if (group.isActive() && group.isSite()) {
+					if (groupLocalService.isLiveGroupActive(group) &&
+						group.isSite()) {
+
 						if (userSiteGroups.add(group) &&
 							(userSiteGroups.size() == max)) {
 
@@ -619,7 +699,9 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 			if (ArrayUtil.contains(classNames, Organization.class.getName())) {
 				for (Group group : userBag.getUserOrgGroups()) {
-					if (group.isActive() && group.isSite()) {
+					if (groupLocalService.isLiveGroupActive(group) &&
+						group.isSite()) {
+
 						if (userSiteGroups.add(group) &&
 							(userSiteGroups.size() == max)) {
 
@@ -718,6 +800,13 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 				getPermissionChecker(), userId, ActionKeys.VIEW);
 		}
 		catch (PrincipalException pe) {
+
+			// LPS-52675
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(pe, pe);
+			}
+
 			GroupPermissionUtil.check(
 				getPermissionChecker(), groupId, ActionKeys.VIEW_MEMBERS);
 		}
@@ -1078,5 +1167,8 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 
 		return map;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		GroupServiceImpl.class);
 
 }

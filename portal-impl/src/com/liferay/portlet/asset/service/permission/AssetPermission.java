@@ -21,11 +21,12 @@ import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 
 /**
- * @author Jorge Ferrer
+ * @author     Jorge Ferrer
+ * @deprecated As of 7.0.0, replaced by {@link AssetCategoriesPermission} and
+ *             {@link AssetTagsPermission}
  */
-@OSGiBeanProperties(
-	property = {"resource.name=" + AssetPermission.RESOURCE_NAME}
-)
+@Deprecated
+@OSGiBeanProperties(property = "resource.name=" + AssetPermission.RESOURCE_NAME)
 public class AssetPermission extends BaseResourcePermissionChecker {
 
 	public static final String RESOURCE_NAME = "com.liferay.asset";

@@ -15,9 +15,9 @@
 package com.liferay.portlet;
 
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.portlet.PortletConfigFactory;
 import com.liferay.portal.kernel.portlet.PortletContextFactory;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
 import com.liferay.portal.security.lang.DoPrivilegedUtil;
 
@@ -52,8 +52,14 @@ public class PortletConfigFactoryImpl implements PortletConfigFactory {
 			_pool.put(portlet.getRootPortletId(), portletConfigs);
 		}
 
-		PortletConfig portletConfig = portletConfigs.get(
-			portlet.getPortletId());
+		PortletConfig portletConfig = null;
+
+		if (portlet.isUndeployedPortlet()) {
+			portletConfigs.remove(portlet.getPortletId());
+		}
+		else {
+			portletConfig = portletConfigs.get(portlet.getPortletId());
+		}
 
 		if (portletConfig == null) {
 			PortletContext portletContext = _portletContextFactory.create(
@@ -79,7 +85,7 @@ public class PortletConfigFactoryImpl implements PortletConfigFactory {
 
 	@Override
 	public PortletConfig get(String portletId) {
-		String rootPortletId = PortletConstants.getRootPortletId(portletId);
+		String rootPortletId = PortletIdCodec.decodePortletName(portletId);
 
 		Map<String, PortletConfig> portletConfigs = _pool.get(rootPortletId);
 

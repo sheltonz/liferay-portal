@@ -28,6 +28,7 @@ import com.liferay.portal.kernel.dao.orm.FinderCache;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderPath;
 import com.liferay.portal.kernel.dao.orm.Query;
+import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
@@ -35,7 +36,6 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.Serializable;
 
@@ -229,8 +229,6 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 
 	@Override
 	protected Counter removeImpl(Counter counter) {
-		counter = toUnwrappedModel(counter);
-
 		Session session = null;
 
 		try {
@@ -261,8 +259,6 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 
 	@Override
 	public Counter updateImpl(Counter counter) {
-		counter = toUnwrappedModel(counter);
-
 		boolean isNew = counter.isNew();
 
 		Session session = null;
@@ -289,7 +285,9 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
 		if (isNew) {
-			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		entityCache.putResult(CounterModelImpl.ENTITY_CACHE_ENABLED,
@@ -298,22 +296,6 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 		counter.resetOriginalValues();
 
 		return counter;
-	}
-
-	protected Counter toUnwrappedModel(Counter counter) {
-		if (counter instanceof CounterImpl) {
-			return counter;
-		}
-
-		CounterImpl counterImpl = new CounterImpl();
-
-		counterImpl.setNew(counter.isNew());
-		counterImpl.setPrimaryKey(counter.getPrimaryKey());
-
-		counterImpl.setName(counter.getName());
-		counterImpl.setCurrentId(counter.getCurrentId());
-
-		return counterImpl;
 	}
 
 	/**
@@ -457,22 +439,20 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 			return map;
 		}
 
-		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 4) +
+		StringBundler query = new StringBundler((uncachedPrimaryKeys.size() * 2) +
 				1);
 
 		query.append(_SQL_SELECT_COUNTER_WHERE_PKS_IN);
 
-		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(StringPool.APOSTROPHE);
-			query.append((String)primaryKey);
-			query.append(StringPool.APOSTROPHE);
+		for (int i = 0; i < uncachedPrimaryKeys.size(); i++) {
+			query.append("?");
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 
@@ -482,6 +462,12 @@ public class CounterPersistenceImpl extends BasePersistenceImpl<Counter>
 			session = openSession();
 
 			Query q = session.createQuery(sql);
+
+			QueryPos qPos = QueryPos.getInstance(q);
+
+			for (Serializable primaryKey : uncachedPrimaryKeys) {
+				qPos.add((String)primaryKey);
+			}
 
 			for (Counter counter : (List<Counter>)q.list()) {
 				map.put(counter.getPrimaryKeyObj(), counter);

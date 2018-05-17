@@ -29,6 +29,7 @@ import com.liferay.document.library.kernel.store.DLStoreUtil;
 import com.liferay.document.library.kernel.util.DLValidatorUtil;
 import com.liferay.document.library.kernel.util.comparator.FolderIdComparator;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -39,8 +40,6 @@ import com.liferay.portal.kernel.lock.InvalidLockException;
 import com.liferay.portal.kernel.lock.Lock;
 import com.liferay.portal.kernel.lock.LockManagerUtil;
 import com.liferay.portal.kernel.lock.NoSuchLockException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.model.ResourceConstants;
@@ -62,7 +61,7 @@ import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFolder;
@@ -209,18 +208,21 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 			repositoryEventTrigger.trigger(
 				RepositoryEventType.Delete.class, Folder.class,
 				new LiferayFolder(dlFolder));
+
+			Indexer<DLFolder> indexer = IndexerRegistryUtil.nullSafeGetIndexer(
+				DLFolder.class);
+
+			indexer.delete(dlFolder);
 		}
 
 		if (repository != null) {
 			dlFileEntryLocalService.deleteRepositoryFileEntries(
-				repository.getRepositoryId(), repository.getDlFolderId());
+				repository.getRepositoryId());
 		}
 		else {
-			dlFileEntryLocalService.deleteFileEntries(
-				groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			dlFileEntryLocalService.deleteRepositoryFileEntries(groupId);
 
-			dlFileShortcutLocalService.deleteFileShortcuts(
-				groupId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID);
+			dlFileShortcutLocalService.deleteRepositoryFileShortcuts(groupId);
 		}
 
 		DLStoreUtil.deleteDirectory(
@@ -313,6 +315,11 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 		long groupId, long parentFolderId, String name) {
 
 		return dlFolderPersistence.fetchByG_P_N(groupId, parentFolderId, name);
+	}
+
+	@Override
+	public DLFolder fetchFolder(String uuid, long groupId) {
+		return dlFolderPersistence.fetchByUUID_G(uuid, groupId);
 	}
 
 	@Override
@@ -603,27 +610,15 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 	}
 
 	@Override
-	public boolean hasInheritableLock(long folderId) throws PortalException {
-		boolean inheritable = false;
+	public boolean hasInheritableLock(long folderId) {
+		Lock lock = LockManagerUtil.fetchLock(
+			DLFolder.class.getName(), folderId);
 
-		try {
-			Lock lock = LockManagerUtil.getLock(
-				DLFolder.class.getName(), folderId);
-
-			inheritable = lock.isInheritable();
-		}
-		catch (ExpiredLockException ele) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(ele, ele);
-			}
-		}
-		catch (NoSuchLockException nsle) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(nsle, nsle);
-			}
+		if (lock == null) {
+			return false;
 		}
 
-		return inheritable;
+		return lock.isInheritable();
 	}
 
 	@Override
@@ -1095,9 +1090,11 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 			return;
 		}
 
-		DLFolder dlFolder = dlFolderPersistence.findByPrimaryKey(folderId);
+		DLFolder dlFolder = dlFolderPersistence.fetchByPrimaryKey(folderId);
 
-		if (lastPostDate.before(dlFolder.getLastPostDate())) {
+		if ((dlFolder == null) ||
+			lastPostDate.before(dlFolder.getLastPostDate())) {
+
 			return;
 		}
 
@@ -1170,7 +1167,9 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 				throw new NoSuchLockException("{folderId=" + folderId + "}");
 			}
 
-			if (lock.getUuid().equals(lockUuid)) {
+			String uuid = lock.getUuid();
+
+			if (uuid.equals(lockUuid)) {
 				verified = true;
 			}
 		}
@@ -1417,14 +1416,16 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 			groupId, parentFolderId, name);
 
 		if (dlFileEntry != null) {
-			throw new DuplicateFileEntryException(name);
+			throw new DuplicateFileEntryException(
+				"A file entry already exists with title " + name);
 		}
 
 		DLFolder dlFolder = dlFolderPersistence.fetchByG_P_N(
 			groupId, parentFolderId, name);
 
 		if ((dlFolder != null) && (dlFolder.getFolderId() != folderId)) {
-			throw new DuplicateFolderNameException(name);
+			throw new DuplicateFolderNameException(
+				"A folder already exists with name " + name);
 		}
 	}
 
@@ -1441,11 +1442,11 @@ public class DLFolderLocalServiceImpl extends DLFolderLocalServiceBaseImpl {
 		throws PortalException {
 
 		if (folderName.contains(StringPool.SLASH)) {
-			throw new FolderNameException(folderName);
+			throw new FolderNameException(
+				StringBundler.concat(
+					"Folder name ", folderName,
+					" is invalid because it contains a ", StringPool.SLASH));
 		}
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		DLFolderLocalServiceImpl.class);
 
 }

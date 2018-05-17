@@ -105,22 +105,17 @@ public class LayoutServiceSoap {
 	<code>layoutUpdateable</code> can be used to specify whether site
 	administrators can modify this page within their site.
 	* @return the layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap addLayout(
 		long groupId, boolean privateLayout, long parentLayoutId,
-		java.lang.String[] localeNamesMapLanguageIds,
-		java.lang.String[] localeNamesMapValues,
-		java.lang.String[] localeTitlesMapLanguageIds,
-		java.lang.String[] localeTitlesMapValues,
-		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues,
-		java.lang.String[] keywordsMapLanguageIds,
-		java.lang.String[] keywordsMapValues,
-		java.lang.String[] robotsMapLanguageIds,
-		java.lang.String[] robotsMapValues, java.lang.String type,
-		java.lang.String typeSettings, boolean hidden,
-		java.lang.String[] friendlyURLMapLanguageIds,
-		java.lang.String[] friendlyURLMapValues,
+		String[] localeNamesMapLanguageIds, String[] localeNamesMapValues,
+		String[] localeTitlesMapLanguageIds, String[] localeTitlesMapValues,
+		String[] descriptionMapLanguageIds, String[] descriptionMapValues,
+		String[] keywordsMapLanguageIds, String[] keywordsMapValues,
+		String[] robotsMapLanguageIds, String[] robotsMapValues, String type,
+		String typeSettings, boolean hidden,
+		String[] friendlyURLMapLanguageIds, String[] friendlyURLMapValues,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -184,12 +179,12 @@ public class LayoutServiceSoap {
 	<code>layoutUpdateable</code> can be used to specify whether site
 	administrators can modify this page within their site.
 	* @return the layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap addLayout(
-		long groupId, boolean privateLayout, long parentLayoutId,
-		java.lang.String name, java.lang.String title,
-		java.lang.String description, java.lang.String type, boolean hidden,
-		java.lang.String friendlyURL,
+		long groupId, boolean privateLayout, long parentLayoutId, String name,
+		String title, String description, String type, boolean hidden,
+		String friendlyURL,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -214,6 +209,7 @@ public class LayoutServiceSoap {
 	* @param privateLayout whether the layout is private to the group
 	* @param layoutId the primary key of the layout
 	* @param serviceContext the service context to be applied
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static void deleteLayout(long groupId, boolean privateLayout,
 		long layoutId,
@@ -236,6 +232,7 @@ public class LayoutServiceSoap {
 	*
 	* @param plid the primary key of the layout
 	* @param serviceContext the service context to be applied
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static void deleteLayout(long plid,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
@@ -250,9 +247,8 @@ public class LayoutServiceSoap {
 		}
 	}
 
-	public static void deleteTempFileEntry(long groupId,
-		java.lang.String folderName, java.lang.String fileName)
-		throws RemoteException {
+	public static void deleteTempFileEntry(long groupId, String folderName,
+		String fileName) throws RemoteException {
 		try {
 			LayoutServiceUtil.deleteTempFileEntry(groupId, folderName, fileName);
 		}
@@ -310,6 +306,7 @@ public class LayoutServiceSoap {
 	*
 	* @param plid the primary key of the layout
 	* @return the ancestor layouts of the layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap[] getAncestorLayouts(
 		long plid) throws RemoteException {
@@ -335,10 +332,10 @@ public class LayoutServiceSoap {
 	* @param portletId the primary key of the portlet
 	* @return Returns the primary key of the default layout group; {@link
 	LayoutConstants#DEFAULT_PLID} otherwise
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static long getDefaultPlid(long groupId, long scopeGroupId,
-		boolean privateLayout, java.lang.String portletId)
-		throws RemoteException {
+		boolean privateLayout, String portletId) throws RemoteException {
 		try {
 			long returnValue = LayoutServiceUtil.getDefaultPlid(groupId,
 					scopeGroupId, privateLayout, portletId);
@@ -353,7 +350,7 @@ public class LayoutServiceSoap {
 	}
 
 	public static long getDefaultPlid(long groupId, long scopeGroupId,
-		java.lang.String portletId) throws RemoteException {
+		String portletId) throws RemoteException {
 		try {
 			long returnValue = LayoutServiceUtil.getDefaultPlid(groupId,
 					scopeGroupId, portletId);
@@ -374,9 +371,10 @@ public class LayoutServiceSoap {
 	* @param groupId the primary key of the group
 	* @param privateLayout whether the layout is private to the group
 	* @return the matching layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap getLayoutByUuidAndGroupId(
-		java.lang.String uuid, long groupId, boolean privateLayout)
+		String uuid, long groupId, boolean privateLayout)
 		throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.Layout returnValue = LayoutServiceUtil.getLayoutByUuidAndGroupId(uuid,
@@ -400,12 +398,12 @@ public class LayoutServiceSoap {
 	* @param languageId the primary key of the language. For more information
 	See {@link Locale}.
 	* @return the layout's name
+	* @throws PortalException if a portal exception occurred
 	*/
-	public static java.lang.String getLayoutName(long groupId,
-		boolean privateLayout, long layoutId, java.lang.String languageId)
-		throws RemoteException {
+	public static String getLayoutName(long groupId, boolean privateLayout,
+		long layoutId, String languageId) throws RemoteException {
 		try {
-			java.lang.String returnValue = LayoutServiceUtil.getLayoutName(groupId,
+			String returnValue = LayoutServiceUtil.getLayoutName(groupId,
 					privateLayout, layoutId, languageId);
 
 			return returnValue;
@@ -428,9 +426,8 @@ public class LayoutServiceSoap {
 	* @return the layout references of the matching layouts
 	*/
 	public static com.liferay.portal.kernel.model.LayoutReference[] getLayoutReferences(
-		long companyId, java.lang.String portletId,
-		java.lang.String preferencesKey, java.lang.String preferencesValue)
-		throws RemoteException {
+		long companyId, String portletId, String preferencesKey,
+		String preferencesValue) throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.LayoutReference[] returnValue = LayoutServiceUtil.getLayoutReferences(companyId,
 					portletId, preferencesKey, preferencesValue);
@@ -491,6 +488,52 @@ public class LayoutServiceSoap {
 		}
 	}
 
+	public static com.liferay.portal.kernel.model.LayoutSoap[] getLayouts(
+		long groupId, String type) throws RemoteException {
+		try {
+			java.util.List<com.liferay.portal.kernel.model.Layout> returnValue = LayoutServiceUtil.getLayouts(groupId,
+					type);
+
+			return com.liferay.portal.kernel.model.LayoutSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static com.liferay.portal.kernel.model.LayoutSoap[] getLayouts(
+		long groupId, String type, int start, int end)
+		throws RemoteException {
+		try {
+			java.util.List<com.liferay.portal.kernel.model.Layout> returnValue = LayoutServiceUtil.getLayouts(groupId,
+					type, start, end);
+
+			return com.liferay.portal.kernel.model.LayoutSoap.toSoapModels(returnValue);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static int getLayoutsCount(long groupId, boolean privateLayout)
+		throws RemoteException {
+		try {
+			int returnValue = LayoutServiceUtil.getLayoutsCount(groupId,
+					privateLayout);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
 	public static int getLayoutsCount(long groupId, boolean privateLayout,
 		long parentLayoutId) throws RemoteException {
 		try {
@@ -506,11 +549,66 @@ public class LayoutServiceSoap {
 		}
 	}
 
-	public static java.lang.String[] getTempFileNames(long groupId,
-		java.lang.String folderName) throws RemoteException {
+	public static int getLayoutsCount(long groupId, boolean privateLayout,
+		long parentLayoutId, int priority) throws RemoteException {
 		try {
-			java.lang.String[] returnValue = LayoutServiceUtil.getTempFileNames(groupId,
+			int returnValue = LayoutServiceUtil.getLayoutsCount(groupId,
+					privateLayout, parentLayoutId, priority);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static int getLayoutsCount(long groupId, String type)
+		throws RemoteException {
+		try {
+			int returnValue = LayoutServiceUtil.getLayoutsCount(groupId, type);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	public static String[] getTempFileNames(long groupId, String folderName)
+		throws RemoteException {
+		try {
+			String[] returnValue = LayoutServiceUtil.getTempFileNames(groupId,
 					folderName);
+
+			return returnValue;
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+
+			throw new RemoteException(e.getMessage());
+		}
+	}
+
+	/**
+	* Returns <code>true</code> if there is a matching layout with the UUID,
+	* group, and privacy.
+	*
+	* @param uuid the layout's UUID
+	* @param groupId the primary key of the group
+	* @param privateLayout whether the layout is private to the group
+	* @return <code>true</code> if the layout is found; <code>false</code>
+	otherwise
+	* @throws PortalException if a portal exception occurred
+	*/
+	public static boolean hasLayout(String uuid, long groupId,
+		boolean privateLayout) throws RemoteException {
+		try {
+			boolean returnValue = LayoutServiceUtil.hasLayout(uuid, groupId,
+					privateLayout);
 
 			return returnValue;
 		}
@@ -530,6 +628,7 @@ public class LayoutServiceSoap {
 	* @param parentLayoutId the primary key of the parent layout
 	* @param layoutIds the primary keys of the layouts
 	* @param serviceContext the service context to be applied
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static void setLayouts(long groupId, boolean privateLayout,
 		long parentLayoutId, long[] layoutIds,
@@ -554,10 +653,10 @@ public class LayoutServiceSoap {
 	* @param groupName the group name (optionally {@link
 	DestinationNames#LAYOUTS_LOCAL_PUBLISHER}). See {@link
 	DestinationNames}.
+	* @throws PortalException if a portal exception occurred
 	*/
-	public static void unschedulePublishToLive(long groupId,
-		java.lang.String jobName, java.lang.String groupName)
-		throws RemoteException {
+	public static void unschedulePublishToLive(long groupId, String jobName,
+		String groupName) throws RemoteException {
 		try {
 			LayoutServiceUtil.unschedulePublishToLive(groupId, jobName,
 				groupName);
@@ -577,10 +676,10 @@ public class LayoutServiceSoap {
 	* @param groupName the group name (optionally {@link
 	DestinationNames#LAYOUTS_LOCAL_PUBLISHER}). See {@link
 	DestinationNames}.
+	* @throws PortalException if a portal exception occurred
 	*/
-	public static void unschedulePublishToRemote(long groupId,
-		java.lang.String jobName, java.lang.String groupName)
-		throws RemoteException {
+	public static void unschedulePublishToRemote(long groupId, String jobName,
+		String groupName) throws RemoteException {
 		try {
 			LayoutServiceUtil.unschedulePublishToRemote(groupId, jobName,
 				groupName);
@@ -634,22 +733,18 @@ public class LayoutServiceSoap {
 	* @param serviceContext the service context to be applied. Can set the
 	modification date and expando bridge attributes for the layout.
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateLayout(
 		long groupId, boolean privateLayout, long layoutId,
-		long parentLayoutId, java.lang.String[] localeNamesMapLanguageIds,
-		java.lang.String[] localeNamesMapValues,
-		java.lang.String[] localeTitlesMapLanguageIds,
-		java.lang.String[] localeTitlesMapValues,
-		java.lang.String[] descriptionMapLanguageIds,
-		java.lang.String[] descriptionMapValues,
-		java.lang.String[] keywordsMapLanguageIds,
-		java.lang.String[] keywordsMapValues,
-		java.lang.String[] robotsMapLanguageIds,
-		java.lang.String[] robotsMapValues, java.lang.String type,
-		boolean hidden, java.lang.String[] friendlyURLMapLanguageIds,
-		java.lang.String[] friendlyURLMapValues, boolean iconImage,
-		byte[] iconBytes,
+		long parentLayoutId, String[] localeNamesMapLanguageIds,
+		String[] localeNamesMapValues, String[] localeTitlesMapLanguageIds,
+		String[] localeTitlesMapValues, String[] descriptionMapLanguageIds,
+		String[] descriptionMapValues, String[] keywordsMapLanguageIds,
+		String[] keywordsMapValues, String[] robotsMapLanguageIds,
+		String[] robotsMapValues, String type, boolean hidden,
+		String[] friendlyURLMapLanguageIds, String[] friendlyURLMapValues,
+		boolean iconImage, byte[] iconBytes,
 		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws RemoteException {
 		try {
@@ -691,10 +786,11 @@ public class LayoutServiceSoap {
 	See {@link com.liferay.portal.kernel.util.UnicodeProperties
 	#fastLoad(String)}.
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateLayout(
-		long groupId, boolean privateLayout, long layoutId,
-		java.lang.String typeSettings) throws RemoteException {
+		long groupId, boolean privateLayout, long layoutId, String typeSettings)
+		throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.Layout returnValue = LayoutServiceUtil.updateLayout(groupId,
 					privateLayout, layoutId, typeSettings);
@@ -718,11 +814,11 @@ public class LayoutServiceSoap {
 	* @param colorSchemeId the primary key of the layout's new color scheme
 	* @param css the layout's new CSS
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateLookAndFeel(
-		long groupId, boolean privateLayout, long layoutId,
-		java.lang.String themeId, java.lang.String colorSchemeId,
-		java.lang.String css) throws RemoteException {
+		long groupId, boolean privateLayout, long layoutId, String themeId,
+		String colorSchemeId, String css) throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.Layout returnValue = LayoutServiceUtil.updateLookAndFeel(groupId,
 					privateLayout, layoutId, themeId, colorSchemeId, css);
@@ -747,11 +843,11 @@ public class LayoutServiceSoap {
 	* @param languageId the primary key of the language. For more information
 	see {@link Locale}.
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateName(
-		long groupId, boolean privateLayout, long layoutId,
-		java.lang.String name, java.lang.String languageId)
-		throws RemoteException {
+		long groupId, boolean privateLayout, long layoutId, String name,
+		String languageId) throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.Layout returnValue = LayoutServiceUtil.updateName(groupId,
 					privateLayout, layoutId, name, languageId);
@@ -773,10 +869,10 @@ public class LayoutServiceSoap {
 	* @param languageId the primary key of the language. For more information
 	see {@link Locale}.
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateName(
-		long plid, java.lang.String name, java.lang.String languageId)
-		throws RemoteException {
+		long plid, String name, String languageId) throws RemoteException {
 		try {
 			com.liferay.portal.kernel.model.Layout returnValue = LayoutServiceUtil.updateName(plid,
 					name, languageId);
@@ -800,6 +896,7 @@ public class LayoutServiceSoap {
 	* @param parentLayoutId the primary key to be assigned to the parent
 	layout
 	* @return the matching layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateParentLayoutId(
 		long groupId, boolean privateLayout, long layoutId, long parentLayoutId)
@@ -826,6 +923,7 @@ public class LayoutServiceSoap {
 	* @param plid the primary key of the layout
 	* @param parentPlid the primary key of the parent layout
 	* @return the layout matching the primary key
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateParentLayoutId(
 		long plid, long parentPlid) throws RemoteException {
@@ -849,6 +947,7 @@ public class LayoutServiceSoap {
 	* @param parentPlid the primary key of the parent layout
 	* @param priority the layout's new priority
 	* @return the layout matching the primary key
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updateParentLayoutIdAndPriority(
 		long plid, long parentPlid, int priority) throws RemoteException {
@@ -874,6 +973,7 @@ public class LayoutServiceSoap {
 	* @param layoutId the primary key of the layout
 	* @param priority the layout's new priority
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updatePriority(
 		long groupId, boolean privateLayout, long layoutId, int priority)
@@ -902,6 +1002,7 @@ public class LayoutServiceSoap {
 	* @param nextLayoutId the primary key of the next layout
 	* @param previousLayoutId the primary key of the previous layout
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updatePriority(
 		long groupId, boolean privateLayout, long layoutId, long nextLayoutId,
@@ -925,6 +1026,7 @@ public class LayoutServiceSoap {
 	* @param plid the primary key of the layout
 	* @param priority the layout's new priority
 	* @return the updated layout
+	* @throws PortalException if a portal exception occurred
 	*/
 	public static com.liferay.portal.kernel.model.LayoutSoap updatePriority(
 		long plid, int priority) throws RemoteException {

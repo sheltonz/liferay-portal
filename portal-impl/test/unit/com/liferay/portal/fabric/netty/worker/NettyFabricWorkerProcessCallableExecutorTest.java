@@ -14,6 +14,7 @@
 
 package com.liferay.portal.fabric.netty.worker;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.fabric.local.worker.EmbeddedProcessChannel;
 import com.liferay.portal.fabric.local.worker.LocalFabricWorker;
 import com.liferay.portal.fabric.netty.NettyTestUtil;
@@ -28,7 +29,6 @@ import com.liferay.portal.kernel.process.ProcessException;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.test.rule.NewEnv;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.AdviseWith;
 import com.liferay.portal.test.rule.AspectJNewEnvTestRule;
 
@@ -53,7 +53,7 @@ public class NettyFabricWorkerProcessCallableExecutorTest {
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
 		new AggregateTestRule(
-			CodeCoverageAssertor.INSTANCE, AspectJNewEnvTestRule.INSTANCE);
+			AspectJNewEnvTestRule.INSTANCE, CodeCoverageAssertor.INSTANCE);
 
 	@AdviseWith(adviceClasses = NettyUtilAdvice.class)
 	@NewEnv(type = NewEnv.Type.CLASSLOADER)

@@ -37,15 +37,18 @@ import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.impl.AddressImpl;
 import com.liferay.portal.model.impl.AddressModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -225,7 +228,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -313,7 +316,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -362,7 +365,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -454,7 +457,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -590,7 +593,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -782,7 +785,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -878,7 +881,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -933,7 +936,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -1027,7 +1030,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1169,7 +1172,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1429,7 +1432,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -1478,7 +1481,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -1929,7 +1932,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -1978,7 +1981,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -2451,7 +2454,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", classNameId=");
 		msg.append(classNameId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -2507,7 +2510,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", classNameId=");
 		msg.append(classNameId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -2793,7 +2796,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the matching addresses
 	 */
 	@Override
@@ -2812,7 +2815,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
 	 * @return the range of matching addresses
@@ -2832,7 +2835,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -2855,7 +2858,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -2984,7 +2987,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address
 	 * @throws NoSuchAddressException if a matching address could not be found
@@ -3013,7 +3016,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -3023,7 +3026,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address, or <code>null</code> if a matching address could not be found
 	 */
@@ -3045,7 +3048,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address
 	 * @throws NoSuchAddressException if a matching address could not be found
@@ -3074,7 +3077,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -3084,7 +3087,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address, or <code>null</code> if a matching address could not be found
 	 */
@@ -3113,7 +3116,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 * @param addressId the primary key of the current address
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next address
 	 * @throws NoSuchAddressException if a address with the primary key could not be found
@@ -3269,7 +3272,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 */
 	@Override
 	public void removeByC_C_C(long companyId, long classNameId, long classPK) {
@@ -3284,7 +3287,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the number of matching addresses
 	 */
 	@Override
@@ -3379,7 +3382,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @return the matching addresses
 	 */
@@ -3399,7 +3402,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -3421,7 +3424,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -3445,7 +3448,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -3487,7 +3490,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 					if ((companyId != address.getCompanyId()) ||
 							(classNameId != address.getClassNameId()) ||
 							(classPK != address.getClassPK()) ||
-							(mailing != address.getMailing())) {
+							(mailing != address.isMailing())) {
 						list = null;
 
 						break;
@@ -3580,7 +3583,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address
@@ -3614,7 +3617,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", mailing=");
 		msg.append(mailing);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -3624,7 +3627,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address, or <code>null</code> if a matching address could not be found
@@ -3648,7 +3651,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address
@@ -3682,7 +3685,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", mailing=");
 		msg.append(mailing);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -3692,7 +3695,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address, or <code>null</code> if a matching address could not be found
@@ -3723,7 +3726,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 * @param addressId the primary key of the current address
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next address
@@ -3885,7 +3888,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 */
 	@Override
@@ -3902,7 +3905,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param mailing the mailing
 	 * @return the number of matching addresses
 	 */
@@ -4006,7 +4009,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @return the matching addresses
 	 */
@@ -4026,7 +4029,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -4048,7 +4051,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -4072,7 +4075,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of addresses
 	 * @param end the upper bound of the range of addresses (not inclusive)
@@ -4114,7 +4117,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 					if ((companyId != address.getCompanyId()) ||
 							(classNameId != address.getClassNameId()) ||
 							(classPK != address.getClassPK()) ||
-							(primary != address.getPrimary())) {
+							(primary != address.isPrimary())) {
 						list = null;
 
 						break;
@@ -4207,7 +4210,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address
@@ -4241,7 +4244,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", primary=");
 		msg.append(primary);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -4251,7 +4254,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching address, or <code>null</code> if a matching address could not be found
@@ -4275,7 +4278,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address
@@ -4309,7 +4312,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		msg.append(", primary=");
 		msg.append(primary);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchAddressException(msg.toString());
 	}
@@ -4319,7 +4322,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching address, or <code>null</code> if a matching address could not be found
@@ -4350,7 +4353,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 * @param addressId the primary key of the current address
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next address
@@ -4512,7 +4515,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 */
 	@Override
@@ -4529,7 +4532,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @return the number of matching addresses
 	 */
@@ -4600,6 +4603,25 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 
 	public AddressPersistenceImpl() {
 		setModelClass(Address.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("uuid", "uuid_");
+			dbColumnNames.put("primary", "primary_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -4751,8 +4773,6 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 
 	@Override
 	protected Address removeImpl(Address address) {
-		address = toUnwrappedModel(address);
-
 		Session session = null;
 
 		try {
@@ -4783,9 +4803,23 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 
 	@Override
 	public Address updateImpl(Address address) {
-		address = toUnwrappedModel(address);
-
 		boolean isNew = address.isNew();
+
+		if (!(address instanceof AddressModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(address.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(address);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in address proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Address implementation " +
+				address.getClass());
+		}
 
 		AddressModelImpl addressModelImpl = (AddressModelImpl)address;
 
@@ -4840,8 +4874,79 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !AddressModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!AddressModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { addressModelImpl.getUuid() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				args);
+
+			args = new Object[] {
+					addressModelImpl.getUuid(), addressModelImpl.getCompanyId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				args);
+
+			args = new Object[] { addressModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			args = new Object[] { addressModelImpl.getUserId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+				args);
+
+			args = new Object[] {
+					addressModelImpl.getCompanyId(),
+					addressModelImpl.getClassNameId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C,
+				args);
+
+			args = new Object[] {
+					addressModelImpl.getCompanyId(),
+					addressModelImpl.getClassNameId(),
+					addressModelImpl.getClassPK()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
+				args);
+
+			args = new Object[] {
+					addressModelImpl.getCompanyId(),
+					addressModelImpl.getClassNameId(),
+					addressModelImpl.getClassPK(), addressModelImpl.isMailing()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_M, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C_M,
+				args);
+
+			args = new Object[] {
+					addressModelImpl.getCompanyId(),
+					addressModelImpl.getClassNameId(),
+					addressModelImpl.getClassPK(), addressModelImpl.isPrimary()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C_P,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -4976,7 +5081,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 						addressModelImpl.getCompanyId(),
 						addressModelImpl.getClassNameId(),
 						addressModelImpl.getClassPK(),
-						addressModelImpl.getMailing()
+						addressModelImpl.isMailing()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_M, args);
@@ -5001,7 +5106,7 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 						addressModelImpl.getCompanyId(),
 						addressModelImpl.getClassNameId(),
 						addressModelImpl.getClassPK(),
-						addressModelImpl.getPrimary()
+						addressModelImpl.isPrimary()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_P, args);
@@ -5016,40 +5121,6 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		address.resetOriginalValues();
 
 		return address;
-	}
-
-	protected Address toUnwrappedModel(Address address) {
-		if (address instanceof AddressImpl) {
-			return address;
-		}
-
-		AddressImpl addressImpl = new AddressImpl();
-
-		addressImpl.setNew(address.isNew());
-		addressImpl.setPrimaryKey(address.getPrimaryKey());
-
-		addressImpl.setMvccVersion(address.getMvccVersion());
-		addressImpl.setUuid(address.getUuid());
-		addressImpl.setAddressId(address.getAddressId());
-		addressImpl.setCompanyId(address.getCompanyId());
-		addressImpl.setUserId(address.getUserId());
-		addressImpl.setUserName(address.getUserName());
-		addressImpl.setCreateDate(address.getCreateDate());
-		addressImpl.setModifiedDate(address.getModifiedDate());
-		addressImpl.setClassNameId(address.getClassNameId());
-		addressImpl.setClassPK(address.getClassPK());
-		addressImpl.setStreet1(address.getStreet1());
-		addressImpl.setStreet2(address.getStreet2());
-		addressImpl.setStreet3(address.getStreet3());
-		addressImpl.setCity(address.getCity());
-		addressImpl.setZip(address.getZip());
-		addressImpl.setRegionId(address.getRegionId());
-		addressImpl.setCountryId(address.getCountryId());
-		addressImpl.setTypeId(address.getTypeId());
-		addressImpl.setMailing(address.isMailing());
-		addressImpl.setPrimary(address.isPrimary());
-
-		return addressImpl;
 	}
 
 	/**
@@ -5200,14 +5271,14 @@ public class AddressPersistenceImpl extends BasePersistenceImpl<Address>
 		query.append(_SQL_SELECT_ADDRESS_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

@@ -32,9 +32,9 @@ import com.liferay.portal.kernel.util.LocaleThreadLocal;
 public interface ${entity.name} extends
 	${entity.name}Model
 
-	<#assign overrideColumnNames = []>
+	<#assign overrideColumnNames = [] />
 
-	<#if entity.hasLocalService() && entity.hasColumns()>
+	<#if entity.hasLocalService() && entity.hasEntityColumns()>
 		<#if entity.isHierarchicalTree()>
 			, NestedSetsTreeNodeModel
 		</#if>
@@ -48,7 +48,7 @@ public interface ${entity.name} extends
 		<#if entity.isTreeModel()>
 			, TreeModel
 
-			<#assign overrideColumnNames = overrideColumnNames + ["buildTreePath", "updateTreePath"]>
+			<#assign overrideColumnNames = overrideColumnNames + ["buildTreePath", "updateTreePath"] />
 		</#if>
 	</#if>
 
@@ -81,18 +81,18 @@ public interface ${entity.name} extends
 		};
 	</#if>
 
-	<#list entity.columnList as column>
-		<#if column.isAccessor() || column.isPrimary()>
-			public static final Accessor<${entity.name}, ${serviceBuilder.getPrimitiveObj(column.type)}> ${textFormatter.format(textFormatter.format(column.name, 7), 0)}_ACCESSOR = new Accessor<${entity.name}, ${serviceBuilder.getPrimitiveObj(column.type)}>() {
+	<#list entity.entityColumns as entityColumn>
+		<#if entityColumn.isAccessor() || entityColumn.isPrimary()>
+			public static final Accessor<${entity.name}, ${serviceBuilder.getPrimitiveObj(entityColumn.type)}> ${entityColumn.getAccessorName(apiPackagePath + ".model." + entity.name)} = new Accessor<${entity.name}, ${serviceBuilder.getPrimitiveObj(entityColumn.type)}>() {
 
 				@Override
-				public ${serviceBuilder.getPrimitiveObj(column.type)} get(${entity.name} ${entity.varName}) {
-					return ${entity.varName}.get${column.methodName}(<#if column.isLocalized()>LocaleThreadLocal.getThemeDisplayLocale()</#if>);
+				public ${serviceBuilder.getPrimitiveObj(entityColumn.type)} get(${entity.name} ${entity.varName}) {
+					return ${entity.varName}.get${entityColumn.methodName}(<#if entityColumn.isLocalized()>LocaleThreadLocal.getThemeDisplayLocale()</#if>);
 				}
 
 				@Override
-				public Class<${serviceBuilder.getPrimitiveObj(column.type)}> getAttributeClass() {
-					return ${serviceBuilder.getPrimitiveObj(column.type)}.class;
+				public Class<${serviceBuilder.getPrimitiveObj(entityColumn.type)}> getAttributeClass() {
+					return ${serviceBuilder.getPrimitiveObj(entityColumn.type)}.class;
 				}
 
 				@Override
@@ -105,19 +105,21 @@ public interface ${entity.name} extends
 	</#list>
 
 	<#list methods as method>
-		<#if !method.isConstructor() && !method.isStatic() && method.isPublic()>
+		<#if !method.isStatic() && method.isPublic()>
 			${serviceBuilder.getJavadocComment(method)}
 
-			<#assign parameters = method.parameters>
+			<#assign
+				parameters = method.parameters
 
-			<#assign annotations = method.annotations>
+				annotations = method.annotations
+			/>
 
 			<#list annotations as annotation>
-				<#if annotation.type.javaClass.name != "Override">
+				<#if !stringUtil.equals(annotation.type.name, "Override")>
 					${annotation.toString()}
 				<#else>
-					<#if (method.name == "equals") && (parameters?size == 1)>
-						<#assign firstParameter = parameters?first>
+					<#if stringUtil.equals(method.name, "equals") && (parameters?size == 1)>
+						<#assign firstParameter = parameters?first />
 
 						<#if serviceBuilder.getTypeGenericsName(firstParameter.type) == "java.lang.Object">
 							@Override
@@ -147,7 +149,7 @@ public interface ${entity.name} extends
 					throws
 				</#if>
 
-				${exception.value}
+				${exception.fullyQualifiedName}
 
 				<#if exception_has_next>
 					,

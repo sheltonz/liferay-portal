@@ -30,6 +30,7 @@ import com.liferay.document.library.kernel.service.DLFolderService;
 import com.liferay.dynamic.data.mapping.kernel.DDMFormValues;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.dynamic.data.mapping.kernel.StorageEngineManagerUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.capabilities.Capability;
 import com.liferay.portal.kernel.repository.capabilities.CapabilityProvider;
@@ -123,7 +124,7 @@ public abstract class LiferayRepositoryBase implements CapabilityProvider {
 
 			DDMFormValues ddmFormValues =
 				(DDMFormValues)serviceContext.getAttribute(
-					DDMFormValues.class.getName() +
+					DDMFormValues.class.getName() + StringPool.POUND +
 						ddmStructure.getStructureId());
 
 			if (ddmFormValues == null) {

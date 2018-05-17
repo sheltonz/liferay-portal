@@ -57,6 +57,7 @@ public class OrganizationImplTest {
 			false);
 
 		_organizations.add(_organization4);
+
 		_organizations.add(_organization3);
 		_organizations.add(_organization2);
 		_organizations.add(_organization1);
@@ -86,6 +87,24 @@ public class OrganizationImplTest {
 				_organization3.getOrganizationId()
 			},
 			_organization4.getAncestorOrganizationIds());
+	}
+
+	@Test
+	public void testGetDescendants() throws Exception {
+		Assert.assertEquals(3, _organization1.getDescendants().size());
+		Assert.assertEquals(2, _organization2.getDescendants().size());
+		Assert.assertEquals(1, _organization3.getDescendants().size());
+		Assert.assertEquals(0, _organization4.getDescendants().size());
+
+		List<Organization> organizations = _organization1.getDescendants();
+
+		Assert.assertTrue(
+			organizations.toString(), organizations.contains(_organization2));
+		Assert.assertTrue(
+			organizations.toString(), organizations.contains(_organization3));
+		Assert.assertTrue(
+			organizations.toString(), organizations.contains(_organization4));
+		Assert.assertTrue(!organizations.contains(_organization1));
 	}
 
 	private Organization _organization1;

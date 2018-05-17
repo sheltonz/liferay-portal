@@ -23,16 +23,15 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import com.liferay.sync.exception.NoSuchDeviceException;
 import com.liferay.sync.model.SyncDevice;
@@ -67,7 +66,8 @@ public class SyncDevicePersistenceTest {
 	@Rule
 	public static final AggregateTestRule aggregateTestRule = new AggregateTestRule(new LiferayIntegrationTestRule(),
 			PersistenceTestRule.INSTANCE,
-			new TransactionalTestRule(Propagation.REQUIRED));
+			new TransactionalTestRule(Propagation.REQUIRED,
+				"com.liferay.sync.service"));
 
 	@Before
 	public void setUp() {
@@ -140,6 +140,8 @@ public class SyncDevicePersistenceTest {
 
 		newSyncDevice.setFeatureSet(RandomTestUtil.nextInt());
 
+		newSyncDevice.setHostname(RandomTestUtil.randomString());
+
 		newSyncDevice.setStatus(RandomTestUtil.nextInt());
 
 		_syncDevices.add(_persistence.update(newSyncDevice));
@@ -168,33 +170,42 @@ public class SyncDevicePersistenceTest {
 			newSyncDevice.getBuildNumber());
 		Assert.assertEquals(existingSyncDevice.getFeatureSet(),
 			newSyncDevice.getFeatureSet());
+		Assert.assertEquals(existingSyncDevice.getHostname(),
+			newSyncDevice.getHostname());
 		Assert.assertEquals(existingSyncDevice.getStatus(),
 			newSyncDevice.getStatus());
 	}
 
 	@Test
 	public void testCountByUuid() throws Exception {
-		_persistence.countByUuid(StringPool.BLANK);
+		_persistence.countByUuid("");
 
-		_persistence.countByUuid(StringPool.NULL);
+		_persistence.countByUuid("null");
 
 		_persistence.countByUuid((String)null);
 	}
 
 	@Test
 	public void testCountByUuid_C() throws Exception {
-		_persistence.countByUuid_C(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByUuid_C("", RandomTestUtil.nextLong());
 
-		_persistence.countByUuid_C(StringPool.NULL, 0L);
+		_persistence.countByUuid_C("null", 0L);
 
 		_persistence.countByUuid_C((String)null, 0L);
 	}
 
 	@Test
-	public void testCountByC_U() throws Exception {
-		_persistence.countByC_U(RandomTestUtil.nextLong(), StringPool.BLANK);
+	public void testCountByUserId() throws Exception {
+		_persistence.countByUserId(RandomTestUtil.nextLong());
 
-		_persistence.countByC_U(0L, StringPool.NULL);
+		_persistence.countByUserId(0L);
+	}
+
+	@Test
+	public void testCountByC_U() throws Exception {
+		_persistence.countByC_U(RandomTestUtil.nextLong(), "");
+
+		_persistence.countByC_U(0L, "null");
 
 		_persistence.countByC_U(0L, (String)null);
 	}
@@ -225,7 +236,8 @@ public class SyncDevicePersistenceTest {
 		return OrderByComparatorFactoryUtil.create("SyncDevice", "uuid", true,
 			"syncDeviceId", true, "companyId", true, "userId", true,
 			"userName", true, "createDate", true, "modifiedDate", true, "type",
-			true, "buildNumber", true, "featureSet", true, "status", true);
+			true, "buildNumber", true, "featureSet", true, "hostname", true,
+			"status", true);
 	}
 
 	@Test
@@ -444,6 +456,8 @@ public class SyncDevicePersistenceTest {
 		syncDevice.setBuildNumber(RandomTestUtil.nextLong());
 
 		syncDevice.setFeatureSet(RandomTestUtil.nextInt());
+
+		syncDevice.setHostname(RandomTestUtil.randomString());
 
 		syncDevice.setStatus(RandomTestUtil.nextInt());
 

@@ -14,16 +14,17 @@
 
 package com.liferay.portal.kernel.io;
 
+import com.liferay.petra.lang.ClassLoaderPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.io.Serializer.BufferNode;
 import com.liferay.portal.kernel.io.Serializer.BufferQueue;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
+import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.test.rule.NewEnv;
 import com.liferay.portal.kernel.test.rule.NewEnvTestRule;
-import com.liferay.portal.kernel.util.ClassLoaderPool;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,6 +41,7 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -135,6 +137,7 @@ public class SerializerTest {
 
 		Assert.assertSame(buffer4, bufferNode1.buffer);
 		Assert.assertNotNull(bufferNode1.next);
+
 		Assert.assertSame(buffer2, bufferNode2.buffer);
 		Assert.assertNull(bufferNode2.next);
 
@@ -344,7 +347,8 @@ public class SerializerTest {
 
 		byte[] newBytes = serializer.getBuffer(1);
 
-		Assert.assertEquals(bytes.length * 2, newBytes.length);
+		Assert.assertEquals(
+			Arrays.toString(newBytes), bytes.length * 2, newBytes.length);
 
 		for (int i = 0; i < bytes.length; i++) {
 			Assert.assertEquals(bytes[i], newBytes[i]);
@@ -361,7 +365,8 @@ public class SerializerTest {
 
 		newBytes = serializer.getBuffer(_COUNT + 1);
 
-		Assert.assertEquals(bytes.length * 2 + 1, newBytes.length);
+		Assert.assertEquals(
+			Arrays.toString(newBytes), bytes.length * 2 + 1, newBytes.length);
 
 		for (int i = 0; i < bytes.length; i++) {
 			Assert.assertEquals(bytes[i], newBytes[i]);
@@ -384,7 +389,10 @@ public class SerializerTest {
 
 		serializer.toByteBuffer();
 
-		Assert.assertEquals(0, Serializer.bufferQueueThreadLocal.get().count);
+		BufferQueue bufferQueue = ReflectionTestUtil.invoke(
+			serializer, "_getBufferQueue", new Class<?>[0]);
+
+		Assert.assertEquals(0, bufferQueue.count);
 
 		serializer = new Serializer();
 
@@ -395,8 +403,7 @@ public class SerializerTest {
 
 		serializer.writeTo(unsyncByteArrayOutputStream);
 
-		Assert.assertEquals(0, Serializer.bufferQueueThreadLocal.get().count);
-
+		Assert.assertEquals(0, bufferQueue.count);
 		Assert.assertEquals(
 			chars.length * 2 + 5, unsyncByteArrayOutputStream.size());
 	}
@@ -630,6 +637,7 @@ public class SerializerTest {
 		String className = clazz.getName();
 
 		Assert.assertEquals(className.length() + 11, byteBuffer.limit());
+
 		Assert.assertEquals(SerializationConstants.TC_CLASS, byteBuffer.get());
 		Assert.assertEquals(1, byteBuffer.get());
 		Assert.assertEquals(0, byteBuffer.getInt());
@@ -662,6 +670,7 @@ public class SerializerTest {
 
 		Assert.assertEquals(
 			className.length() + contextName.length() + 11, byteBuffer.limit());
+
 		Assert.assertEquals(SerializationConstants.TC_CLASS, byteBuffer.get());
 		Assert.assertEquals(1, byteBuffer.get());
 		Assert.assertEquals(contextName.length(), byteBuffer.getInt());
@@ -692,7 +701,7 @@ public class SerializerTest {
 
 		Assert.assertEquals(9, byteBuffer.limit());
 		Assert.assertEquals(SerializationConstants.TC_DOUBLE, byteBuffer.get());
-		Assert.assertTrue(17.58D == byteBuffer.getDouble());
+		Assert.assertTrue(byteBuffer.getDouble() == 17.58D);
 	}
 
 	@Test
@@ -705,7 +714,7 @@ public class SerializerTest {
 
 		Assert.assertEquals(5, byteBuffer.limit());
 		Assert.assertEquals(SerializationConstants.TC_FLOAT, byteBuffer.get());
-		Assert.assertTrue(17.58F == byteBuffer.getFloat());
+		Assert.assertTrue(byteBuffer.getFloat() == 17.58F);
 	}
 
 	@Test

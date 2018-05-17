@@ -14,8 +14,12 @@
 
 package com.liferay.portlet;
 
+import java.io.IOException;
+
 import javax.portlet.ActionResponse;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderURL;
 
 /**
  * @author Brian Wing Shun Chan
@@ -24,25 +28,24 @@ public class ActionResponseImpl
 	extends StateAwareResponseImpl implements ActionResponse {
 
 	@Override
+	public RenderURL createRedirectURL(MimeResponse.Copy copy)
+		throws IllegalStateException {
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getLifecycle() {
 		return PortletRequest.ACTION_PHASE;
 	}
 
 	@Override
-	public void sendRedirect(String location) {
+	public void sendRedirect(String location) throws IOException {
 		if ((location == null) ||
-			(!location.startsWith("/") && !location.contains("://") &&
-			 !location.startsWith("wsrp_rewrite?"))) {
+			(!location.startsWith("/") && !location.contains("://"))) {
 
 			throw new IllegalArgumentException(
 				location + " is not a valid redirect");
-		}
-
-		// This is needed because app servers will try to prepend a host if they
-		// see an invalid URL
-
-		if (location.startsWith("wsrp_rewrite?")) {
-			location = "http://wsrp-rewrite-holder?" + location;
 		}
 
 		if (isCalledSetRenderParameter()) {
@@ -54,7 +57,8 @@ public class ActionResponseImpl
 	}
 
 	@Override
-	public void sendRedirect(String location, String renderUrlParamName) {
+	public void sendRedirect(String location, String renderUrlParamName)
+		throws IOException {
 	}
 
 }

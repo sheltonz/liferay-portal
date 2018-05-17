@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.util;
 
+import aQute.bnd.annotation.ProviderType;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Brian Wing Shun Chan
  * @author Hugo Huijser
  */
+@ProviderType
 public interface Http {
 
 	public static final String HTTP = "http";
@@ -78,8 +81,17 @@ public interface Http {
 
 	public String encodePath(String path);
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link URLCodec#encodeURL(String)}
+	 */
+	@Deprecated
 	public String encodeURL(String url);
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link URLCodec#encodeURL(String,
+	 *             boolean)}
+	 */
+	@Deprecated
 	public String encodeURL(String url, boolean escapeSpaces);
 
 	public String fixPath(String path);
@@ -169,6 +181,12 @@ public interface Http {
 
 	public String setParameter(String url, String name, String value);
 
+	public String shortenURL(String url);
+
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link #shortenURL(String)}
+	 */
+	@Deprecated
 	public String shortenURL(String url, int count);
 
 	public byte[] URLtoByteArray(Http.Options options) throws IOException;
@@ -326,7 +344,7 @@ public interface Http {
 			String charSet) {
 
 			if (_body != null) {
-				throw new IllegalArgumentException (
+				throw new IllegalArgumentException(
 					"File part cannot be added because a body has already " +
 						"been set");
 			}
@@ -396,6 +414,10 @@ public interface Http {
 
 		public Response getResponse() {
 			return _response;
+		}
+
+		public int getTimeout() {
+			return _timeout;
 		}
 
 		public boolean isDelete() {
@@ -540,6 +562,10 @@ public interface Http {
 			_response = response;
 		}
 
+		public void setTimeout(int timeout) {
+			_timeout = timeout;
+		}
+
 		private Auth _auth;
 		private Body _body;
 		private Cookie[] _cookies;
@@ -550,6 +576,7 @@ public interface Http {
 		private Method _method = Method.GET;
 		private Map<String, String> _parts;
 		private Response _response = new Response();
+		private int _timeout;
 
 	}
 

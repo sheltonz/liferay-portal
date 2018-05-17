@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.Event;
+import javax.portlet.MutableRenderParameters;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
 import javax.portlet.StateAwareResponse;
@@ -54,7 +55,9 @@ public abstract class StateAwareResponseImpl
 		Portlet portlet = getPortlet();
 
 		if (portlet != null) {
-			return portlet.getPortletApp().getDefaultNamespace();
+			PortletApp portletApp = portlet.getPortletApp();
+
+			return portletApp.getDefaultNamespace();
 		}
 		else {
 			return XMLConstants.NULL_NS_URI;
@@ -81,6 +84,11 @@ public abstract class StateAwareResponseImpl
 	@Override
 	public Map<String, String[]> getRenderParameterMap() {
 		return _params;
+	}
+
+	@Override
+	public MutableRenderParameters getRenderParameters() {
+		throw new UnsupportedOperationException();
 	}
 
 	public User getUser() {
@@ -147,16 +155,20 @@ public abstract class StateAwareResponseImpl
 			throw new IllegalStateException();
 		}
 
-		if (!_portletRequestImpl.isPortletModeAllowed(portletMode)) {
+		if (portletMode == null) {
+			throw new IllegalArgumentException();
+		}
+
+		if (!portletRequestImpl.isPortletModeAllowed(portletMode)) {
 			throw new PortletModeException(portletMode.toString(), portletMode);
 		}
 
 		try {
 			_portletMode = PortalUtil.updatePortletMode(
-				_portletName, _user, _layout, portletMode,
-				_portletRequestImpl.getHttpServletRequest());
+				portletName, _user, _layout, portletMode,
+				portletRequestImpl.getHttpServletRequest());
 
-			_portletRequestImpl.setPortletMode(_portletMode);
+			portletRequestImpl.setPortletMode(_portletMode);
 		}
 		catch (Exception e) {
 			throw new PortletModeException(e, portletMode);
@@ -219,12 +231,14 @@ public abstract class StateAwareResponseImpl
 
 			for (Map.Entry<String, String[]> entry : params.entrySet()) {
 				String key = entry.getKey();
-				String[] value = entry.getValue();
 
 				if (key == null) {
 					throw new IllegalArgumentException();
 				}
-				else if (value == null) {
+
+				String[] value = entry.getValue();
+
+				if (value == null) {
 					throw new IllegalArgumentException();
 				}
 
@@ -249,16 +263,20 @@ public abstract class StateAwareResponseImpl
 			throw new IllegalStateException();
 		}
 
-		if (!_portletRequestImpl.isWindowStateAllowed(windowState)) {
+		if (windowState == null) {
+			throw new IllegalArgumentException();
+		}
+
+		if (!portletRequestImpl.isWindowStateAllowed(windowState)) {
 			throw new WindowStateException(windowState.toString(), windowState);
 		}
 
 		try {
 			_windowState = PortalUtil.updateWindowState(
-				_portletName, _user, _layout, windowState,
-				_portletRequestImpl.getHttpServletRequest());
+				portletName, _user, _layout, windowState,
+				portletRequestImpl.getHttpServletRequest());
 
-			_portletRequestImpl.setWindowState(_windowState);
+			portletRequestImpl.setWindowState(_windowState);
 		}
 		catch (Exception e) {
 			throw new WindowStateException(e, windowState);
@@ -269,32 +287,20 @@ public abstract class StateAwareResponseImpl
 
 	protected void init(
 			PortletRequestImpl portletRequestImpl, HttpServletResponse response,
-			String portletName, User user, Layout layout,
-			WindowState windowState, PortletMode portletMode)
+			User user, Layout layout, boolean setWindowStateAndPortletMode)
 		throws PortletModeException, WindowStateException {
 
-		super.init(
-			portletRequestImpl, response, portletName, layout.getCompanyId(),
-			layout.getPlid());
+		super.init(portletRequestImpl, response);
 
-		_portletRequestImpl = portletRequestImpl;
-		_portletName = portletName;
 		_user = user;
 		_layout = layout;
 
-		Portlet portlet = portletRequestImpl.getPortlet();
-
-		PortletApp portletApp = portlet.getPortletApp();
-
 		_publicRenderParameters = PublicRenderParametersPool.get(
-			getHttpServletRequest(), layout.getPlid(), portletApp.isWARFile());
+			getHttpServletRequest(), layout.getPlid());
 
-		if (windowState != null) {
-			setWindowState(windowState);
-		}
-
-		if (portletMode != null) {
-			setPortletMode(portletMode);
+		if (setWindowStateAndPortletMode) {
+			setWindowState(portletRequestImpl.getWindowState());
+			setPortletMode(portletRequestImpl.getPortletMode());
 		}
 
 		// Set _calledSetRenderParameter to false because setWindowState and
@@ -304,12 +310,34 @@ public abstract class StateAwareResponseImpl
 	}
 
 	protected void reset() {
-		_calledSetRenderParameter = false;
 		_events.clear();
 		_params.clear();
+
+		try {
+			setPortletMode(PortletMode.VIEW);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to reset portlet mode to VIEW", e);
+			}
+		}
+
 		_portletMode = null;
+
 		_redirectLocation = null;
+
+		try {
+			setWindowState(WindowState.NORMAL);
+		}
+		catch (Exception e) {
+			if (_log.isWarnEnabled()) {
+				_log.warn("Unable to reset window state to NORMAL", e);
+			}
+		}
+
 		_windowState = null;
+
+		_calledSetRenderParameter = false;
 	}
 
 	protected boolean setPublicRenderParameter(String name, String[] values) {
@@ -345,8 +373,6 @@ public abstract class StateAwareResponseImpl
 	private Layout _layout;
 	private Map<String, String[]> _params = new LinkedHashMap<>();
 	private PortletMode _portletMode;
-	private String _portletName;
-	private PortletRequestImpl _portletRequestImpl;
 	private Map<String, String[]> _publicRenderParameters;
 	private String _redirectLocation;
 	private User _user;

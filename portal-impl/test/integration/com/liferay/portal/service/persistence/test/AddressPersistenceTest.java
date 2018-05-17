@@ -26,16 +26,15 @@ import com.liferay.portal.kernel.service.AddressLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.AddressPersistence;
 import com.liferay.portal.kernel.service.persistence.AddressUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -191,26 +190,24 @@ public class AddressPersistenceTest {
 		Assert.assertEquals(existingAddress.getCountryId(),
 			newAddress.getCountryId());
 		Assert.assertEquals(existingAddress.getTypeId(), newAddress.getTypeId());
-		Assert.assertEquals(existingAddress.getMailing(),
-			newAddress.getMailing());
-		Assert.assertEquals(existingAddress.getPrimary(),
-			newAddress.getPrimary());
+		Assert.assertEquals(existingAddress.isMailing(), newAddress.isMailing());
+		Assert.assertEquals(existingAddress.isPrimary(), newAddress.isPrimary());
 	}
 
 	@Test
 	public void testCountByUuid() throws Exception {
-		_persistence.countByUuid(StringPool.BLANK);
+		_persistence.countByUuid("");
 
-		_persistence.countByUuid(StringPool.NULL);
+		_persistence.countByUuid("null");
 
 		_persistence.countByUuid((String)null);
 	}
 
 	@Test
 	public void testCountByUuid_C() throws Exception {
-		_persistence.countByUuid_C(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByUuid_C("", RandomTestUtil.nextLong());
 
-		_persistence.countByUuid_C(StringPool.NULL, 0L);
+		_persistence.countByUuid_C("null", 0L);
 
 		_persistence.countByUuid_C((String)null, 0L);
 	}

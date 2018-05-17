@@ -17,6 +17,7 @@ package com.liferay.portal.model.impl;
 import com.liferay.exportimport.kernel.lar.PortletDataHandler;
 import com.liferay.exportimport.kernel.staging.StagingConstants;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -34,11 +35,11 @@ import com.liferay.portal.kernel.model.LayoutSet;
 import com.liferay.portal.kernel.model.LayoutSetPrototype;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.model.UserPersonalSite;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
@@ -60,7 +61,6 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -70,11 +70,10 @@ import com.liferay.portal.util.PropsValues;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents either a site or a generic resource container.
@@ -112,7 +111,7 @@ public class GroupImpl extends GroupBaseImpl {
 	}
 
 	@Override
-	public List<Group> getAncestors() throws PortalException {
+	public List<Group> getAncestors() {
 		Group group = null;
 
 		if (isStagingGroup()) {
@@ -122,12 +121,20 @@ public class GroupImpl extends GroupBaseImpl {
 			group = this;
 		}
 
-		List<Group> groups = new ArrayList<>();
+		List<Group> groups = null;
 
 		while (!group.isRoot()) {
 			group = group.getParentGroup();
 
+			if (groups == null) {
+				groups = new ArrayList<>();
+			}
+
 			groups.add(group);
+		}
+
+		if (groups == null) {
+			return Collections.emptyList();
 		}
 
 		return groups;
@@ -178,14 +185,8 @@ public class GroupImpl extends GroupBaseImpl {
 
 	@Override
 	public List<Group> getDescendants(boolean site) {
-		Set<Group> descendants = new LinkedHashSet<>();
-
-		for (Group group : getChildren(site)) {
-			descendants.add(group);
-			descendants.addAll(group.getDescendants(site));
-		}
-
-		return new ArrayList<>(descendants);
+		return GroupLocalServiceUtil.getGroups(
+			getCompanyId(), getTreePath().concat("_%"), site);
 	}
 
 	@JSON
@@ -289,29 +290,29 @@ public class GroupImpl extends GroupBaseImpl {
 	public String getDisplayURL(
 		ThemeDisplay themeDisplay, boolean privateLayout) {
 
-		if (!privateLayout && (getPublicLayoutsPageCount() > 0)) {
-			try {
+		try {
+			LayoutSet layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
+				getGroupId(), privateLayout);
+
+			if ((layoutSet.getPageCount() > 0) ||
+				(isUser() &&
+				 (LayoutLocalServiceUtil.getLayoutsCount(this, privateLayout) >
+					 0))) {
+
 				String groupFriendlyURL = PortalUtil.getGroupFriendlyURL(
-					getPublicLayoutSet(), themeDisplay);
+					layoutSet, themeDisplay);
+
+				if (isUser()) {
+					return PortalUtil.addPreservedParameters(
+						themeDisplay, groupFriendlyURL, false, true);
+				}
 
 				return PortalUtil.addPreservedParameters(
 					themeDisplay, groupFriendlyURL);
-			}
-			catch (PortalException pe) {
-				_log.error(pe, pe);
 			}
 		}
-		else if (privateLayout && (getPrivateLayoutsPageCount() > 0)) {
-			try {
-				String groupFriendlyURL = PortalUtil.getGroupFriendlyURL(
-					getPrivateLayoutSet(), themeDisplay);
-
-				return PortalUtil.addPreservedParameters(
-					themeDisplay, groupFriendlyURL);
-			}
-			catch (PortalException pe) {
-				_log.error(pe);
-			}
+		catch (PortalException pe) {
+			_log.error(pe, pe);
 		}
 
 		return StringPool.BLANK;
@@ -480,14 +481,14 @@ public class GroupImpl extends GroupBaseImpl {
 	}
 
 	@Override
-	public Group getParentGroup() throws PortalException {
+	public Group getParentGroup() {
 		long parentGroupId = getParentGroupId();
 
 		if (parentGroupId <= 0) {
 			return null;
 		}
 
-		return GroupLocalServiceUtil.getGroup(parentGroupId);
+		return GroupLocalServiceUtil.fetchGroup(parentGroupId);
 	}
 
 	@Override
@@ -649,7 +650,9 @@ public class GroupImpl extends GroupBaseImpl {
 		}
 
 		try {
-			if (_stagingGroup == null) {
+			if ((_stagingGroup == null) ||
+				(_stagingGroup == _NULL_STAGING_GROUP)) {
+
 				_stagingGroup = GroupLocalServiceUtil.getStagingGroup(
 					getGroupId());
 
@@ -793,7 +796,7 @@ public class GroupImpl extends GroupBaseImpl {
 
 	@Override
 	public boolean hasStagingGroup() {
-		if (isStagingGroup()) {
+		if (isStagingGroup() || (_stagingGroup == _NULL_STAGING_GROUP)) {
 			return false;
 		}
 
@@ -801,12 +804,18 @@ public class GroupImpl extends GroupBaseImpl {
 			return true;
 		}
 
-		try {
-			return GroupLocalServiceUtil.hasStagingGroup(getGroupId());
-		}
-		catch (Exception e) {
+		Group stagingGroup = GroupLocalServiceUtil.fetchStagingGroup(
+			getGroupId());
+
+		if (stagingGroup == null) {
+			_stagingGroup = _NULL_STAGING_GROUP;
+
 			return false;
 		}
+
+		_stagingGroup = stagingGroup;
+
+		return true;
 	}
 
 	/**
@@ -954,16 +963,10 @@ public class GroupImpl extends GroupBaseImpl {
 
 		boolean showSite = true;
 
-		Layout defaultLayout = null;
-
 		int siteLayoutsCount = LayoutLocalServiceUtil.getLayoutsCount(
 			this, privateSite);
 
 		if (siteLayoutsCount == 0) {
-			boolean hasPowerUserRole = RoleLocalServiceUtil.hasUserRole(
-				permissionChecker.getUserId(), permissionChecker.getCompanyId(),
-				RoleConstants.POWER_USER, true);
-
 			if (isSite()) {
 				if (privateSite) {
 					showSite =
@@ -978,6 +981,11 @@ public class GroupImpl extends GroupBaseImpl {
 				showSite = false;
 			}
 			else if (isUser()) {
+				boolean hasPowerUserRole = RoleLocalServiceUtil.hasUserRole(
+					permissionChecker.getUserId(),
+					permissionChecker.getCompanyId(), RoleConstants.POWER_USER,
+					true);
+
 				if (privateSite) {
 					showSite =
 						PropsValues.
@@ -1005,7 +1013,7 @@ public class GroupImpl extends GroupBaseImpl {
 			}
 		}
 		else {
-			defaultLayout = LayoutLocalServiceUtil.fetchFirstLayout(
+			Layout defaultLayout = LayoutLocalServiceUtil.fetchFirstLayout(
 				getGroupId(), privateSite,
 				LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
 
@@ -1036,7 +1044,7 @@ public class GroupImpl extends GroupBaseImpl {
 		UnicodeProperties typeSettingsProperties =
 			getParentLiveGroupTypeSettingsProperties();
 
-		portletId = PortletConstants.getRootPortletId(portletId);
+		portletId = PortletIdCodec.decodePortletName(portletId);
 
 		String typeSettingsProperty = typeSettingsProperties.getProperty(
 			StagingUtil.getStagedPortletId(portletId));
@@ -1070,6 +1078,10 @@ public class GroupImpl extends GroupBaseImpl {
 				Portlet stagedPortlet = PortletLocalServiceUtil.getPortletById(
 					stagedPortletId);
 
+				if (stagedPortlet == null) {
+					continue;
+				}
+
 				if (portletDataHandler.equals(
 						stagedPortlet.getPortletDataHandlerInstance())) {
 
@@ -1078,6 +1090,9 @@ public class GroupImpl extends GroupBaseImpl {
 			}
 		}
 		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
 		}
 
 		return true;
@@ -1162,6 +1177,8 @@ public class GroupImpl extends GroupBaseImpl {
 
 		return LayoutConstants.DEFAULT_PLID;
 	}
+
+	private static final Group _NULL_STAGING_GROUP = new GroupImpl();
 
 	private static final Log _log = LogFactoryUtil.getLog(GroupImpl.class);
 

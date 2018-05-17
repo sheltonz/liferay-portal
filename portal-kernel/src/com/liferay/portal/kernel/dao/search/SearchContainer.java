@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.dao.search;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.DeterminateKeyGenerator;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -22,12 +23,9 @@ import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
-import com.liferay.portal.kernel.util.SearchContainerReference;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.kernel.util.WebKeys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,16 +145,14 @@ public class SearchContainer<R> {
 
 		_emptyResultsMessage = emptyResultsMessage;
 
-		SearchContainerReference searchContainerReference =
-			(SearchContainerReference)portletRequest.getAttribute(
-				WebKeys.SEARCH_CONTAINER_REFERENCE);
-
-		if (searchContainerReference != null) {
-			searchContainerReference.register(this);
-		}
-
 		if (Validator.isNotNull(cssClass)) {
 			_cssClass = cssClass;
+		}
+
+		String keywords = ParamUtil.getString(portletRequest, "keywords");
+
+		if (Validator.isNotNull(keywords)) {
+			_search = true;
 		}
 	}
 
@@ -255,6 +251,7 @@ public class SearchContainer<R> {
 			id = id.concat("SearchContainer");
 
 			_id = PortalUtil.getUniqueElementId(request, namespace, id);
+
 			_uniqueId = true;
 
 			return _id;
@@ -263,6 +260,7 @@ public class SearchContainer<R> {
 		id = DeterminateKeyGenerator.generate("taglib_search_container");
 
 		_id = id.concat("SearchContainer");
+
 		_uniqueId = true;
 
 		return _id;
@@ -373,10 +371,6 @@ public class SearchContainer<R> {
 	}
 
 	public boolean isSearch() {
-		if (_searchTerms != null) {
-			return _searchTerms.isSearch();
-		}
-
 		return _search;
 	}
 
@@ -523,7 +517,7 @@ public class SearchContainer<R> {
 
 		if (isRecalculateCur()) {
 			if ((_total % _delta) == 0) {
-				_cur = (_total / _delta);
+				_cur = _total / _delta;
 			}
 			else {
 				_cur = (_total / _delta) + 1;

@@ -26,6 +26,7 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
 import com.liferay.exportimport.kernel.service.ExportImportServiceUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Layout;
@@ -38,7 +39,6 @@ import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.util.test.LayoutTestUtil;
 
@@ -56,7 +56,7 @@ import org.junit.Before;
 /**
  * @author Eduardo Garcia
  */
-public class BaseExportImportTestCase {
+public abstract class BaseExportImportTestCase {
 
 	public void importLayouts(Map<String, String[]> parameterMap)
 		throws Exception {
@@ -236,14 +236,12 @@ public class BaseExportImportTestCase {
 		return parameterMap;
 	}
 
-	@SuppressWarnings("unused")
 	protected StagedModel getStagedModel(String uuid, long groupId)
 		throws PortalException {
 
 		return null;
 	}
 
-	@SuppressWarnings("unused")
 	protected String getStagedModelUuid(StagedModel stagedModel)
 		throws PortalException {
 

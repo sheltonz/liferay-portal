@@ -10,7 +10,7 @@
 <tbody>
 <tr>
 	<td>SITE_NAME</td>
-	<td>//span[contains(@class,'site-name') and contains(@title,'${key_siteName}')] | //div[contains(@class,'site-name') and contains(.,'${key_siteName}')]</td>
+	<td>//span[contains(@class,'site-name') and contains(.,'${key_siteName}')] | //div[contains(@class,'site-name') and contains(.,'${key_siteName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -21,6 +21,42 @@
 <tr>
 	<td></td>
 	<td></td>
+	<td></td>
+</tr>
+<!--LIST_GROUP_ITEM-->
+<tr>
+	<td>LIST_GROUP_ITEM</td>
+	<td>//li[contains(@class,'list-group-item')]//div[h4[normalize-space()='${key_itemName}']]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_ANGLE_ICON</td>
+	<td>xpath=(//a[*[name()='svg'][contains(@class,'icon-angle-right')]])[${key_depth}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_CHECKBOX</td>
+	<td>//li[contains(@class,'list-group-item')][div[normalize-space()='${key_pageName}']]//input[@type='checkbox']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_ELLIPSIS_ICON</td>
+	<td>//li[contains(@class,'list-group-item')][div[normalize-space()='${key_pageName}']]//button[*[name()='svg'][contains(@class,'icon-ellipsis-v')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_PLUS_ICON</td>
+	<td>//li[contains(@class,'list-group-item')][div[normalize-space()='${key_pageName}']]//a[*[name()='svg'][contains(@class,'icon-plus')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_ROW_ENTRY</td>
+	<td>xpath=(//li[contains(@class,'list-group-item')])[${key_index}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LIST_GROUP_ITEM_ROW_ELLIPSIS</td>
+	<td>xpath=(//li[contains(@class,'list-group-item')])[${key_index}]//button[*[name()='svg'][contains(@class,'icon-ellipsis-v')]]</td>
 	<td></td>
 </tr>
 <!--NAVIGATION-->
@@ -41,7 +77,7 @@
 </tr>
 <tr>
 	<td>NAVIGATION_MY_DASHBOARD</td>
-	<td>//a[contains(@title,'Dashboard')]//span/*[name()='svg'][contains(@class,'icon-cog')]</td>
+	<td>//a[contains(@title,'Dashboard')]//a[span/*[name()='svg'][contains(@class,'icon-cog')]]</td>
 	<td></td>
 </tr>
 <tr>
@@ -167,11 +203,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>PAGE_TREE_PAGE_EDIT_COG</td>
-	<td>//a[contains(@class,'tree-edit') and contains(.,'${key_page}')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>PAGE_TREE_PAGE_LINK_2</td>
 	<td>xpath=(//span[contains(@class,'tree-label')])[3]/a</td>
 	<td></td>
@@ -234,7 +265,7 @@
 </tr>
 <tr>
 	<td>DETAILS_FRIENDLY_BASE_URL</td>
-	<td>//span[contains(@id,'urlBase')]</td>
+	<td>//span[contains(@id,'friendlyURL')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -265,12 +296,12 @@
 </tr>
 <tr>
 	<td>DETAILS_PAGE_TYPE_PANEL_COMPONENT_TREE_ARROW</td>
-	<td>//div[contains(@id,'detailsselectPortletsTree')]//span[contains(.,'${key_componentName}')]/../span[contains(@class,'tree-hitarea glyphicon-plus')]</td>
+	<td>//div[contains(@id,'selectPortletsTree')]//span[contains(.,'${key_componentName}')]/../span[contains(@class,'tree-hitarea glyphicon-plus')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>DETAILS_PAGE_TYPE_PANEL_CHECKBOX_INPUT</td>
-	<td>//li[contains(@id,'detailsselectPortletsRootNode')]//span[contains(.,'${key_componentOrPortletName}')]/../span[contains(@class,'tree-node-checkbox')]/input</td>
+	<td>//li[contains(@id,'selectPortletsRootNode')]//span[contains(.,'${key_componentOrPortletName}')]/../span[contains(@class,'tree-node-checkbox')]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -282,11 +313,6 @@
 <tr>
 	<td>STAGING_SITE_PAGES_VARIATION_BUTTON</td>
 	<td>//ul[contains(@aria-labelledby,'panel-manage-site_administration_navigation')]//div[contains(@class,'scope-selector')]/span[2]/div/a</td>
-	<td></td>
-</tr>
-<tr>
-	<td>STAGING_SITE_PAGES_VARIATION_MENULIST_VARIATION_NAME</td>
-	<td>//ul[contains(@class,'dropdown-menu')]/li/a[contains(.,'${key_sitePagesVariationName}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -448,6 +474,11 @@
 <tr>
 	<td>SPECIFIC_PAGE_ELLIPSIS</td>
 	<td>//div[contains(.,'${key_page}')]/*[@data-qa-id='pageOptions']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_ELLIPSIS_2</td>
+	<td>xpath=(//*[@data-qa-id='pageOptions'])[2]</td>
 	<td></td>
 </tr>
 </tbody>

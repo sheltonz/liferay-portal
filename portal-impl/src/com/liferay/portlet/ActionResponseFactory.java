@@ -17,8 +17,7 @@ package com.liferay.portlet;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.User;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import javax.portlet.PortletException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,15 +28,13 @@ public class ActionResponseFactory {
 
 	public static ActionResponseImpl create(
 			ActionRequestImpl actionRequestImpl, HttpServletResponse response,
-			String portletName, User user, Layout layout,
-			WindowState windowState, PortletMode portletMode)
-		throws Exception {
+			User user, Layout layout)
+		throws PortletException {
 
 		ActionResponseImpl actionResponseImpl = new ActionResponseImpl();
 
 		actionResponseImpl.init(
-			actionRequestImpl, response, portletName, user, layout, windowState,
-			portletMode);
+			actionRequestImpl, response, user, layout, true);
 
 		return actionResponseImpl;
 	}

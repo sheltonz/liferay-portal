@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.model.StagedModel;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.DateRange;
-import com.liferay.portal.kernel.util.ProxyFactory;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.zip.ZipWriter;
@@ -241,6 +241,12 @@ public class ExportImportHelperUtil {
 		return _exportImportHelper.getLayoutIds(portletRequest, targetGroupId);
 	}
 
+	public static Layout getLayoutOrCreateDummyRootLayout(long plid)
+		throws PortalException {
+
+		return _exportImportHelper.getLayoutOrCreateDummyRootLayout(plid);
+	}
+
 	public static ZipWriter getLayoutSetZipWriter(long groupId) {
 		return _exportImportHelper.getLayoutSetZipWriter(groupId);
 	}
@@ -291,6 +297,10 @@ public class ExportImportHelperUtil {
 			portletDataContext, stagedModelType);
 	}
 
+	public static String getPortletExportFileName(Portlet portlet) {
+		return _exportImportHelper.getPortletExportFileName(portlet);
+	}
+
 	public static ZipWriter getPortletZipWriter(String portletId) {
 		return _exportImportHelper.getPortletZipWriter(portletId);
 	}
@@ -315,6 +325,14 @@ public class ExportImportHelperUtil {
 		throws PortalException {
 
 		return _exportImportHelper.getUserIdStrategy(userId, userIdStrategy);
+	}
+
+	public static boolean isAlwaysIncludeReference(
+		PortletDataContext portletDataContext,
+		StagedModel referenceStagedModel) {
+
+		return _exportImportHelper.isAlwaysIncludeReference(
+			portletDataContext, referenceStagedModel);
 	}
 
 	public static boolean isReferenceWithinExportScope(
@@ -571,6 +589,12 @@ public class ExportImportHelperUtil {
 			portletDataContext, content, importReferencedContent);
 	}
 
+	public static void setPortletScope(
+		PortletDataContext portletDataContext, Element portletElement) {
+
+		_exportImportHelper.setPortletScope(portletDataContext, portletElement);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, see {@link
 	 *             DefaultConfigurationPortletDataHandler#updateExportPortletPreferencesClassPKs(
@@ -648,7 +672,9 @@ public class ExportImportHelperUtil {
 		_exportImportHelper.writeManifestSummary(document, manifestSummary);
 	}
 
-	private static final ExportImportHelper _exportImportHelper =
-		ProxyFactory.newServiceTrackedInstance(ExportImportHelper.class);
+	private static volatile ExportImportHelper _exportImportHelper =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			ExportImportHelper.class, ExportImportHelperUtil.class,
+			"_exportImportHelper", false);
 
 }

@@ -36,6 +36,7 @@ import com.liferay.sync.engine.util.GetterUtil;
 import com.liferay.sync.engine.util.IODeltaUtil;
 import com.liferay.sync.engine.util.JSONUtil;
 import com.liferay.sync.engine.util.SyncEngineUtil;
+import com.liferay.sync.engine.util.Validator;
 
 import java.io.IOException;
 
@@ -60,6 +61,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -72,7 +74,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Shinn Lok
  */
-public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
+public class GetSyncDLObjectUpdateHandler extends BaseJSONHandler {
 
 	public GetSyncDLObjectUpdateHandler(final Event event) {
 		super(event);
@@ -122,8 +124,22 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				}
 			}
 
+			protected void doCancel() {
+				if (_firedProcessingState) {
+					SyncEngineUtil.fireSyncEngineStateChanged(
+						getSyncAccountId(),
+						SyncEngineUtil.SYNC_ENGINE_STATE_PROCESSED);
+
+					_firedProcessingState = false;
+				}
+
+				event.cancel();
+
+				_scheduledFuture.cancel(true);
+			}
+
 			@Override
-			public void run() {
+			protected void doRun() {
 				SyncAccount syncAccount = SyncAccountService.fetchSyncAccount(
 					getSyncAccountId());
 
@@ -140,21 +156,7 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 					return;
 				}
 
-				super.run();
-			}
-
-			protected void doCancel() {
-				if (_firedProcessingState) {
-					SyncEngineUtil.fireSyncEngineStateChanged(
-						getSyncAccountId(),
-						SyncEngineUtil.SYNC_ENGINE_STATE_PROCESSED);
-
-					_firedProcessingState = false;
-				}
-
-				event.cancel();
-
-				_scheduledFuture.cancel(true);
+				super.doRun();
 			}
 
 			private boolean _firedProcessingState;
@@ -210,6 +212,8 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			_syncDLObjectUpdate = JSONUtil.readValue(
 				response, SyncDLObjectUpdate.class);
 		}
+
+		updateSettings(_syncDLObjectUpdate.getSettingsModifiedTimes());
 
 		List<SyncFile> syncFiles = _syncDLObjectUpdate.getSyncFiles();
 
@@ -276,7 +280,7 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			return;
 		}
 
-		if (Files.exists(filePath) &&
+		if (FileUtil.exists(filePath) &&
 			(syncFile.isFolder() || !FileUtil.isModified(syncFile, filePath))) {
 
 			return;
@@ -305,6 +309,62 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 		}
 	}
 
+	protected boolean checkUnsynced(
+			SyncFile sourceSyncFile, SyncFile targetSyncFile,
+			String targetFilePathName)
+		throws Exception {
+
+		Path targetFilePath = Paths.get(targetFilePathName);
+
+		if (isParentUnsynced(targetSyncFile)) {
+			if (sourceSyncFile.isFolder()) {
+				List<SyncFile> syncFiles = new ArrayList<>();
+
+				syncFiles.add(sourceSyncFile);
+
+				List<SyncFile> childSyncFiles = SyncFileService.findSyncFiles(
+					sourceSyncFile.getFilePathName());
+
+				syncFiles.addAll(childSyncFiles);
+
+				SyncFileService.unsyncFolders(getSyncAccountId(), syncFiles);
+
+				sourceSyncFile = SyncFileService.fetchSyncFile(
+					sourceSyncFile.getSyncFileId());
+
+				SyncFileService.updateSyncFile(
+					targetFilePath, targetSyncFile.getParentFolderId(),
+					sourceSyncFile);
+			}
+			else {
+				deleteFile(sourceSyncFile, targetSyncFile);
+			}
+
+			return true;
+		}
+
+		if (sourceSyncFile.isUnsynced()) {
+			if (!isParentUnsynced(sourceSyncFile)) {
+				return true;
+			}
+
+			List<SyncFile> syncFiles = new ArrayList<>();
+
+			syncFiles.add(sourceSyncFile);
+
+			List<SyncFile> childSyncFiles = SyncFileService.findSyncFiles(
+				sourceSyncFile.getFilePathName());
+
+			syncFiles.addAll(childSyncFiles);
+
+			SyncFileService.resyncFolders(getSyncAccountId(), syncFiles);
+
+			return true;
+		}
+
+		return false;
+	}
+
 	protected void copyFile(SyncFile sourceSyncFile, SyncFile targetSyncFile)
 		throws Exception {
 
@@ -324,11 +384,14 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			tempFilePath, String.valueOf(targetSyncFile.getSyncFileId()),
 			false);
 
+		FileUtil.setModifiedTime(
+			tempFilePath, targetSyncFile.getModifiedTime());
+
 		Watcher watcher = WatcherManager.getWatcher(getSyncAccountId());
 
 		watcher.addDownloadedFilePathName(targetSyncFile.getFilePathName());
 
-		boolean exists = Files.exists(
+		boolean exists = FileUtil.exists(
 			Paths.get(targetSyncFile.getFilePathName()));
 
 		try {
@@ -338,6 +401,8 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				StandardCopyOption.REPLACE_EXISTING);
 		}
 		catch (AccessDeniedException ade) {
+			_logger.error(ade.getMessage(), ade);
+
 			targetSyncFile.setState(SyncFile.STATE_ERROR);
 			targetSyncFile.setUiEvent(SyncFile.UI_EVENT_ACCESS_DENIED_LOCAL);
 
@@ -376,12 +441,17 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 
 		sourceSyncFile.setModifiedTime(targetSyncFile.getModifiedTime());
 
-		if (targetSyncFile.getEvent() == SyncFile.EVENT_TRASH) {
+		String event = targetSyncFile.getEvent();
+
+		if (event.equals(SyncFile.EVENT_TRASH)) {
 			sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_TRASHED_REMOTE);
 		}
 		else {
 			sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_DELETED_REMOTE);
 		}
+
+		sourceSyncFile.setUserId(targetSyncFile.getUserId());
+		sourceSyncFile.setUserName(targetSyncFile.getUserName());
 
 		if (!sourceSyncFile.isUnsynced()) {
 			SyncFileService.deleteSyncFile(sourceSyncFile);
@@ -389,7 +459,7 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 
 		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
 
-		if (Files.notExists(sourceFilePath)) {
+		if (FileUtil.notExists(sourceFilePath)) {
 			return;
 		}
 
@@ -461,7 +531,7 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				checksum, SyncFile.STATE_SYNCED);
 
 			if ((sourceSyncFile != null) &&
-				Files.exists(Paths.get(sourceSyncFile.getFilePathName()))) {
+				FileUtil.exists(Paths.get(sourceSyncFile.getFilePathName()))) {
 
 				copyFile(sourceSyncFile, syncFile);
 
@@ -532,88 +602,6 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 		}
 	}
 
-	protected void moveFile(
-			SyncFile sourceSyncFile, SyncFile targetSyncFile,
-			String targetFilePathName)
-		throws Exception {
-
-		Path targetFilePath = Paths.get(targetFilePathName);
-
-		if (isParentUnsynced(targetSyncFile)) {
-			if (sourceSyncFile.isFolder()) {
-				List<SyncFile> syncFiles = new ArrayList<>();
-
-				syncFiles.add(sourceSyncFile);
-
-				List<SyncFile> childSyncFiles = SyncFileService.findSyncFiles(
-					sourceSyncFile.getFilePathName());
-
-				syncFiles.addAll(childSyncFiles);
-
-				SyncFileService.unsyncFolders(getSyncAccountId(), syncFiles);
-
-				sourceSyncFile = SyncFileService.fetchSyncFile(
-					sourceSyncFile.getSyncFileId());
-
-				SyncFileService.updateSyncFile(
-					targetFilePath, targetSyncFile.getParentFolderId(),
-					sourceSyncFile);
-			}
-			else {
-				deleteFile(sourceSyncFile, targetSyncFile);
-			}
-
-			return;
-		}
-
-		if (sourceSyncFile.isUnsynced()) {
-			if (!isParentUnsynced(sourceSyncFile)) {
-				return;
-			}
-
-			List<SyncFile> syncFiles = new ArrayList<>();
-
-			syncFiles.add(sourceSyncFile);
-
-			List<SyncFile> childSyncFiles = SyncFileService.findSyncFiles(
-				sourceSyncFile.getFilePathName());
-
-			syncFiles.addAll(childSyncFiles);
-
-			SyncFileService.resyncFolders(getSyncAccountId(), syncFiles);
-
-			return;
-		}
-
-		Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
-
-		sourceSyncFile = SyncFileService.updateSyncFile(
-			targetFilePath, targetSyncFile.getParentFolderId(), sourceSyncFile);
-
-		if (Files.exists(sourceFilePath)) {
-			FileUtil.moveFile(sourceFilePath, targetFilePath);
-
-			sourceSyncFile.setState(SyncFile.STATE_SYNCED);
-		}
-		else if (targetSyncFile.isFolder()) {
-			Files.createDirectories(targetFilePath);
-
-			sourceSyncFile.setState(SyncFile.STATE_SYNCED);
-
-			FileKeyUtil.writeFileKey(
-				targetFilePath, String.valueOf(sourceSyncFile.getSyncFileId()),
-				false);
-		}
-		else {
-			downloadFile(sourceSyncFile, null, 0, false);
-		}
-
-		sourceSyncFile.setModifiedTime(targetSyncFile.getModifiedTime());
-		sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_MOVED_REMOTE);
-
-		SyncFileService.update(sourceSyncFile);
-	}
-
 	protected void processDependentSyncFiles(SyncFile syncFile) {
 		List<SyncFile> dependentSyncFiles = _dependentSyncFilesMap.remove(
 			getSyncAccountId() + "#" + syncFile.getTypePK());
@@ -627,12 +615,70 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 		}
 	}
 
-	protected void processSyncFile(SyncFile targetSyncFile) {
-		String event = targetSyncFile.getEvent();
+	protected boolean processFilePathChange(
+			SyncFile sourceSyncFile, SyncFile targetSyncFile)
+		throws Exception {
 
+		String sourceSyncFileName = FileUtil.getSanitizedFileName(
+			sourceSyncFile.getName(), sourceSyncFile.getExtension());
+
+		String targetSyncFileName = FileUtil.getSanitizedFileName(
+			targetSyncFile.getName(), targetSyncFile.getExtension());
+
+		if ((sourceSyncFile.getParentFolderId() !=
+				targetSyncFile.getParentFolderId()) ||
+			!sourceSyncFileName.equals(targetSyncFileName)) {
+
+			SyncFile targetParentSyncFile = SyncFileService.fetchSyncFile(
+				targetSyncFile.getRepositoryId(), getSyncAccountId(),
+				targetSyncFile.getParentFolderId());
+
+			Path targetParentFilePath = Paths.get(
+				targetParentSyncFile.getFilePathName());
+
+			Path targetFilePath = targetParentFilePath.resolve(
+				targetSyncFileName);
+
+			Path sourceFilePath = Paths.get(sourceSyncFile.getFilePathName());
+
+			sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_NONE);
+
+			SyncFileService.updateSyncFile(
+				targetFilePath, targetSyncFile.getParentFolderId(),
+				sourceSyncFile);
+
+			if (FileUtil.exists(sourceFilePath)) {
+				Watcher watcher = WatcherManager.getWatcher(getSyncAccountId());
+
+				watcher.addMovedFilePathName(targetSyncFile.getFilePathName());
+
+				FileUtil.moveFile(sourceFilePath, targetFilePath);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	protected void processSyncFile(SyncFile targetSyncFile) {
 		SyncFile sourceSyncFile = SyncFileService.fetchSyncFile(
 			targetSyncFile.getRepositoryId(), getSyncAccountId(),
 			targetSyncFile.getTypePK());
+
+		if ((sourceSyncFile != null) &&
+			(sourceSyncFile.getState() == SyncFile.STATE_ERROR)) {
+
+			if (_logger.isDebugEnabled()) {
+				_logger.debug(
+					"Skipping file {}. File is in an error state.",
+					sourceSyncFile.getFilePathName());
+			}
+
+			return;
+		}
+
+		String event = targetSyncFile.getEvent();
 
 		if (event.equals(SyncFile.EVENT_DELETE) ||
 			event.equals(SyncFile.EVENT_TRASH)) {
@@ -659,18 +705,29 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			return;
 		}
 
-		String filePathName = "";
-
 		try {
-			filePathName = FileUtil.getFilePathName(
+			String filePathName = FileUtil.getFilePathName(
 				parentSyncFile.getFilePathName(),
 				FileUtil.getSanitizedFileName(
 					targetSyncFile.getName(), targetSyncFile.getExtension()));
 
-			if (isIgnoredFilePath(sourceSyncFile, filePathName) ||
-				((sourceSyncFile != null) &&
-				 (sourceSyncFile.getModifiedTime() ==
-					 targetSyncFile.getModifiedTime()))) {
+			if (sourceSyncFile == null) {
+				sourceSyncFile = SyncFileService.fetchSyncFile(filePathName);
+			}
+
+			if (isIgnoredFilePath(sourceSyncFile, filePathName)) {
+				return;
+			}
+
+			if ((sourceSyncFile != null) &&
+				(sourceSyncFile.getModifiedTime() ==
+					targetSyncFile.getModifiedTime())) {
+
+				if (!Validator.isBlank(targetSyncFile.getChecksum())) {
+					sourceSyncFile.setChecksum(targetSyncFile.getChecksum());
+
+					SyncFileService.update(sourceSyncFile);
+				}
 
 				return;
 			}
@@ -683,30 +740,25 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			targetSyncFile.setState(SyncFile.STATE_IN_PROGRESS);
 
 			if (event.equals(SyncFile.EVENT_ADD) ||
-				event.equals(SyncFile.EVENT_GET)) {
+				event.equals(SyncFile.EVENT_GET) ||
+				event.equals(SyncFile.EVENT_MOVE) ||
+				event.equals(SyncFile.EVENT_UPDATE)) {
 
-				if (sourceSyncFile != null) {
-					updateFile(sourceSyncFile, targetSyncFile, filePathName);
-				}
-				else {
-					addFile(targetSyncFile, filePathName);
-				}
-			}
-			else if (event.equals(SyncFile.EVENT_MOVE)) {
 				if (sourceSyncFile == null) {
 					addFile(targetSyncFile, filePathName);
 				}
-				else if (sourceSyncFile.getParentFolderId() ==
-							targetSyncFile.getParentFolderId()) {
-
-					updateFile(sourceSyncFile, targetSyncFile, filePathName);
-				}
 				else {
-					moveFile(sourceSyncFile, targetSyncFile, filePathName);
+					updateFile(sourceSyncFile, targetSyncFile, filePathName);
 				}
 			}
 			else if (event.equals(SyncFile.EVENT_RESTORE)) {
-				if (sourceSyncFile != null) {
+				if (Validator.isBlank(targetSyncFile.getName())) {
+
+					// Workaround for SYNC-1690
+
+					return;
+				}
+				else if (sourceSyncFile != null) {
 					updateFile(sourceSyncFile, targetSyncFile, filePathName);
 				}
 				else if (isParentUnsynced(targetSyncFile)) {
@@ -727,14 +779,6 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 					SyncFileService.update(targetSyncFile);
 
 					addFile(targetSyncFile, filePathName);
-				}
-			}
-			else if (event.equals(SyncFile.EVENT_UPDATE)) {
-				if (sourceSyncFile == null) {
-					addFile(targetSyncFile, filePathName);
-				}
-				else {
-					updateFile(sourceSyncFile, targetSyncFile, filePathName);
 				}
 			}
 
@@ -787,8 +831,23 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 			String filePathName)
 		throws Exception {
 
-		String sourceVersion = sourceSyncFile.getVersion();
-		long sourceVersionId = sourceSyncFile.getVersionId();
+		if (checkUnsynced(sourceSyncFile, targetSyncFile, filePathName)) {
+			return;
+		}
+
+		if (sourceSyncFile.getTypePK() != targetSyncFile.getTypePK()) {
+			_logger.error(
+				"Source type pk {} does not match target {} for {}",
+				sourceSyncFile.getTypePK(), targetSyncFile.getTypePK(),
+				sourceSyncFile.getFilePathName());
+		}
+
+		String previousChecksum = sourceSyncFile.getChecksum();
+		String previousFilePathName = sourceSyncFile.getFilePathName();
+		long previousParentFolderId = sourceSyncFile.getParentFolderId();
+		String previousType = sourceSyncFile.getType();
+		String previousVersion = sourceSyncFile.getVersion();
+		long previousVersionId = sourceSyncFile.getVersionId();
 
 		boolean filePathChanged = processFilePathChange(
 			sourceSyncFile, targetSyncFile);
@@ -798,12 +857,15 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 		sourceSyncFile.setDescription(targetSyncFile.getDescription());
 		sourceSyncFile.setExtension(targetSyncFile.getExtension());
 		sourceSyncFile.setExtraSettings(targetSyncFile.getExtraSettings());
+		sourceSyncFile.setLanTokenKey(targetSyncFile.getLanTokenKey());
 		sourceSyncFile.setLockExpirationDate(
 			targetSyncFile.getLockExpirationDate());
 		sourceSyncFile.setLockUserId(targetSyncFile.getLockUserId());
 		sourceSyncFile.setLockUserName(targetSyncFile.getLockUserName());
 		sourceSyncFile.setModifiedTime(targetSyncFile.getModifiedTime());
 		sourceSyncFile.setSize(targetSyncFile.getSize());
+		sourceSyncFile.setType(targetSyncFile.getType());
+		sourceSyncFile.setTypePK(targetSyncFile.getTypePK());
 		sourceSyncFile.setUserId(targetSyncFile.getUserId());
 		sourceSyncFile.setUserName(targetSyncFile.getUserName());
 		sourceSyncFile.setVersion(targetSyncFile.getVersion());
@@ -811,13 +873,35 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 
 		SyncFileService.update(sourceSyncFile);
 
-		if (isParentUnsynced(sourceSyncFile) || sourceSyncFile.isUnsynced()) {
+		if (filePathChanged && !Validator.isBlank(previousChecksum) &&
+			previousChecksum.equals(targetSyncFile.getChecksum())) {
+
+			sourceSyncFile.setState(SyncFile.STATE_SYNCED);
+
+			if (previousParentFolderId == sourceSyncFile.getParentFolderId()) {
+				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_RENAMED_REMOTE);
+			}
+			else {
+				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_MOVED_REMOTE);
+			}
+
+			SyncFileService.update(sourceSyncFile);
+
 			return;
 		}
 
 		Path filePath = Paths.get(targetSyncFile.getFilePathName());
 
-		if (!Files.exists(filePath)) {
+		if (!previousType.equals(sourceSyncFile.getType())) {
+			if (previousType.equals(SyncFile.TYPE_FOLDER)) {
+				FileUtils.deleteDirectory(filePath.toFile());
+			}
+			else {
+				Files.deleteIfExists(filePath);
+			}
+		}
+
+		if (!FileUtil.exists(filePath)) {
 			if (targetSyncFile.isFolder()) {
 				Path targetFilePath = Paths.get(filePathName);
 
@@ -840,20 +924,43 @@ public class GetSyncDLObjectUpdateHandler extends BaseSyncDLObjectHandler {
 				 FileUtil.isModified(targetSyncFile, filePath)) {
 
 			downloadFile(
-				sourceSyncFile, sourceVersion, sourceVersionId,
+				sourceSyncFile, previousVersion, previousVersionId,
 				!IODeltaUtil.isIgnoredFilePatchingExtension(targetSyncFile));
 		}
 		else {
 			sourceSyncFile.setState(SyncFile.STATE_SYNCED);
 
-			if (filePathChanged) {
-				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_RENAMED_REMOTE);
+			if (previousFilePathName.equals(sourceSyncFile.getFilePathName())) {
+				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_NONE);
 			}
 			else {
-				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_NONE);
+				sourceSyncFile.setUiEvent(SyncFile.UI_EVENT_RENAMED_REMOTE);
 			}
 
 			SyncFileService.update(sourceSyncFile);
+		}
+	}
+
+	protected void updateSettings(Map<String, Long> settingsModifiedTimes) {
+		if (settingsModifiedTimes == null) {
+			return;
+		}
+
+		for (Map.Entry<String, Long> entry : settingsModifiedTimes.entrySet()) {
+			String setting = entry.getKey();
+			long modifiedTime = entry.getValue();
+
+			if (setting.equals(
+					SyncDLObjectUpdate.
+						PREFERENCE_KEY_SYNC_CONTEXT_MODIFIED_TIME)) {
+
+				SyncAccount syncAccount = SyncAccountService.fetchSyncAccount(
+					getSyncAccountId());
+
+				syncAccount.setSyncContextModifiedTime(modifiedTime);
+
+				SyncAccountService.update(syncAccount);
+			}
 		}
 	}
 

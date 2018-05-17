@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import com.liferay.push.notifications.model.PushNotificationsDevice;
 import com.liferay.push.notifications.model.PushNotificationsDeviceModel;
@@ -71,6 +71,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 	public static final String TABLE_NAME = "PushNotificationsDevice";
 	public static final Object[][] TABLE_COLUMNS = {
 			{ "pushNotificationsDeviceId", Types.BIGINT },
+			{ "companyId", Types.BIGINT },
 			{ "userId", Types.BIGINT },
 			{ "createDate", Types.TIMESTAMP },
 			{ "platform", Types.VARCHAR },
@@ -80,13 +81,14 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	static {
 		TABLE_COLUMNS_MAP.put("pushNotificationsDeviceId", Types.BIGINT);
+		TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
 		TABLE_COLUMNS_MAP.put("platform", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("token", Types.VARCHAR);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table PushNotificationsDevice (pushNotificationsDeviceId LONG not null primary key,userId LONG,createDate DATE null,platform VARCHAR(75) null,token STRING null)";
+	public static final String TABLE_SQL_CREATE = "create table PushNotificationsDevice (pushNotificationsDeviceId LONG not null primary key,companyId LONG,userId LONG,createDate DATE null,platform VARCHAR(75) null,token STRING null)";
 	public static final String TABLE_SQL_DROP = "drop table PushNotificationsDevice";
 	public static final String ORDER_BY_JPQL = " ORDER BY pushNotificationsDevice.pushNotificationsDeviceId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY PushNotificationsDevice.pushNotificationsDeviceId ASC";
@@ -122,6 +124,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 		PushNotificationsDevice model = new PushNotificationsDeviceImpl();
 
 		model.setPushNotificationsDeviceId(soapModel.getPushNotificationsDeviceId());
+		model.setCompanyId(soapModel.getCompanyId());
 		model.setUserId(soapModel.getUserId());
 		model.setCreateDate(soapModel.getCreateDate());
 		model.setPlatform(soapModel.getPlatform());
@@ -193,6 +196,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 		attributes.put("pushNotificationsDeviceId",
 			getPushNotificationsDeviceId());
+		attributes.put("companyId", getCompanyId());
 		attributes.put("userId", getUserId());
 		attributes.put("createDate", getCreateDate());
 		attributes.put("platform", getPlatform());
@@ -211,6 +215,12 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 		if (pushNotificationsDeviceId != null) {
 			setPushNotificationsDeviceId(pushNotificationsDeviceId);
+		}
+
+		Long companyId = (Long)attributes.get("companyId");
+
+		if (companyId != null) {
+			setCompanyId(companyId);
 		}
 
 		Long userId = (Long)attributes.get("userId");
@@ -251,6 +261,17 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	@JSON
 	@Override
+	public long getCompanyId() {
+		return _companyId;
+	}
+
+	@Override
+	public void setCompanyId(long companyId) {
+		_companyId = companyId;
+	}
+
+	@JSON
+	@Override
 	public long getUserId() {
 		return _userId;
 	}
@@ -276,7 +297,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 			return user.getUuid();
 		}
 		catch (PortalException pe) {
-			return StringPool.BLANK;
+			return "";
 		}
 	}
 
@@ -303,7 +324,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 	@Override
 	public String getPlatform() {
 		if (_platform == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _platform;
@@ -329,7 +350,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 	@Override
 	public String getToken() {
 		if (_token == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _token;
@@ -357,7 +378,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	@Override
 	public ExpandoBridge getExpandoBridge() {
-		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
+		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			PushNotificationsDevice.class.getName(), getPrimaryKey());
 	}
 
@@ -383,6 +404,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 		PushNotificationsDeviceImpl pushNotificationsDeviceImpl = new PushNotificationsDeviceImpl();
 
 		pushNotificationsDeviceImpl.setPushNotificationsDeviceId(getPushNotificationsDeviceId());
+		pushNotificationsDeviceImpl.setCompanyId(getCompanyId());
 		pushNotificationsDeviceImpl.setUserId(getUserId());
 		pushNotificationsDeviceImpl.setCreateDate(getCreateDate());
 		pushNotificationsDeviceImpl.setPlatform(getPlatform());
@@ -466,6 +488,8 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 		pushNotificationsDeviceCacheModel.pushNotificationsDeviceId = getPushNotificationsDeviceId();
 
+		pushNotificationsDeviceCacheModel.companyId = getCompanyId();
+
 		pushNotificationsDeviceCacheModel.userId = getUserId();
 
 		Date createDate = getCreateDate();
@@ -498,10 +522,12 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(11);
+		StringBundler sb = new StringBundler(13);
 
 		sb.append("{pushNotificationsDeviceId=");
 		sb.append(getPushNotificationsDeviceId());
+		sb.append(", companyId=");
+		sb.append(getCompanyId());
 		sb.append(", userId=");
 		sb.append(getUserId());
 		sb.append(", createDate=");
@@ -517,7 +543,7 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(22);
 
 		sb.append("<model><model-name>");
 		sb.append(
@@ -527,6 +553,10 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 		sb.append(
 			"<column><column-name>pushNotificationsDeviceId</column-name><column-value><![CDATA[");
 		sb.append(getPushNotificationsDeviceId());
+		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>companyId</column-name><column-value><![CDATA[");
+		sb.append(getCompanyId());
 		sb.append("]]></column-value></column>");
 		sb.append(
 			"<column><column-name>userId</column-name><column-value><![CDATA[");
@@ -552,9 +582,10 @@ public class PushNotificationsDeviceModelImpl extends BaseModelImpl<PushNotifica
 
 	private static final ClassLoader _classLoader = PushNotificationsDevice.class.getClassLoader();
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
-			PushNotificationsDevice.class
+			PushNotificationsDevice.class, ModelWrapper.class
 		};
 	private long _pushNotificationsDeviceId;
+	private long _companyId;
 	private long _userId;
 	private long _originalUserId;
 	private boolean _setOriginalUserId;

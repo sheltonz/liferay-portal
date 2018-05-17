@@ -37,12 +37,14 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.WorkflowInstanceLinkPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.WorkflowInstanceLinkImpl;
 import com.liferay.portal.model.impl.WorkflowInstanceLinkModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -128,7 +130,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the matching workflow instance links
 	 */
 	@Override
@@ -148,7 +150,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of workflow instance links
 	 * @param end the upper bound of the range of workflow instance links (not inclusive)
 	 * @return the range of matching workflow instance links
@@ -170,7 +172,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of workflow instance links
 	 * @param end the upper bound of the range of workflow instance links (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -194,7 +196,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of workflow instance links
 	 * @param end the upper bound of the range of workflow instance links (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -330,7 +332,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching workflow instance link
 	 * @throws NoSuchWorkflowInstanceLinkException if a matching workflow instance link could not be found
@@ -363,7 +365,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWorkflowInstanceLinkException(msg.toString());
 	}
@@ -374,7 +376,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching workflow instance link, or <code>null</code> if a matching workflow instance link could not be found
 	 */
@@ -398,7 +400,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching workflow instance link
 	 * @throws NoSuchWorkflowInstanceLinkException if a matching workflow instance link could not be found
@@ -431,7 +433,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWorkflowInstanceLinkException(msg.toString());
 	}
@@ -442,7 +444,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching workflow instance link, or <code>null</code> if a matching workflow instance link could not be found
 	 */
@@ -473,7 +475,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next workflow instance link
 	 * @throws NoSuchWorkflowInstanceLinkException if a workflow instance link with the primary key could not be found
@@ -639,7 +641,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 */
 	@Override
 	public void removeByG_C_C_C(long groupId, long companyId, long classNameId,
@@ -657,7 +659,7 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	 * @param groupId the group ID
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the number of matching workflow instance links
 	 */
 	@Override
@@ -881,8 +883,6 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	@Override
 	protected WorkflowInstanceLink removeImpl(
 		WorkflowInstanceLink workflowInstanceLink) {
-		workflowInstanceLink = toUnwrappedModel(workflowInstanceLink);
-
 		Session session = null;
 
 		try {
@@ -914,9 +914,23 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 	@Override
 	public WorkflowInstanceLink updateImpl(
 		WorkflowInstanceLink workflowInstanceLink) {
-		workflowInstanceLink = toUnwrappedModel(workflowInstanceLink);
-
 		boolean isNew = workflowInstanceLink.isNew();
+
+		if (!(workflowInstanceLink instanceof WorkflowInstanceLinkModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(workflowInstanceLink.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(workflowInstanceLink);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in workflowInstanceLink proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom WorkflowInstanceLink implementation " +
+				workflowInstanceLink.getClass());
+		}
 
 		WorkflowInstanceLinkModelImpl workflowInstanceLinkModelImpl = (WorkflowInstanceLinkModelImpl)workflowInstanceLink;
 
@@ -967,8 +981,25 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !WorkflowInstanceLinkModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!WorkflowInstanceLinkModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] {
+					workflowInstanceLinkModelImpl.getGroupId(),
+					workflowInstanceLinkModelImpl.getCompanyId(),
+					workflowInstanceLinkModelImpl.getClassNameId(),
+					workflowInstanceLinkModelImpl.getClassPK()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_C_C_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_C_C_C,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1005,32 +1036,6 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 		workflowInstanceLink.resetOriginalValues();
 
 		return workflowInstanceLink;
-	}
-
-	protected WorkflowInstanceLink toUnwrappedModel(
-		WorkflowInstanceLink workflowInstanceLink) {
-		if (workflowInstanceLink instanceof WorkflowInstanceLinkImpl) {
-			return workflowInstanceLink;
-		}
-
-		WorkflowInstanceLinkImpl workflowInstanceLinkImpl = new WorkflowInstanceLinkImpl();
-
-		workflowInstanceLinkImpl.setNew(workflowInstanceLink.isNew());
-		workflowInstanceLinkImpl.setPrimaryKey(workflowInstanceLink.getPrimaryKey());
-
-		workflowInstanceLinkImpl.setMvccVersion(workflowInstanceLink.getMvccVersion());
-		workflowInstanceLinkImpl.setWorkflowInstanceLinkId(workflowInstanceLink.getWorkflowInstanceLinkId());
-		workflowInstanceLinkImpl.setGroupId(workflowInstanceLink.getGroupId());
-		workflowInstanceLinkImpl.setCompanyId(workflowInstanceLink.getCompanyId());
-		workflowInstanceLinkImpl.setUserId(workflowInstanceLink.getUserId());
-		workflowInstanceLinkImpl.setUserName(workflowInstanceLink.getUserName());
-		workflowInstanceLinkImpl.setCreateDate(workflowInstanceLink.getCreateDate());
-		workflowInstanceLinkImpl.setModifiedDate(workflowInstanceLink.getModifiedDate());
-		workflowInstanceLinkImpl.setClassNameId(workflowInstanceLink.getClassNameId());
-		workflowInstanceLinkImpl.setClassPK(workflowInstanceLink.getClassPK());
-		workflowInstanceLinkImpl.setWorkflowInstanceId(workflowInstanceLink.getWorkflowInstanceId());
-
-		return workflowInstanceLinkImpl;
 	}
 
 	/**
@@ -1182,14 +1187,14 @@ public class WorkflowInstanceLinkPersistenceImpl extends BasePersistenceImpl<Wor
 		query.append(_SQL_SELECT_WORKFLOWINSTANCELINK_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

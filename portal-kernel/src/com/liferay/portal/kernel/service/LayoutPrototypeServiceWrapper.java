@@ -31,6 +31,16 @@ public class LayoutPrototypeServiceWrapper implements LayoutPrototypeService,
 		_layoutPrototypeService = layoutPrototypeService;
 	}
 
+	@Override
+	public com.liferay.portal.kernel.model.LayoutPrototype addLayoutPrototype(
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap, boolean active,
+		ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _layoutPrototypeService.addLayoutPrototype(nameMap,
+			descriptionMap, active, serviceContext);
+	}
+
 	/**
 	* @deprecated As of 7.0.0, replaced by {@link #addLayoutPrototype(Map, Map,
 	boolean, ServiceContext)}
@@ -38,22 +48,17 @@ public class LayoutPrototypeServiceWrapper implements LayoutPrototypeService,
 	@Deprecated
 	@Override
 	public com.liferay.portal.kernel.model.LayoutPrototype addLayoutPrototype(
-		java.util.Map<java.util.Locale, java.lang.String> nameMap,
-		java.lang.String description, boolean active,
-		ServiceContext serviceContext)
+		java.util.Map<java.util.Locale, String> nameMap, String description,
+		boolean active, ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _layoutPrototypeService.addLayoutPrototype(nameMap, description,
 			active, serviceContext);
 	}
 
 	@Override
-	public com.liferay.portal.kernel.model.LayoutPrototype addLayoutPrototype(
-		java.util.Map<java.util.Locale, java.lang.String> nameMap,
-		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
-		boolean active, ServiceContext serviceContext)
+	public void deleteLayoutPrototype(long layoutPrototypeId)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layoutPrototypeService.addLayoutPrototype(nameMap,
-			descriptionMap, active, serviceContext);
+		_layoutPrototypeService.deleteLayoutPrototype(layoutPrototypeId);
 	}
 
 	@Override
@@ -71,6 +76,35 @@ public class LayoutPrototypeServiceWrapper implements LayoutPrototypeService,
 	}
 
 	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public String getOSGiServiceIdentifier() {
+		return _layoutPrototypeService.getOSGiServiceIdentifier();
+	}
+
+	@Override
+	public java.util.List<com.liferay.portal.kernel.model.LayoutPrototype> search(
+		long companyId, Boolean active,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portal.kernel.model.LayoutPrototype> obc)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _layoutPrototypeService.search(companyId, active, obc);
+	}
+
+	@Override
+	public com.liferay.portal.kernel.model.LayoutPrototype updateLayoutPrototype(
+		long layoutPrototypeId,
+		java.util.Map<java.util.Locale, String> nameMap,
+		java.util.Map<java.util.Locale, String> descriptionMap, boolean active,
+		ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _layoutPrototypeService.updateLayoutPrototype(layoutPrototypeId,
+			nameMap, descriptionMap, active, serviceContext);
+	}
+
+	/**
 	* @deprecated As of 7.0.0, replaced by {@link #updateLayoutPrototype(long,
 	Map, Map, boolean, ServiceContext)}
 	*/
@@ -78,47 +112,11 @@ public class LayoutPrototypeServiceWrapper implements LayoutPrototypeService,
 	@Override
 	public com.liferay.portal.kernel.model.LayoutPrototype updateLayoutPrototype(
 		long layoutPrototypeId,
-		java.util.Map<java.util.Locale, java.lang.String> nameMap,
-		java.lang.String description, boolean active,
-		ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layoutPrototypeService.updateLayoutPrototype(layoutPrototypeId,
-			nameMap, description, active, serviceContext);
-	}
-
-	@Override
-	public com.liferay.portal.kernel.model.LayoutPrototype updateLayoutPrototype(
-		long layoutPrototypeId,
-		java.util.Map<java.util.Locale, java.lang.String> nameMap,
-		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		java.util.Map<java.util.Locale, String> nameMap, String description,
 		boolean active, ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _layoutPrototypeService.updateLayoutPrototype(layoutPrototypeId,
-			nameMap, descriptionMap, active, serviceContext);
-	}
-
-	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
-	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
-		return _layoutPrototypeService.getOSGiServiceIdentifier();
-	}
-
-	@Override
-	public java.util.List<com.liferay.portal.kernel.model.LayoutPrototype> search(
-		long companyId, java.lang.Boolean active,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.portal.kernel.model.LayoutPrototype> obc)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _layoutPrototypeService.search(companyId, active, obc);
-	}
-
-	@Override
-	public void deleteLayoutPrototype(long layoutPrototypeId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		_layoutPrototypeService.deleteLayoutPrototype(layoutPrototypeId);
+			nameMap, description, active, serviceContext);
 	}
 
 	@Override

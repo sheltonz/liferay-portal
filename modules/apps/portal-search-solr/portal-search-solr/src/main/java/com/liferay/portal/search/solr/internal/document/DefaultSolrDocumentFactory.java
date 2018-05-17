@@ -14,12 +14,12 @@
 
 package com.liferay.portal.search.solr.internal.document;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.search.Document;
 import com.liferay.portal.kernel.search.DocumentImpl;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.search.geolocation.GeoLocationPoint;
 import com.liferay.portal.kernel.util.LocaleUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.search.solr.document.SolrDocumentFactory;
 
@@ -47,7 +47,7 @@ public class DefaultSolrDocumentFactory implements SolrDocumentFactory {
 
 			if (!field.isLocalized()) {
 				for (String value : field.getValues()) {
-					if (Validator.isNull(value)) {
+					if (value == null) {
 						continue;
 					}
 
@@ -97,11 +97,9 @@ public class DefaultSolrDocumentFactory implements SolrDocumentFactory {
 		SolrInputDocument solrInputDocument, Field field, String value,
 		String localizedName) {
 
-		String name = field.getName();
+		GeoLocationPoint geoLocationPoint = field.getGeoLocationPoint();
 
-		if (name.equals(Field.GEO_LOCATION)) {
-			GeoLocationPoint geoLocationPoint = field.getGeoLocationPoint();
-
+		if (geoLocationPoint != null) {
 			value =
 				geoLocationPoint.getLatitude() + StringPool.COMMA +
 					geoLocationPoint.getLongitude();

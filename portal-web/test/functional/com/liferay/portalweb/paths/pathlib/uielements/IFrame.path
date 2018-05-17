@@ -49,8 +49,18 @@
 	<td></td>
 </tr>
 <tr>
+	<td>EMBEDDED_IFRAME</td>
+	<td>//iframe[@id='embeddedIframe']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>IFRAME_TITLE</td>
 	<td>//div[contains(@class,'modal-header')]/h3[@class='modal-title' and contains(.,'${key_iframeTitle}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IFRAME_PORTLET</td>
+	<td>//iframe[contains(@id,'IFramePortlet') and contains(@id,'iframe')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -79,6 +89,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SELECT_CATEGORY</td>
+	<td>//iframe[contains(@id,'selectCategory_iframe_')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SELECT_CONTENT</td>
 	<td>//iframe[contains(@id,'selectContent')]</td>
 	<td></td>
@@ -99,14 +114,24 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SELECT_TAG</td>
+	<td>//iframe[contains(@id,'selectTag_iframe')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>MANAGE_SITE_PAGES</td>
 	<td>//iframe[contains(@id,'iframe') and contains(@class,'dialog-iframe-node')]</td>
 	<td></td>
 </tr>
 <tr>
-    <td>MODAL_IFRAME</td>
-    <td>//div[contains(@class,'modal')]//iframe</td>
-    <td></td>
+	<td>MODAL_IFRAME</td>
+	<td>//div[contains(@class,'modal')]//iframe</td>
+	<td></td>
+</tr>
+<tr>
+	<td>RECAPTCHA</td>
+	<td>//iframe[contains(@title,'recaptcha')]</td>
+	<td></td>
 </tr>
 <tr>
 	<td>SELECT_ORGANIZATION</td>
@@ -114,9 +139,29 @@
 	<td></td>
 </tr>
 <tr>
+	<td>SELECT_ORGANIZATION_ROLE</td>
+	<td>//iframe[contains(@id,'selectOrganizationRole_iframe_')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SELECT_REGULAR_ROLE</td>
+	<td>//iframe[contains(@id,'selectRegularRole_iframe_')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SELECT_SITE_ROLE</td>
+	<td>//iframe[contains(@id,'selectSiteRole_iframe_')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SELECT_SITES</td>
 	<td>//iframe[contains(@src,'selectSite')]</td>
 	<td></td>
+</tr>
+<tr>
+ 	<td>SELECT_USER_SITES</td>
+ 	<td>//iframe[contains(@id,'selectSite_iframe_')]</td>
+ 	<td></td>
 </tr>
 <tr>
 	<td>SELECT_STRUCTURE_FIELD</td>
@@ -141,6 +186,11 @@
 <tr>
 	<td>UPLOAD_IMAGE</td>
 	<td>//iframe[contains(@id,'changeLogo_iframe')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>XPACK_MONITORING</td>
+	<td>//iframe[contains(@id,'XPackMonitoringPortlet')]</td>
 	<td></td>
 </tr>
 </tbody>

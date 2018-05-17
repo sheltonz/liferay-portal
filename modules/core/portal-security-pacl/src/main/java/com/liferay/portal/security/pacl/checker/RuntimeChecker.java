@@ -14,9 +14,10 @@
 
 package com.liferay.portal.security.pacl.checker;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.security.pacl.Reflection;
 
 import java.security.Permission;
@@ -227,8 +228,9 @@ public class RuntimeChecker extends BaseChecker {
 
 			logSecurityException(
 				_log,
-				"Attempted to " + permission.getName() + " on " +
-					permission.getActions());
+				StringBundler.concat(
+					"Attempted to ", permission.getName(), " on ",
+					permission.getActions()));
 
 			return false;
 		}
@@ -434,8 +436,8 @@ public class RuntimeChecker extends BaseChecker {
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Allowing access to environment variables that match " +
-						"the regular expression " + environmentVariable);
+					"Allowing access to environment variables that match the " +
+						"regular expression " + environmentVariable);
 			}
 		}
 	}

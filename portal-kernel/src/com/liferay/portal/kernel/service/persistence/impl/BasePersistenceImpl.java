@@ -15,6 +15,7 @@
 package com.liferay.portal.kernel.service.persistence.impl;
 
 import com.liferay.expando.kernel.model.ExpandoBridge;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
@@ -46,7 +47,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.Serializable;
 
@@ -55,6 +55,7 @@ import java.sql.Types;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,7 +119,9 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 			return 0;
 		}
 		else {
-			return (results.get(0)).longValue();
+			Long firstResult = results.get(0);
+
+			return firstResult.longValue();
 		}
 	}
 
@@ -135,7 +138,6 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public T findByPrimaryKey(Serializable primaryKey)
 		throws NoSuchModelException {
 
@@ -213,6 +215,10 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 		return Collections.emptySet();
 	}
 
+	public Set<String> getCompoundPKColumnNames() {
+		return Collections.emptySet();
+	}
+
 	@Override
 	public Session getCurrentSession() throws ORMException {
 		return _sessionFactory.getCurrentSession();
@@ -255,12 +261,9 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	@Override
 	public SystemException processException(Exception e) {
 		if (!(e instanceof ORMException)) {
-			Class<?> clazz = e.getClass();
-
-			_log.error("Caught unexpected exception " + clazz.getName());
+			_log.error("Caught unexpected exception", e);
 		}
-
-		if (_log.isDebugEnabled()) {
+		else if (_log.isDebugEnabled()) {
 			_log.debug(e, e);
 		}
 
@@ -273,14 +276,13 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public T remove(Serializable primaryKey) throws NoSuchModelException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public T remove(T model) {
-		if (model instanceof ModelWrapper) {
+		while (model instanceof ModelWrapper) {
 			ModelWrapper<T> modelWrapper = (ModelWrapper<T>)model;
 
 			model = modelWrapper.getWrappedModel();
@@ -308,7 +310,9 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		_sessionFactory = sessionFactory;
+
 		_dialect = _sessionFactory.getDialect();
+
 		_db = DBManagerUtil.getDB(_dialect, getDataSource());
 
 		DBType dbType = _db.getDBType();
@@ -326,7 +330,7 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 	@Override
 	public T update(T model) {
-		if (model instanceof ModelWrapper) {
+		while (model instanceof ModelWrapper) {
 			ModelWrapper<T> modelWrapper = (ModelWrapper<T>)model;
 
 			model = modelWrapper.getWrappedModel();
@@ -384,17 +388,17 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	}
 
 	protected void appendOrderByComparator(
-		StringBundler query, String entityAlias,
+		StringBundler sb, String entityAlias,
 		OrderByComparator<T> orderByComparator) {
 
-		appendOrderByComparator(query, entityAlias, orderByComparator, false);
+		appendOrderByComparator(sb, entityAlias, orderByComparator, false);
 	}
 
 	protected void appendOrderByComparator(
-		StringBundler query, String entityAlias,
+		StringBundler sb, String entityAlias,
 		OrderByComparator<T> orderByComparator, boolean sqlQuery) {
 
-		query.append(ORDER_BY_CLAUSE);
+		sb.append(ORDER_BY_CLAUSE);
 
 		String[] orderByFields = orderByComparator.getOrderByFields();
 
@@ -407,23 +411,22 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 		}
 
 		for (int i = 0; i < length; i++) {
-			query.append(
-				getColumnName(entityAlias, orderByFields[i], sqlQuery));
+			sb.append(getColumnName(entityAlias, orderByFields[i], sqlQuery));
 
 			if ((i + 1) < length) {
 				if (orderByComparator.isAscending(orderByFields[i])) {
-					query.append(ORDER_BY_ASC_HAS_NEXT);
+					sb.append(ORDER_BY_ASC_HAS_NEXT);
 				}
 				else {
-					query.append(ORDER_BY_DESC_HAS_NEXT);
+					sb.append(ORDER_BY_DESC_HAS_NEXT);
 				}
 			}
 			else {
 				if (orderByComparator.isAscending(orderByFields[i])) {
-					query.append(ORDER_BY_ASC);
+					sb.append(ORDER_BY_ASC);
 				}
 				else {
-					query.append(ORDER_BY_DESC);
+					sb.append(ORDER_BY_DESC);
 				}
 			}
 		}
@@ -438,16 +441,17 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	protected String getColumnName(
 		String entityAlias, String fieldName, boolean sqlQuery) {
 
-		String columnName = fieldName;
-
-		Set<String> badColumnNames = getBadColumnNames();
-
-		if (badColumnNames.contains(fieldName)) {
-			columnName = columnName.concat(StringPool.UNDERLINE);
-		}
+		String columnName = _getDBColumnName(fieldName);
 
 		if (sqlQuery) {
 			fieldName = columnName;
+		}
+		else {
+			Set<String> compoundPKColumnNames = getCompoundPKColumnNames();
+
+			if (compoundPKColumnNames.contains(fieldName)) {
+				fieldName = "id.".concat(fieldName);
+			}
 		}
 
 		fieldName = entityAlias.concat(fieldName);
@@ -538,12 +542,28 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 	@Deprecated
 	protected ModelListener<T>[] listeners = new ModelListener[0];
 
+	private String _getDBColumnName(String fieldName) {
+		if (_dbColumnNames == null) {
+			Map<String, String> dbColumnNames = new HashMap<>();
+
+			for (String badColumnName : getBadColumnNames()) {
+				dbColumnNames.put(
+					badColumnName, badColumnName.concat(StringPool.UNDERLINE));
+			}
+
+			_dbColumnNames = dbColumnNames;
+		}
+
+		return _dbColumnNames.getOrDefault(fieldName, fieldName);
+	}
+
 	private static final Log _log = LogFactoryUtil.getLog(
 		BasePersistenceImpl.class);
 
 	private int _databaseOrderByMaxColumns;
 	private DataSource _dataSource;
 	private DB _db;
+	private Map<String, String> _dbColumnNames;
 	private Dialect _dialect;
 	private Class<T> _modelClass;
 	private SessionFactory _sessionFactory;
@@ -660,12 +680,12 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 		@Override
 		public CacheModel<NullModel> toCacheModel() {
-			return this;
+			return nullModel;
 		}
 
 		@Override
 		public NullModel toEntityModel() {
-			return this;
+			return nullModel;
 		}
 
 		@Override

@@ -35,12 +35,14 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.ResourceBlockPermissionPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.ResourceBlockPermissionImpl;
 import com.liferay.portal.model.impl.ResourceBlockPermissionModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,8 +62,10 @@ import java.util.Set;
  * @author Brian Wing Shun Chan
  * @see ResourceBlockPermissionPersistence
  * @see com.liferay.portal.kernel.service.persistence.ResourceBlockPermissionUtil
+ * @deprecated As of 7.0.0, with no direct replacement
  * @generated
  */
+@Deprecated
 @ProviderType
 public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<ResourceBlockPermission>
 	implements ResourceBlockPermissionPersistence {
@@ -310,7 +314,7 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		msg.append("resourceBlockId=");
 		msg.append(resourceBlockId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchResourceBlockPermissionException(msg.toString());
 	}
@@ -363,7 +367,7 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		msg.append("resourceBlockId=");
 		msg.append(resourceBlockId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchResourceBlockPermissionException(msg.toString());
 	}
@@ -825,7 +829,7 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		msg.append("roleId=");
 		msg.append(roleId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchResourceBlockPermissionException(msg.toString());
 	}
@@ -876,7 +880,7 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		msg.append("roleId=");
 		msg.append(roleId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchResourceBlockPermissionException(msg.toString());
 	}
@@ -1157,7 +1161,7 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 			msg.append(", roleId=");
 			msg.append(roleId);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -1424,7 +1428,8 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((ResourceBlockPermissionModelImpl)resourceBlockPermission);
+		clearUniqueFindersCache((ResourceBlockPermissionModelImpl)resourceBlockPermission,
+			true);
 	}
 
 	@Override
@@ -1438,53 +1443,40 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 				ResourceBlockPermissionImpl.class,
 				resourceBlockPermission.getPrimaryKey());
 
-			clearUniqueFindersCache((ResourceBlockPermissionModelImpl)resourceBlockPermission);
+			clearUniqueFindersCache((ResourceBlockPermissionModelImpl)resourceBlockPermission,
+				true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		ResourceBlockPermissionModelImpl resourceBlockPermissionModelImpl,
-		boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					resourceBlockPermissionModelImpl.getResourceBlockId(),
-					resourceBlockPermissionModelImpl.getRoleId()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_R_R, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_R_R, args,
-				resourceBlockPermissionModelImpl);
-		}
-		else {
-			if ((resourceBlockPermissionModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_R_R.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						resourceBlockPermissionModelImpl.getResourceBlockId(),
-						resourceBlockPermissionModelImpl.getRoleId()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_R_R, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_R_R, args,
-					resourceBlockPermissionModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		ResourceBlockPermissionModelImpl resourceBlockPermissionModelImpl) {
 		Object[] args = new Object[] {
 				resourceBlockPermissionModelImpl.getResourceBlockId(),
 				resourceBlockPermissionModelImpl.getRoleId()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_R_R, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_R_R, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_R_R, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_R_R, args,
+			resourceBlockPermissionModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		ResourceBlockPermissionModelImpl resourceBlockPermissionModelImpl,
+		boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					resourceBlockPermissionModelImpl.getResourceBlockId(),
+					resourceBlockPermissionModelImpl.getRoleId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_R_R, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_R_R, args);
+		}
 
 		if ((resourceBlockPermissionModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_R_R.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					resourceBlockPermissionModelImpl.getOriginalResourceBlockId(),
 					resourceBlockPermissionModelImpl.getOriginalRoleId()
 				};
@@ -1568,8 +1560,6 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 	@Override
 	protected ResourceBlockPermission removeImpl(
 		ResourceBlockPermission resourceBlockPermission) {
-		resourceBlockPermission = toUnwrappedModel(resourceBlockPermission);
-
 		Session session = null;
 
 		try {
@@ -1601,9 +1591,23 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 	@Override
 	public ResourceBlockPermission updateImpl(
 		ResourceBlockPermission resourceBlockPermission) {
-		resourceBlockPermission = toUnwrappedModel(resourceBlockPermission);
-
 		boolean isNew = resourceBlockPermission.isNew();
+
+		if (!(resourceBlockPermission instanceof ResourceBlockPermissionModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(resourceBlockPermission.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(resourceBlockPermission);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in resourceBlockPermission proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom ResourceBlockPermission implementation " +
+				resourceBlockPermission.getClass());
+		}
 
 		ResourceBlockPermissionModelImpl resourceBlockPermissionModelImpl = (ResourceBlockPermissionModelImpl)resourceBlockPermission;
 
@@ -1630,8 +1634,28 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !ResourceBlockPermissionModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!ResourceBlockPermissionModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] {
+					resourceBlockPermissionModelImpl.getResourceBlockId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_RESOURCEBLOCKID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_RESOURCEBLOCKID,
+				args);
+
+			args = new Object[] { resourceBlockPermissionModelImpl.getRoleId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_ROLEID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_ROLEID,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1679,33 +1703,12 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 			resourceBlockPermission.getPrimaryKey(), resourceBlockPermission,
 			false);
 
-		clearUniqueFindersCache(resourceBlockPermissionModelImpl);
-		cacheUniqueFindersCache(resourceBlockPermissionModelImpl, isNew);
+		clearUniqueFindersCache(resourceBlockPermissionModelImpl, false);
+		cacheUniqueFindersCache(resourceBlockPermissionModelImpl);
 
 		resourceBlockPermission.resetOriginalValues();
 
 		return resourceBlockPermission;
-	}
-
-	protected ResourceBlockPermission toUnwrappedModel(
-		ResourceBlockPermission resourceBlockPermission) {
-		if (resourceBlockPermission instanceof ResourceBlockPermissionImpl) {
-			return resourceBlockPermission;
-		}
-
-		ResourceBlockPermissionImpl resourceBlockPermissionImpl = new ResourceBlockPermissionImpl();
-
-		resourceBlockPermissionImpl.setNew(resourceBlockPermission.isNew());
-		resourceBlockPermissionImpl.setPrimaryKey(resourceBlockPermission.getPrimaryKey());
-
-		resourceBlockPermissionImpl.setMvccVersion(resourceBlockPermission.getMvccVersion());
-		resourceBlockPermissionImpl.setResourceBlockPermissionId(resourceBlockPermission.getResourceBlockPermissionId());
-		resourceBlockPermissionImpl.setCompanyId(resourceBlockPermission.getCompanyId());
-		resourceBlockPermissionImpl.setResourceBlockId(resourceBlockPermission.getResourceBlockId());
-		resourceBlockPermissionImpl.setRoleId(resourceBlockPermission.getRoleId());
-		resourceBlockPermissionImpl.setActionIds(resourceBlockPermission.getActionIds());
-
-		return resourceBlockPermissionImpl;
 	}
 
 	/**
@@ -1859,14 +1862,14 @@ public class ResourceBlockPermissionPersistenceImpl extends BasePersistenceImpl<
 		query.append(_SQL_SELECT_RESOURCEBLOCKPERMISSION_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

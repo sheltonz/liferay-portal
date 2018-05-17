@@ -21,6 +21,7 @@ import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -57,7 +58,7 @@ public class SyncDLFileVersionDiffModelImpl extends BaseModelImpl<SyncDLFileVers
 	/*
 	 * NOTE FOR DEVELOPERS:
 	 *
-	 * Never modify or reference this class directly. All methods that expect a sync d l file version diff model instance should use the {@link SyncDLFileVersionDiff} interface instead.
+	 * Never modify or reference this class directly. All methods that expect a sync dl file version diff model instance should use the {@link SyncDLFileVersionDiff} interface instead.
 	 */
 	public static final String TABLE_NAME = "SyncDLFileVersionDiff";
 	public static final Object[][] TABLE_COLUMNS = {
@@ -530,7 +531,7 @@ public class SyncDLFileVersionDiffModelImpl extends BaseModelImpl<SyncDLFileVers
 
 	private static final ClassLoader _classLoader = SyncDLFileVersionDiff.class.getClassLoader();
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
-			SyncDLFileVersionDiff.class
+			SyncDLFileVersionDiff.class, ModelWrapper.class
 		};
 	private long _syncDLFileVersionDiffId;
 	private long _fileEntryId;

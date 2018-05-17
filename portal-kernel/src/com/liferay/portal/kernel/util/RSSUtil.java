@@ -14,10 +14,14 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.StringPool;
+
 /**
  * @author Brian Wing Shun Chan
  * @author Eduardo Garcia
+ * @deprecated As of 7.0.0, replaced by {@link com.liferay.rss.util.RSSUtil}
  */
+@Deprecated
 public class RSSUtil {
 
 	public static final String ATOM = "atom";
@@ -31,7 +35,7 @@ public class RSSUtil {
 
 	public static final String DISPLAY_STYLE_TITLE = "title";
 
-	public static final String[] DISPLAY_STYLES = new String[] {
+	public static final String[] DISPLAY_STYLES = {
 		DISPLAY_STYLE_ABSTRACT, DISPLAY_STYLE_FULL_CONTENT, DISPLAY_STYLE_TITLE
 	};
 

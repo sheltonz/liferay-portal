@@ -14,9 +14,10 @@
 
 package com.liferay.portal.upgrade.v7_0_0;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.LoggingTimer;
+import com.liferay.portal.kernel.util.StringBundler;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,8 +50,8 @@ public class UpgradeRelease extends UpgradeProcess {
 	protected void upgradeSchemaVersion() throws Exception {
 		try (LoggingTimer loggingTimer = new LoggingTimer();
 			PreparedStatement ps = connection.prepareStatement(
-				"select distinct buildNumber from Release_ " +
-					"where schemaVersion is null");
+				"select distinct buildNumber from Release_ where " +
+					"schemaVersion is null");
 			ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
@@ -59,9 +60,10 @@ public class UpgradeRelease extends UpgradeProcess {
 				String schemaVersion = toSchemaVersion(buildNumber);
 
 				runSQL(
-					"update Release_ set schemaVersion = '" + schemaVersion +
-						"' where buildNumber = " + buildNumber +
-							" and schemaVersion is null");
+					StringBundler.concat(
+						"update Release_ set schemaVersion = '", schemaVersion,
+						"' where buildNumber = ", buildNumber,
+						" and schemaVersion is null"));
 			}
 		}
 	}

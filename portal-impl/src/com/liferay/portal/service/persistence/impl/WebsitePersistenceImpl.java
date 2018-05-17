@@ -37,15 +37,18 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.WebsitePersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.impl.WebsiteImpl;
 import com.liferay.portal.model.impl.WebsiteModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -225,7 +228,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -313,7 +316,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -362,7 +365,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -454,7 +457,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -590,7 +593,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -782,7 +785,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -878,7 +881,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -933,7 +936,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -1027,7 +1030,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1169,7 +1172,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1429,7 +1432,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -1478,7 +1481,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -1929,7 +1932,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -1978,7 +1981,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -2451,7 +2454,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", classNameId=");
 		msg.append(classNameId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -2507,7 +2510,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", classNameId=");
 		msg.append(classNameId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -2793,7 +2796,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the matching websites
 	 */
 	@Override
@@ -2812,7 +2815,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
 	 * @return the range of matching websites
@@ -2832,7 +2835,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -2855,7 +2858,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
 	 * @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -2984,7 +2987,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching website
 	 * @throws NoSuchWebsiteException if a matching website could not be found
@@ -3013,7 +3016,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -3023,7 +3026,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching website, or <code>null</code> if a matching website could not be found
 	 */
@@ -3045,7 +3048,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching website
 	 * @throws NoSuchWebsiteException if a matching website could not be found
@@ -3074,7 +3077,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", classPK=");
 		msg.append(classPK);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -3084,7 +3087,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching website, or <code>null</code> if a matching website could not be found
 	 */
@@ -3113,7 +3116,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 * @param websiteId the primary key of the current website
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next website
 	 * @throws NoSuchWebsiteException if a website with the primary key could not be found
@@ -3269,7 +3272,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 */
 	@Override
 	public void removeByC_C_C(long companyId, long classNameId, long classPK) {
@@ -3284,7 +3287,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @return the number of matching websites
 	 */
 	@Override
@@ -3379,7 +3382,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @return the matching websites
 	 */
@@ -3399,7 +3402,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
@@ -3421,7 +3424,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
@@ -3445,7 +3448,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param start the lower bound of the range of websites
 	 * @param end the upper bound of the range of websites (not inclusive)
@@ -3487,7 +3490,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 					if ((companyId != website.getCompanyId()) ||
 							(classNameId != website.getClassNameId()) ||
 							(classPK != website.getClassPK()) ||
-							(primary != website.getPrimary())) {
+							(primary != website.isPrimary())) {
 						list = null;
 
 						break;
@@ -3580,7 +3583,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching website
@@ -3614,7 +3617,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", primary=");
 		msg.append(primary);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -3624,7 +3627,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching website, or <code>null</code> if a matching website could not be found
@@ -3648,7 +3651,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching website
@@ -3682,7 +3685,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		msg.append(", primary=");
 		msg.append(primary);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchWebsiteException(msg.toString());
 	}
@@ -3692,7 +3695,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the last matching website, or <code>null</code> if a matching website could not be found
@@ -3723,7 +3726,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 * @param websiteId the primary key of the current website
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the previous, current, and next website
@@ -3885,7 +3888,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 */
 	@Override
@@ -3902,7 +3905,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 	 *
 	 * @param companyId the company ID
 	 * @param classNameId the class name ID
-	 * @param classPK the class p k
+	 * @param classPK the class pk
 	 * @param primary the primary
 	 * @return the number of matching websites
 	 */
@@ -3973,6 +3976,25 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 
 	public WebsitePersistenceImpl() {
 		setModelClass(Website.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("uuid", "uuid_");
+			dbColumnNames.put("primary", "primary_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -4124,8 +4146,6 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 
 	@Override
 	protected Website removeImpl(Website website) {
-		website = toUnwrappedModel(website);
-
 		Session session = null;
 
 		try {
@@ -4156,9 +4176,23 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 
 	@Override
 	public Website updateImpl(Website website) {
-		website = toUnwrappedModel(website);
-
 		boolean isNew = website.isNew();
+
+		if (!(website instanceof WebsiteModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(website.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(website);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in website proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom Website implementation " +
+				website.getClass());
+		}
 
 		WebsiteModelImpl websiteModelImpl = (WebsiteModelImpl)website;
 
@@ -4213,8 +4247,69 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !WebsiteModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!WebsiteModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { websiteModelImpl.getUuid() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				args);
+
+			args = new Object[] {
+					websiteModelImpl.getUuid(), websiteModelImpl.getCompanyId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				args);
+
+			args = new Object[] { websiteModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			args = new Object[] { websiteModelImpl.getUserId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+				args);
+
+			args = new Object[] {
+					websiteModelImpl.getCompanyId(),
+					websiteModelImpl.getClassNameId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C,
+				args);
+
+			args = new Object[] {
+					websiteModelImpl.getCompanyId(),
+					websiteModelImpl.getClassNameId(),
+					websiteModelImpl.getClassPK()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C,
+				args);
+
+			args = new Object[] {
+					websiteModelImpl.getCompanyId(),
+					websiteModelImpl.getClassNameId(),
+					websiteModelImpl.getClassPK(), websiteModelImpl.isPrimary()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_C_C_P,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -4349,7 +4444,7 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 						websiteModelImpl.getCompanyId(),
 						websiteModelImpl.getClassNameId(),
 						websiteModelImpl.getClassPK(),
-						websiteModelImpl.getPrimary()
+						websiteModelImpl.isPrimary()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_C_C_C_P, args);
@@ -4364,34 +4459,6 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		website.resetOriginalValues();
 
 		return website;
-	}
-
-	protected Website toUnwrappedModel(Website website) {
-		if (website instanceof WebsiteImpl) {
-			return website;
-		}
-
-		WebsiteImpl websiteImpl = new WebsiteImpl();
-
-		websiteImpl.setNew(website.isNew());
-		websiteImpl.setPrimaryKey(website.getPrimaryKey());
-
-		websiteImpl.setMvccVersion(website.getMvccVersion());
-		websiteImpl.setUuid(website.getUuid());
-		websiteImpl.setWebsiteId(website.getWebsiteId());
-		websiteImpl.setCompanyId(website.getCompanyId());
-		websiteImpl.setUserId(website.getUserId());
-		websiteImpl.setUserName(website.getUserName());
-		websiteImpl.setCreateDate(website.getCreateDate());
-		websiteImpl.setModifiedDate(website.getModifiedDate());
-		websiteImpl.setClassNameId(website.getClassNameId());
-		websiteImpl.setClassPK(website.getClassPK());
-		websiteImpl.setUrl(website.getUrl());
-		websiteImpl.setTypeId(website.getTypeId());
-		websiteImpl.setPrimary(website.isPrimary());
-		websiteImpl.setLastPublishDate(website.getLastPublishDate());
-
-		return websiteImpl;
 	}
 
 	/**
@@ -4542,14 +4609,14 @@ public class WebsitePersistenceImpl extends BasePersistenceImpl<Website>
 		query.append(_SQL_SELECT_WEBSITE_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

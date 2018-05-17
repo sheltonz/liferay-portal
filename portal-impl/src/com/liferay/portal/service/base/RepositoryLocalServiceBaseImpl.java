@@ -69,6 +69,7 @@ import com.liferay.portal.kernel.service.persistence.RepositoryPersistence;
 import com.liferay.portal.kernel.service.persistence.SystemEventPersistence;
 import com.liferay.portal.kernel.service.persistence.UserFinder;
 import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 
@@ -121,6 +122,7 @@ public abstract class RepositoryLocalServiceBaseImpl
 	 * @return the new repository
 	 */
 	@Override
+	@Transactional(enabled = false)
 	public Repository createRepository(long repositoryId) {
 		return repositoryPersistence.create(repositoryId);
 	}
@@ -712,18 +714,18 @@ public abstract class RepositoryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the d l app helper local service.
+	 * Returns the dl app helper local service.
 	 *
-	 * @return the d l app helper local service
+	 * @return the dl app helper local service
 	 */
 	public com.liferay.document.library.kernel.service.DLAppHelperLocalService getDLAppHelperLocalService() {
 		return dlAppHelperLocalService;
 	}
 
 	/**
-	 * Sets the d l app helper local service.
+	 * Sets the dl app helper local service.
 	 *
-	 * @param dlAppHelperLocalService the d l app helper local service
+	 * @param dlAppHelperLocalService the dl app helper local service
 	 */
 	public void setDLAppHelperLocalService(
 		com.liferay.document.library.kernel.service.DLAppHelperLocalService dlAppHelperLocalService) {

@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CalendarUtil {
 
-	public static final String[] DAYS_ABBREVIATION = new String[] {
+	public static final String[] DAYS_ABBREVIATION = {
 		"sunday-abbreviation", "monday-abbreviation", "tuesday-abbreviation",
 		"wednesday-abbreviation", "thursday-abbreviation",
 		"friday-abbreviation", "saturday-abbreviation"
@@ -38,7 +38,7 @@ public class CalendarUtil {
 
 	public static final String ICAL_EXTENSION = "ics";
 
-	public static final int[] MONTH_IDS = new int[] {
+	public static final int[] MONTH_IDS = {
 		Calendar.JANUARY, Calendar.FEBRUARY, Calendar.MARCH, Calendar.APRIL,
 		Calendar.MAY, Calendar.JUNE, Calendar.JULY, Calendar.AUGUST,
 		Calendar.SEPTEMBER, Calendar.OCTOBER, Calendar.NOVEMBER,
@@ -91,8 +91,8 @@ public class CalendarUtil {
 		if (today.get(Calendar.MONTH) < birthday.get(Calendar.MONTH)) {
 			yearDiff--;
 		}
-		else if (today.get(Calendar.MONTH) == birthday.get(Calendar.MONTH) &&
-				 today.get(Calendar.DATE) < birthday.get(Calendar.DATE)) {
+		else if ((today.get(Calendar.MONTH) == birthday.get(Calendar.MONTH)) &&
+				 (today.get(Calendar.DATE) < birthday.get(Calendar.DATE))) {
 
 			yearDiff--;
 		}
@@ -165,7 +165,7 @@ public class CalendarUtil {
 			return 30;
 		}
 
-		if (((year % 4) == 0) && ((year % 100) != 0) || ((year % 400) == 0)) {
+		if ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0)) {
 			return 29;
 		}
 		else {
@@ -457,6 +457,7 @@ public class CalendarUtil {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
 		int day = cal.get(Calendar.DATE);
+
 		int hour = 0;
 		int minute = 0;
 		int second = 0;

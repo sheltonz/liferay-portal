@@ -86,6 +86,8 @@ public class LanguageTag extends IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_ddmTemplateGroupId = 0;
 		_ddmTemplateKey = null;
 		_displayCurrentLocale = true;
@@ -130,6 +132,7 @@ public class LanguageTag extends IncludeTag {
 		formAction =
 			themeDisplay.getPathMain() + "/portal/update_language?p_l_id=" +
 				themeDisplay.getPlid();
+
 		formAction = HttpUtil.setParameter(
 			formAction, "redirect", PortalUtil.getCurrentURL(request));
 

@@ -30,16 +30,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -68,7 +67,8 @@ public class AppPersistenceTest {
 	@Rule
 	public static final AggregateTestRule aggregateTestRule = new AggregateTestRule(new LiferayIntegrationTestRule(),
 			PersistenceTestRule.INSTANCE,
-			new TransactionalTestRule(Propagation.REQUIRED));
+			new TransactionalTestRule(Propagation.REQUIRED,
+				"com.liferay.marketplace.service"));
 
 	@Before
 	public void setUp() {
@@ -171,23 +171,23 @@ public class AppPersistenceTest {
 		Assert.assertEquals(existingApp.getCategory(), newApp.getCategory());
 		Assert.assertEquals(existingApp.getIconURL(), newApp.getIconURL());
 		Assert.assertEquals(existingApp.getVersion(), newApp.getVersion());
-		Assert.assertEquals(existingApp.getRequired(), newApp.getRequired());
+		Assert.assertEquals(existingApp.isRequired(), newApp.isRequired());
 	}
 
 	@Test
 	public void testCountByUuid() throws Exception {
-		_persistence.countByUuid(StringPool.BLANK);
+		_persistence.countByUuid("");
 
-		_persistence.countByUuid(StringPool.NULL);
+		_persistence.countByUuid("null");
 
 		_persistence.countByUuid((String)null);
 	}
 
 	@Test
 	public void testCountByUuid_C() throws Exception {
-		_persistence.countByUuid_C(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByUuid_C("", RandomTestUtil.nextLong());
 
-		_persistence.countByUuid_C(StringPool.NULL, 0L);
+		_persistence.countByUuid_C("null", 0L);
 
 		_persistence.countByUuid_C((String)null, 0L);
 	}
@@ -208,9 +208,9 @@ public class AppPersistenceTest {
 
 	@Test
 	public void testCountByCategory() throws Exception {
-		_persistence.countByCategory(StringPool.BLANK);
+		_persistence.countByCategory("");
 
-		_persistence.countByCategory(StringPool.NULL);
+		_persistence.countByCategory("null");
 
 		_persistence.countByCategory((String)null);
 	}

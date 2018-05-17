@@ -14,20 +14,12 @@
 
 package com.liferay.exportimport.kernel.lar;
 
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_EXPORT_PORTLET;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_IMPORT_PORTLET;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_PUBLISH_LAYOUT_LOCAL;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_PUBLISH_LAYOUT_REMOTE;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_PUBLISH_PORTLET;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_SCHEDULED_PUBLISH_LAYOUT_LOCAL;
-import static com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants.TYPE_SCHEDULED_PUBLISH_LAYOUT_REMOTE;
-
 import aQute.bnd.annotation.ProviderType;
 
+import com.liferay.exportimport.kernel.configuration.ExportImportConfigurationConstants;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.service.ExportImportConfigurationLocalServiceUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -46,7 +38,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.TimeZoneUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
@@ -320,12 +311,6 @@ public class ExportImportDateUtil {
 		StagedGroupedModel stagedGroupedModel, DateRange dateRange,
 		Date lastPublishDate) {
 
-		Date originalLastPublishDate = stagedGroupedModel.getLastPublishDate();
-
-		if (!isValidDateRange(dateRange, originalLastPublishDate)) {
-			return;
-		}
-
 		if (lastPublishDate == null) {
 			lastPublishDate = new Date();
 		}
@@ -357,8 +342,7 @@ public class ExportImportDateUtil {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
 					"Not updating the portlet setup for " + portletId +
-						" because no setup was returned for the current " +
-							"page");
+						" because no setup was returned for the current page");
 			}
 		}
 		catch (Exception e) {
@@ -468,38 +452,53 @@ public class ExportImportDateUtil {
 	protected static String getDefaultDateRange(
 		ExportImportConfiguration exportImportConfiguration) {
 
-		if (exportImportConfiguration.getType() == TYPE_EXPORT_LAYOUT) {
-			return RANGE_ALL;
-		}
-		else if (exportImportConfiguration.getType() == TYPE_EXPORT_PORTLET) {
-			return RANGE_ALL;
-		}
-		else if (exportImportConfiguration.getType() == TYPE_IMPORT_LAYOUT) {
-			return RANGE_ALL;
-		}
-		else if (exportImportConfiguration.getType() == TYPE_IMPORT_PORTLET) {
+		if (exportImportConfiguration.getType() ==
+				ExportImportConfigurationConstants.TYPE_EXPORT_LAYOUT) {
+
 			return RANGE_ALL;
 		}
 		else if (exportImportConfiguration.getType() ==
-					TYPE_PUBLISH_LAYOUT_LOCAL) {
+					ExportImportConfigurationConstants.TYPE_EXPORT_PORTLET) {
+
+			return RANGE_ALL;
+		}
+		else if (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.TYPE_IMPORT_LAYOUT) {
+
+			return RANGE_ALL;
+		}
+		else if (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.TYPE_IMPORT_PORTLET) {
+
+			return RANGE_ALL;
+		}
+		else if (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_LOCAL) {
 
 			return RANGE_FROM_LAST_PUBLISH_DATE;
 		}
 		else if (exportImportConfiguration.getType() ==
-					TYPE_PUBLISH_LAYOUT_REMOTE) {
-
-			return RANGE_FROM_LAST_PUBLISH_DATE;
-		}
-		else if (exportImportConfiguration.getType() == TYPE_PUBLISH_PORTLET) {
-			return RANGE_FROM_LAST_PUBLISH_DATE;
-		}
-		else if (exportImportConfiguration.getType() ==
-					TYPE_SCHEDULED_PUBLISH_LAYOUT_LOCAL) {
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_LAYOUT_REMOTE) {
 
 			return RANGE_FROM_LAST_PUBLISH_DATE;
 		}
 		else if (exportImportConfiguration.getType() ==
-					TYPE_SCHEDULED_PUBLISH_LAYOUT_REMOTE) {
+					ExportImportConfigurationConstants.
+						TYPE_PUBLISH_PORTLET_LOCAL) {
+
+			return RANGE_FROM_LAST_PUBLISH_DATE;
+		}
+		else if (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.
+						TYPE_SCHEDULED_PUBLISH_LAYOUT_LOCAL) {
+
+			return RANGE_FROM_LAST_PUBLISH_DATE;
+		}
+		else if (exportImportConfiguration.getType() ==
+					ExportImportConfigurationConstants.
+						TYPE_SCHEDULED_PUBLISH_LAYOUT_REMOTE) {
 
 			return RANGE_FROM_LAST_PUBLISH_DATE;
 		}
@@ -518,7 +517,6 @@ public class ExportImportDateUtil {
 		}
 
 		Date startDate = dateRange.getStartDate();
-		Date endDate = dateRange.getEndDate();
 
 		if (originalLastPublishDate != null) {
 			if ((startDate != null) &&
@@ -527,11 +525,13 @@ public class ExportImportDateUtil {
 				return false;
 			}
 
+			Date endDate = dateRange.getEndDate();
+
 			if ((endDate != null) && endDate.before(originalLastPublishDate)) {
 				return false;
 			}
 		}
-		else if ((startDate != null) || (endDate != null)) {
+		else if (startDate != null) {
 			return false;
 		}
 

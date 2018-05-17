@@ -14,9 +14,9 @@
 
 package com.liferay.portal.test.rule;
 
+import com.liferay.petra.string.CharPool;
 import com.liferay.portal.kernel.test.rule.BaseTestRule;
 import com.liferay.portal.kernel.test.rule.callback.BaseTestCallback;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.test.rule.callback.HypersonicServerTestCallback;
 import com.liferay.portal.util.PropsImpl;
@@ -93,6 +93,7 @@ public class HypersonicServerTestRule extends BaseTestRule<Server, Object> {
 			}
 
 			_DATABASE_NAME = databaseName;
+
 			_DATABASE_URL =
 				HypersonicServerTestCallback.DATABASE_URL_BASE + _DATABASE_NAME;
 		}

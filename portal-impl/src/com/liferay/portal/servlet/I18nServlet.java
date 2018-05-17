@@ -14,16 +14,19 @@
 
 package com.liferay.portal.servlet;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
-import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.xml.Element;
@@ -32,9 +35,11 @@ import com.liferay.portal.util.PropsValues;
 import java.io.IOException;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -54,11 +59,15 @@ import org.apache.struts.Globals;
 public class I18nServlet extends HttpServlet {
 
 	public static Set<String> getLanguageIds() {
+		return new HashSet<>(_languageIds.values());
+	}
+
+	public static Map<String, String> getLanguageIdsMap() {
 		return _languageIds;
 	}
 
 	public static void setLanguageIds(Element root) {
-		_languageIds = new HashSet<>();
+		Map<String, String> languageIds = new HashMap<>();
 
 		List<Element> rootElements = root.elements("servlet-mapping");
 
@@ -71,11 +80,11 @@ public class I18nServlet extends HttpServlet {
 				String languageId = urlPattern.substring(
 					0, urlPattern.lastIndexOf(CharPool.SLASH));
 
-				_languageIds.add(languageId);
+				languageIds.put(StringUtil.toLowerCase(languageId), languageId);
 			}
 		}
 
-		_languageIds = Collections.unmodifiableSet(_languageIds);
+		_languageIds = Collections.unmodifiableMap(languageIds);
 	}
 
 	@Override
@@ -130,7 +139,7 @@ public class I18nServlet extends HttpServlet {
 		String path = GetterUtil.getString(request.getPathInfo());
 
 		if (Validator.isNull(path)) {
-			return null;
+			path = "/";
 		}
 
 		String i18nLanguageId = request.getServletPath();
@@ -153,14 +162,46 @@ public class I18nServlet extends HttpServlet {
 
 		String i18nLanguageCode = i18nLanguageId;
 
-		if ((locale == null) || Validator.isNull(locale.getCountry())) {
-
-			// Locales must contain the country code
-
-			locale = LanguageUtil.getLocale(i18nLanguageCode);
-		}
-
 		if (locale != null) {
+			Locale siteDefaultLocale = null;
+
+			try {
+				int[] friendlyURLIndices = PortalUtil.getGroupFriendlyURLIndex(
+					path);
+
+				String friendlyURL = path.substring(
+					friendlyURLIndices[0], friendlyURLIndices[1]);
+
+				Group siteGroup = GroupLocalServiceUtil.getFriendlyURLGroup(
+					GetterUtil.getLong(
+						request.getAttribute(WebKeys.COMPANY_ID)),
+					friendlyURL);
+
+				siteDefaultLocale = PortalUtil.getSiteDefaultLocale(siteGroup);
+
+				if (!LanguageUtil.isSameLanguage(locale, siteDefaultLocale)) {
+					siteDefaultLocale = LanguageUtil.getLocale(
+						siteGroup.getGroupId(), locale.getLanguage());
+				}
+			}
+			catch (Exception e) {
+				siteDefaultLocale = LocaleUtil.getDefault();
+
+				if (!LanguageUtil.isSameLanguage(locale, siteDefaultLocale)) {
+					siteDefaultLocale = LanguageUtil.getLocale(
+						locale.getLanguage());
+				}
+			}
+
+			String siteDefaultLanguageId = LanguageUtil.getLanguageId(
+				siteDefaultLocale);
+
+			if (siteDefaultLanguageId.startsWith(i18nLanguageId)) {
+				locale = siteDefaultLocale;
+
+				i18nPath = StringPool.SLASH + locale.getLanguage();
+			}
+
 			i18nLanguageId = LocaleUtil.toLanguageId(locale);
 
 			i18nLanguageCode = locale.getLanguage();
@@ -185,9 +226,23 @@ public class I18nServlet extends HttpServlet {
 	protected I18nData getI18nData(Locale locale) {
 		String languageId = LocaleUtil.toLanguageId(locale);
 
+		String i18nPath = StringPool.SLASH + languageId;
+
+		Locale defaultLocale = LocaleUtil.getDefault();
+
+		if (LocaleUtil.equals(defaultLocale, locale)) {
+			i18nPath = StringPool.SLASH + defaultLocale.getLanguage();
+		}
+		else if (!LanguageUtil.isSameLanguage(defaultLocale, locale)) {
+			defaultLocale = LanguageUtil.getLocale(locale.getLanguage());
+
+			if (LocaleUtil.equals(defaultLocale, locale)) {
+				i18nPath = StringPool.SLASH + defaultLocale.getLanguage();
+			}
+		}
+
 		return new I18nData(
-			StringPool.SLASH + languageId, locale.getLanguage(), languageId,
-			StringPool.SLASH);
+			i18nPath, locale.getLanguage(), languageId, StringPool.SLASH);
 	}
 
 	protected class I18nData {
@@ -260,6 +315,6 @@ public class I18nServlet extends HttpServlet {
 
 	private static final Log _log = LogFactoryUtil.getLog(I18nServlet.class);
 
-	private static Set<String> _languageIds;
+	private static Map<String, String> _languageIds;
 
 }

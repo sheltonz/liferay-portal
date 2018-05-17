@@ -14,14 +14,15 @@
 
 package com.liferay.portlet;
 
+import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutType;
 import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.model.PortletPreferencesIds;
 import com.liferay.portal.kernel.model.PublicRenderParameter;
 import com.liferay.portal.kernel.model.User;
@@ -36,6 +37,7 @@ import com.liferay.portal.kernel.portlet.PortletModeFactory;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletQName;
 import com.liferay.portal.kernel.portlet.PortletQNameUtil;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.portlet.configuration.icon.PortletConfigurationIconMenu;
 import com.liferay.portal.kernel.portlet.toolbar.PortletToolbar;
@@ -49,12 +51,14 @@ import com.liferay.portal.kernel.service.permission.PortletPermissionUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.DirectRequestDispatcherFactoryUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
+import com.liferay.portal.kernel.servlet.TransferHeadersHelperUtil;
 import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.util.comparator.PortletConfigurationIconComparator;
@@ -66,6 +70,7 @@ import com.liferay.util.SerializableUtil;
 import java.io.Serializable;
 import java.io.Writer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +104,7 @@ public class PortletContainerImpl implements PortletContainer {
 		throws PortletContainerException {
 
 		try {
-			_doPreparePortlet(request, portlet);
+			_preparePortlet(request, portlet);
 		}
 		catch (Exception e) {
 			throw new PortletContainerException(e);
@@ -112,12 +117,15 @@ public class PortletContainerImpl implements PortletContainer {
 			Portlet portlet)
 		throws PortletContainerException {
 
-		try {
-			return _doProcessAction(request, response, portlet);
-		}
-		catch (Exception e) {
-			throw new PortletContainerException(e);
-		}
+		return _preserveGroupIds(
+			request,
+			() -> {
+				if (portlet != null) {
+					_processGroupId(request, portlet);
+				}
+
+				return _processAction(request, response, portlet);
+			});
 	}
 
 	@Override
@@ -126,12 +134,45 @@ public class PortletContainerImpl implements PortletContainer {
 			Portlet portlet, Layout layout, Event event)
 		throws PortletContainerException {
 
-		try {
-			return _doProcessEvent(request, response, portlet, layout, event);
+		return _preserveGroupIds(
+			request,
+			() -> {
+				String portletId = ParamUtil.getString(request, "p_p_id");
+
+				if ((portlet != null) &&
+					portletId.equals(portlet.getPortletId())) {
+
+					_processGroupId(request, portlet);
+				}
+
+				return _processEvent(request, response, portlet, layout, event);
+			});
+	}
+
+	@Override
+	public void processPublicRenderParameters(
+		HttpServletRequest request, Layout layout) {
+
+		processPublicRenderParameters(request, layout, null);
+	}
+
+	@Override
+	public void processPublicRenderParameters(
+		HttpServletRequest request, Layout layout, Portlet portlet) {
+
+		LayoutType layoutType = layout.getLayoutType();
+
+		if (!(layoutType instanceof LayoutTypePortlet)) {
+			return;
 		}
-		catch (Exception e) {
-			throw new PortletContainerException(e);
-		}
+
+		LayoutTypePortlet layoutTypePortlet = (LayoutTypePortlet)layoutType;
+
+		List<Portlet> portlets = layoutTypePortlet.getPortlets();
+
+		portlets.remove(portlet);
+
+		_processPublicRenderParameters(request, layout, portlets, false);
 	}
 
 	@Override
@@ -140,12 +181,21 @@ public class PortletContainerImpl implements PortletContainer {
 			Portlet portlet)
 		throws PortletContainerException {
 
-		try {
-			_doRender(request, response, portlet);
-		}
-		catch (Exception e) {
-			throw new PortletContainerException(e);
-		}
+		_preserveGroupIds(
+			request,
+			() -> {
+				String portletId = ParamUtil.getString(request, "p_p_id");
+
+				if ((portlet != null) &&
+					portletId.equals(portlet.getPortletId())) {
+
+					_processGroupId(request, portlet);
+				}
+
+				_render(request, response, portlet);
+
+				return null;
+			});
 	}
 
 	@Override
@@ -154,12 +204,17 @@ public class PortletContainerImpl implements PortletContainer {
 			Portlet portlet)
 		throws PortletContainerException {
 
-		try {
-			_doServeResource(request, response, portlet);
-		}
-		catch (Exception e) {
-			throw new PortletContainerException(e);
-		}
+		_preserveGroupIds(
+			request,
+			() -> {
+				if (portlet != null) {
+					_processGroupId(request, portlet);
+				}
+
+				_serveResource(request, response, portlet);
+
+				return null;
+			});
 	}
 
 	public void setPortletConfigurationIconMenu(
@@ -196,62 +251,6 @@ public class PortletContainerImpl implements PortletContainer {
 		return scopeGroupId;
 	}
 
-	protected void processPublicRenderParameters(
-		HttpServletRequest request, Layout layout, Portlet portlet) {
-
-		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
-		PortletApp portletApp = portlet.getPortletApp();
-
-		Map<String, String[]> publicRenderParameters =
-			PublicRenderParametersPool.get(
-				request, layout.getPlid(), portletApp.isWARFile());
-
-		Map<String, String[]> parameters = request.getParameterMap();
-
-		for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
-			String name = entry.getKey();
-
-			QName qName = PortletQNameUtil.getQName(name);
-
-			if (qName == null) {
-				continue;
-			}
-
-			PublicRenderParameter publicRenderParameter =
-				portlet.getPublicRenderParameter(
-					qName.getNamespaceURI(), qName.getLocalPart());
-
-			if (publicRenderParameter == null) {
-				continue;
-			}
-
-			String publicRenderParameterName =
-				PortletQNameUtil.getPublicRenderParameterName(qName);
-
-			if (name.startsWith(
-					PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE)) {
-
-				String[] values = entry.getValue();
-
-				if (themeDisplay.isLifecycleAction()) {
-					String[] oldValues = publicRenderParameters.get(
-						publicRenderParameterName);
-
-					if ((oldValues != null) && (oldValues.length != 0)) {
-						values = ArrayUtil.append(values, oldValues);
-					}
-				}
-
-				publicRenderParameters.put(publicRenderParameterName, values);
-			}
-			else {
-				publicRenderParameters.remove(publicRenderParameterName);
-			}
-		}
-	}
-
 	protected Event serializeEvent(
 		Event event, ClassLoader portletClassLoader) {
 
@@ -285,7 +284,7 @@ public class PortletContainerImpl implements PortletContainer {
 		return new EventImpl(event.getName(), event.getQName(), value);
 	}
 
-	private void _doPreparePortlet(HttpServletRequest request, Portlet portlet)
+	private void _preparePortlet(HttpServletRequest request, Portlet portlet)
 		throws Exception {
 
 		User user = PortalUtil.getUser(request);
@@ -293,22 +292,6 @@ public class PortletContainerImpl implements PortletContainer {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 			WebKeys.THEME_DISPLAY);
-
-		long scopeGroupId = PortalUtil.getScopeGroupId(
-			request, portlet.getPortletId());
-
-		themeDisplay.setScopeGroupId(scopeGroupId);
-
-		long siteGroupId = 0;
-
-		if (layout.isTypeControlPanel()) {
-			siteGroupId = PortalUtil.getSiteGroupId(scopeGroupId);
-		}
-		else {
-			siteGroupId = PortalUtil.getSiteGroupId(layout.getGroupId());
-		}
-
-		themeDisplay.setSiteGroupId(siteGroupId);
 
 		if (user != null) {
 			HttpSession session = request.getSession();
@@ -318,7 +301,9 @@ public class PortletContainerImpl implements PortletContainer {
 				LanguageUtil.getLanguageId(request));
 		}
 
-		processPublicRenderParameters(request, layout, portlet);
+		_processPublicRenderParameters(
+			request, layout, Arrays.asList(portlet),
+			themeDisplay.isLifecycleAction());
 
 		if (themeDisplay.isLifecycleRender() ||
 			themeDisplay.isLifecycleResource()) {
@@ -345,10 +330,47 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 	}
 
-	private ActionResult _doProcessAction(
+	private <T> T _preserveGroupIds(
+			HttpServletRequest request,
+			UnsafeSupplier<T, Exception> unsafeSupplier)
+		throws PortletContainerException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long previousScopeGroupId = 0;
+		long previousSiteGroupId = 0;
+
+		if (themeDisplay != null) {
+			previousScopeGroupId = themeDisplay.getScopeGroupId();
+			previousSiteGroupId = themeDisplay.getSiteGroupId();
+		}
+
+		try {
+			return unsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new PortletContainerException(e);
+		}
+		finally {
+			if (themeDisplay != null) {
+				themeDisplay.setScopeGroupId(previousScopeGroupId);
+				themeDisplay.setSiteGroupId(previousSiteGroupId);
+			}
+		}
+	}
+
+	private ActionResult _processAction(
 			HttpServletRequest request, HttpServletResponse response,
 			Portlet portlet)
 		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+		portletDisplay.setId(portlet.getPortletId());
 
 		Layout layout = (Layout)request.getAttribute(WebKeys.LAYOUT);
 
@@ -384,9 +406,9 @@ public class PortletContainerImpl implements PortletContainer {
 
 		PortletContext portletContext = portletConfig.getPortletContext();
 
-		String contentType = request.getHeader(HttpHeaders.CONTENT_TYPE);
-
 		if (_log.isDebugEnabled()) {
+			String contentType = request.getHeader(HttpHeaders.CONTENT_TYPE);
+
 			_log.debug("Content type " + contentType);
 		}
 
@@ -399,8 +421,7 @@ public class PortletContainerImpl implements PortletContainer {
 
 			ActionResponseImpl actionResponseImpl =
 				ActionResponseFactory.create(
-					actionRequestImpl, response, portlet.getPortletId(), user,
-					layout, windowState, portletMode);
+					actionRequestImpl, response, user, layout);
 
 			actionRequestImpl.defineObjects(portletConfig, actionResponseImpl);
 
@@ -413,6 +434,9 @@ public class PortletContainerImpl implements PortletContainer {
 
 			actionResponseImpl.transferHeaders(response);
 
+			RenderParametersPool.clear(
+				request, layout.getPlid(), portlet.getPortletId());
+
 			RenderParametersPool.put(
 				request, layout.getPlid(), portlet.getPortletId(),
 				actionResponseImpl.getRenderParameterMap());
@@ -424,9 +448,9 @@ public class PortletContainerImpl implements PortletContainer {
 			if (Validator.isNull(redirectLocation) &&
 				portlet.isActionURLRedirect()) {
 
-				PortletURL portletURL = new PortletURLImpl(
-					actionRequestImpl, actionRequestImpl.getPortletName(),
-					layout.getPlid(), PortletRequest.RENDER_PHASE);
+				PortletURL portletURL = PortletURLFactoryUtil.create(
+					actionRequestImpl, portlet, layout,
+					PortletRequest.RENDER_PHASE);
 
 				Map<String, String[]> renderParameters =
 					actionResponseImpl.getRenderParameterMap();
@@ -450,7 +474,7 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 	}
 
-	private List<Event> _doProcessEvent(
+	private List<Event> _processEvent(
 			HttpServletRequest request, HttpServletResponse response,
 			Portlet portlet, Layout layout, Event event)
 		throws Exception {
@@ -545,13 +569,14 @@ public class PortletContainerImpl implements PortletContainer {
 		Layout requestLayout = (Layout)request.getAttribute(WebKeys.LAYOUT);
 
 		EventResponseImpl eventResponseImpl = EventResponseFactory.create(
-			eventRequestImpl, response, portlet.getPortletId(), user,
-			requestLayout);
+			eventRequestImpl, response, user, requestLayout);
 
 		eventRequestImpl.defineObjects(portletConfig, eventResponseImpl);
 
 		try {
 			invokerPortlet.processEvent(eventRequestImpl, eventResponseImpl);
+
+			eventResponseImpl.transferHeaders(response);
 
 			if (eventResponseImpl.isCalledSetRenderParameter()) {
 				Map<String, String[]> renderParameterMap =
@@ -572,7 +597,90 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 	}
 
-	private void _doRender(
+	private void _processGroupId(HttpServletRequest request, Portlet portlet)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		long scopeGroupId = PortalUtil.getScopeGroupId(
+			request, portlet.getPortletId());
+
+		themeDisplay.setScopeGroupId(scopeGroupId);
+
+		long siteGroupId = 0;
+
+		Layout layout = (Layout)request.getAttribute(WebKeys.LAYOUT);
+
+		if (layout.isTypeControlPanel()) {
+			siteGroupId = PortalUtil.getSiteGroupId(scopeGroupId);
+		}
+		else {
+			siteGroupId = PortalUtil.getSiteGroupId(layout.getGroupId());
+		}
+
+		themeDisplay.setSiteGroupId(siteGroupId);
+	}
+
+	private void _processPublicRenderParameters(
+		HttpServletRequest request, Layout layout, List<Portlet> portlets,
+		boolean lifecycleAction) {
+
+		PortletQName portletQName = PortletQNameUtil.getPortletQName();
+		Map<String, String[]> publicRenderParameters = null;
+		Map<String, String[]> parameters = request.getParameterMap();
+
+		for (Map.Entry<String, String[]> entry : parameters.entrySet()) {
+			String name = entry.getKey();
+
+			QName qName = portletQName.getQName(name);
+
+			if (qName == null) {
+				continue;
+			}
+
+			for (Portlet portlet : portlets) {
+				PublicRenderParameter publicRenderParameter =
+					portlet.getPublicRenderParameter(
+						qName.getNamespaceURI(), qName.getLocalPart());
+
+				if (publicRenderParameter == null) {
+					continue;
+				}
+
+				if (publicRenderParameters == null) {
+					publicRenderParameters = PublicRenderParametersPool.get(
+						request, layout.getPlid());
+				}
+
+				String publicRenderParameterName =
+					portletQName.getPublicRenderParameterName(qName);
+
+				if (name.startsWith(
+						PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE)) {
+
+					String[] values = entry.getValue();
+
+					if (lifecycleAction) {
+						String[] oldValues = publicRenderParameters.get(
+							publicRenderParameterName);
+
+						if ((oldValues != null) && (oldValues.length != 0)) {
+							values = ArrayUtil.append(values, oldValues);
+						}
+					}
+
+					publicRenderParameters.put(
+						publicRenderParameterName, values);
+				}
+				else {
+					publicRenderParameters.remove(publicRenderParameterName);
+				}
+			}
+		}
+	}
+
+	private void _render(
 			HttpServletRequest request, HttpServletResponse response,
 			Portlet portlet)
 		throws Exception {
@@ -585,9 +693,10 @@ public class PortletContainerImpl implements PortletContainer {
 			if (!Validator.isPassword(instanceId)) {
 				if (_log.isDebugEnabled()) {
 					_log.debug(
-						"Portlet " + portlet.getPortletId() +
-							" is instanceable but does not have a valid " +
-								"instance id");
+						StringBundler.concat(
+							"Portlet ", portlet.getPortletId(),
+							" is instanceable but does not have a valid ",
+							"instance id"));
 				}
 
 				portlet = null;
@@ -650,8 +759,9 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 
 		RequestDispatcher requestDispatcher =
-			DirectRequestDispatcherFactoryUtil.getRequestDispatcher(
-				request, path);
+			TransferHeadersHelperUtil.getTransferHeadersRequestDispatcher(
+				DirectRequestDispatcherFactoryUtil.getRequestDispatcher(
+					request, path));
 
 		BufferCacheServletResponse bufferCacheServletResponse = null;
 
@@ -727,7 +837,7 @@ public class PortletContainerImpl implements PortletContainer {
 		}
 	}
 
-	private void _doServeResource(
+	private void _serveResource(
 			HttpServletRequest request, HttpServletResponse response,
 			Portlet portlet)
 		throws Exception {
@@ -788,12 +898,8 @@ public class PortletContainerImpl implements PortletContainer {
 			request, portlet, invokerPortlet, portletContext, windowState,
 			portletMode, portletPreferences, layout.getPlid());
 
-		long companyId = PortalUtil.getCompanyId(request);
-
 		ResourceResponseImpl resourceResponseImpl =
-			ResourceResponseFactory.create(
-				resourceRequestImpl, response, portlet.getPortletId(),
-				companyId);
+			ResourceResponseFactory.create(resourceRequestImpl, response);
 
 		resourceRequestImpl.defineObjects(portletConfig, resourceResponseImpl);
 

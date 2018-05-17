@@ -14,6 +14,9 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -383,7 +386,9 @@ public class Validator {
 			return false;
 		}
 
-		for (char c : name.trim().toCharArray()) {
+		String trimmedName = name.trim();
+
+		for (char c : trimmedName.toCharArray()) {
 			if (!isChar(c) && !isDigit(c) && !Character.isWhitespace(c)) {
 				return false;
 			}
@@ -603,7 +608,7 @@ public class Validator {
 	 *         <code>false</code> otherwise
 	 */
 	public static boolean isEmailAddress(String emailAddress) {
-		if (Validator.isNull(emailAddress)) {
+		if (isNull(emailAddress)) {
 			return false;
 		}
 
@@ -665,7 +670,7 @@ public class Validator {
 		return true;
 	}
 
-	public static boolean isFilePath(String path, boolean isParentDirAllowed) {
+	public static boolean isFilePath(String path, boolean parentDirAllowed) {
 		if (isNull(path)) {
 			return false;
 		}
@@ -674,7 +679,7 @@ public class Validator {
 			return false;
 		}
 
-		if (isParentDirAllowed) {
+		if (parentDirAllowed) {
 			return true;
 		}
 
@@ -726,7 +731,7 @@ public class Validator {
 		if (month == 1) {
 			int febMax = 28;
 
-			if (((year % 4) == 0) && ((year % 100) != 0) ||
+			if ((((year % 4) == 0) && ((year % 100) != 0)) ||
 				((year % 400) == 0)) {
 
 				febMax = 29;
@@ -857,8 +862,9 @@ public class Validator {
 			return false;
 		}
 
-		if (StringUtil.startsWith(ipAddress, CharPool.OPEN_BRACKET) &&
-			StringUtil.endsWith(ipAddress, CharPool.CLOSE_BRACKET)) {
+		if ((ipAddress.charAt(0) == CharPool.OPEN_BRACKET) &&
+			(ipAddress.charAt(ipAddress.length() - 1) ==
+				CharPool.CLOSE_BRACKET)) {
 
 			ipAddress = ipAddress.substring(1, ipAddress.length() - 1);
 		}
@@ -915,37 +921,33 @@ public class Validator {
 			return false;
 		}
 
-		number = StringUtil.reverse(number);
+		int sum = 0;
 
-		int total = 0;
+		int length = number.length();
 
-		for (int i = 0; i < number.length(); i++) {
-			int x = 0;
+		for (int i = 0; i < length; i++) {
+			int x = number.charAt(length - 1 - i) - CharPool.NUMBER_0;
 
-			if (((i + 1) % 2) == 0) {
-				x = GetterUtil.getInteger(number.substring(i, i + 1)) * 2;
+			if ((x > 9) || (x < 0)) {
+				return false;
+			}
 
-				if (x >= 10) {
-					String s = String.valueOf(x);
+			if ((i % 2) == 1) {
+				x *= 2;
 
-					x =
-						GetterUtil.getInteger(s.substring(0, 1)) +
-							GetterUtil.getInteger(s.substring(1, 2));
+				if (x > 9) {
+					x -= 9;
 				}
 			}
-			else {
-				x = GetterUtil.getInteger(number.substring(i, i + 1));
-			}
 
-			total = total + x;
+			sum += x;
 		}
 
-		if ((total % 10) == 0) {
+		if ((sum % 10) == 0) {
 			return true;
 		}
-		else {
-			return false;
-		}
+
+		return false;
 	}
 
 	/**
@@ -961,7 +963,9 @@ public class Validator {
 			return false;
 		}
 
-		for (char c : name.trim().toCharArray()) {
+		String trimmedName = name.trim();
+
+		for (char c : trimmedName.toCharArray()) {
 			if (!isChar(c) && !Character.isWhitespace(c)) {
 				return false;
 			}
@@ -1231,7 +1235,9 @@ public class Validator {
 	 *         <code>false</code> otherwise
 	 */
 	public static boolean isVariableName(String variableName) {
-		if (isNull(variableName)) {
+		if (isNull(variableName) ||
+			ArrayUtil.contains(_JAVA_KEYWORDS, variableName)) {
+
 			return false;
 		}
 
@@ -1267,7 +1273,7 @@ public class Validator {
 	/**
 	 * Returns <code>true</code> if the character is whitespace, meaning it is
 	 * either the <code>null</code> character '0' or whitespace according to
-	 * {@link java.lang.Character#isWhitespace(char)}.
+	 * {@link Character#isWhitespace(char)}.
 	 *
 	 * @param  c the character to check
 	 * @return <code>true</code> if the character is whitespace;
@@ -1319,9 +1325,20 @@ public class Validator {
 
 	private static final int _DIGIT_END = 57;
 
-	private static final char[] _EMAIL_ADDRESS_SPECIAL_CHAR = new char[] {
+	private static final char[] _EMAIL_ADDRESS_SPECIAL_CHAR = {
 		'.', '!', '#', '$', '%', '&', '\'', '*', '+', '-', '/', '=', '?', '^',
 		'_', '`', '{', '|', '}', '~'
+	};
+
+	private static final String[] _JAVA_KEYWORDS = {
+		"abstract", "assert", "boolean", "break", "byte", "case", "catch",
+		"char", "class", "const", "continue", "default", "do", "double", "else",
+		"enum", "extends", "false", "final", "finally", "float", "for", "goto",
+		"if", "implements", "import", "instanceof", "int", "interface", "long",
+		"native", "new", "null", "package", "private", "protected", "public",
+		"return", "short", "static", "strictfp", "super", "switch",
+		"synchronized", "this", "throw", "throws", "transient", "true", "try",
+		"void", "volatile", "while"
 	};
 
 	private static final String _VARIABLE_TERM_BEGIN = "[$";
@@ -1334,40 +1351,56 @@ public class Validator {
 
 	private static final Pattern _emailAddressPattern = Pattern.compile(
 		"[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@" +
-			"(?:[a-zA-Z0-9](?:-*[a-zA-Z0-9])?\\.*)+");
-	private static final Pattern _ipv4AddressPattern = Pattern.compile(
-		"^" +
-		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-		"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" +
-		"$");
-	private static final Pattern _ipv6AddressPattern = Pattern.compile(
-		"^" +
-		"\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|" +
-		"((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:" +
-		"((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|" +
-		"((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|" +
-		"((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|" +
-		"((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|" +
-		"(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|" +
-		"((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)" +
-		"(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|" +
-		"(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:" +
-		"((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
-		"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*" +
-		"$");
+			"(?:\\w(?:[\\w-]*\\w)?\\.)*\\w(?:[\\w-]*\\w)?");
+	private static final Pattern _ipv4AddressPattern;
+	private static final Pattern _ipv6AddressPattern;
 	private static final Pattern _variableNamePattern = Pattern.compile(
 		"[_a-zA-Z]+[_a-zA-Z0-9]*");
+
+	static {
+		StringBundler sb = new StringBundler(6);
+
+		sb.append("^");
+		sb.append("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.");
+		sb.append("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.");
+		sb.append("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.");
+		sb.append("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)");
+		sb.append("$");
+
+		_ipv4AddressPattern = Pattern.compile(sb.toString());
+
+		sb = new StringBundler(28);
+
+		sb.append("^");
+		sb.append("\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|");
+		sb.append("((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:");
+		sb.append("((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|");
+		sb.append("((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]");
+		sb.append("?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|");
+		sb.append("((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|");
+		sb.append("[1-9]?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|");
+		sb.append("((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|");
+		sb.append("[1-9]?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|");
+		sb.append("(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|");
+		sb.append("((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|");
+		sb.append("[1-9]?\\d)");
+		sb.append("(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|");
+		sb.append("(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:");
+		sb.append("((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.");
+		sb.append("(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*");
+		sb.append("$");
+
+		_ipv6AddressPattern = Pattern.compile(sb.toString());
+	}
 
 }

@@ -32,13 +32,15 @@ import com.liferay.portal.kernel.model.PortalPreferences;
 import com.liferay.portal.kernel.service.persistence.PortalPreferencesPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.impl.PortalPreferencesImpl;
 import com.liferay.portal.model.impl.PortalPreferencesModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -120,7 +122,7 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 			msg.append(", ownerType=");
 			msg.append(ownerType);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -204,11 +206,15 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 						list);
 				}
 				else {
-					if ((list.size() > 1) && _log.isWarnEnabled()) {
-						_log.warn(
-							"PortalPreferencesPersistenceImpl.fetchByO_O(long, int, boolean) with parameters (" +
-							StringUtil.merge(finderArgs) +
-							") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"PortalPreferencesPersistenceImpl.fetchByO_O(long, int, boolean) with parameters (" +
+								StringUtil.merge(finderArgs) +
+								") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
 					}
 
 					PortalPreferences portalPreferences = list.get(0);
@@ -390,7 +396,8 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((PortalPreferencesModelImpl)portalPreferences);
+		clearUniqueFindersCache((PortalPreferencesModelImpl)portalPreferences,
+			true);
 	}
 
 	@Override
@@ -402,52 +409,40 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 			entityCache.removeResult(PortalPreferencesModelImpl.ENTITY_CACHE_ENABLED,
 				PortalPreferencesImpl.class, portalPreferences.getPrimaryKey());
 
-			clearUniqueFindersCache((PortalPreferencesModelImpl)portalPreferences);
+			clearUniqueFindersCache((PortalPreferencesModelImpl)portalPreferences,
+				true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		PortalPreferencesModelImpl portalPreferencesModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					portalPreferencesModelImpl.getOwnerId(),
-					portalPreferencesModelImpl.getOwnerType()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_O_O, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_O_O, args,
-				portalPreferencesModelImpl);
-		}
-		else {
-			if ((portalPreferencesModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_O_O.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						portalPreferencesModelImpl.getOwnerId(),
-						portalPreferencesModelImpl.getOwnerType()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_O_O, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_O_O, args,
-					portalPreferencesModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		PortalPreferencesModelImpl portalPreferencesModelImpl) {
 		Object[] args = new Object[] {
 				portalPreferencesModelImpl.getOwnerId(),
 				portalPreferencesModelImpl.getOwnerType()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_O_O, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_O_O, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_O_O, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_O_O, args,
+			portalPreferencesModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		PortalPreferencesModelImpl portalPreferencesModelImpl,
+		boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					portalPreferencesModelImpl.getOwnerId(),
+					portalPreferencesModelImpl.getOwnerType()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_O_O, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_O_O, args);
+		}
 
 		if ((portalPreferencesModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_O_O.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					portalPreferencesModelImpl.getOriginalOwnerId(),
 					portalPreferencesModelImpl.getOriginalOwnerType()
 				};
@@ -528,8 +523,6 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 
 	@Override
 	protected PortalPreferences removeImpl(PortalPreferences portalPreferences) {
-		portalPreferences = toUnwrappedModel(portalPreferences);
-
 		Session session = null;
 
 		try {
@@ -560,9 +553,23 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 
 	@Override
 	public PortalPreferences updateImpl(PortalPreferences portalPreferences) {
-		portalPreferences = toUnwrappedModel(portalPreferences);
-
 		boolean isNew = portalPreferences.isNew();
+
+		if (!(portalPreferences instanceof PortalPreferencesModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(portalPreferences.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(portalPreferences);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in portalPreferences proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom PortalPreferences implementation " +
+				portalPreferences.getClass());
+		}
 
 		PortalPreferencesModelImpl portalPreferencesModelImpl = (PortalPreferencesModelImpl)portalPreferences;
 
@@ -589,40 +596,26 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !PortalPreferencesModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!PortalPreferencesModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		entityCache.putResult(PortalPreferencesModelImpl.ENTITY_CACHE_ENABLED,
 			PortalPreferencesImpl.class, portalPreferences.getPrimaryKey(),
 			portalPreferences, false);
 
-		clearUniqueFindersCache(portalPreferencesModelImpl);
-		cacheUniqueFindersCache(portalPreferencesModelImpl, isNew);
+		clearUniqueFindersCache(portalPreferencesModelImpl, false);
+		cacheUniqueFindersCache(portalPreferencesModelImpl);
 
 		portalPreferences.resetOriginalValues();
 
 		return portalPreferences;
-	}
-
-	protected PortalPreferences toUnwrappedModel(
-		PortalPreferences portalPreferences) {
-		if (portalPreferences instanceof PortalPreferencesImpl) {
-			return portalPreferences;
-		}
-
-		PortalPreferencesImpl portalPreferencesImpl = new PortalPreferencesImpl();
-
-		portalPreferencesImpl.setNew(portalPreferences.isNew());
-		portalPreferencesImpl.setPrimaryKey(portalPreferences.getPrimaryKey());
-
-		portalPreferencesImpl.setMvccVersion(portalPreferences.getMvccVersion());
-		portalPreferencesImpl.setPortalPreferencesId(portalPreferences.getPortalPreferencesId());
-		portalPreferencesImpl.setOwnerId(portalPreferences.getOwnerId());
-		portalPreferencesImpl.setOwnerType(portalPreferences.getOwnerType());
-		portalPreferencesImpl.setPreferences(portalPreferences.getPreferences());
-
-		return portalPreferencesImpl;
 	}
 
 	/**
@@ -774,14 +767,14 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 		query.append(_SQL_SELECT_PORTALPREFERENCES_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

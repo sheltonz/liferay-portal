@@ -14,13 +14,16 @@
 
 package com.liferay.portlet;
 
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portlet.extra.config.ExtraPortletAppConfig;
+import com.liferay.portlet.extra.config.ExtraPortletAppConfigRegistry;
 
 import java.util.Locale;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceURL;
@@ -36,32 +39,30 @@ public class ResourceResponseImpl
 
 	@Override
 	public void addDateHeader(String name, long date) {
-		_response.addDateHeader(name, date);
+		response.addDateHeader(name, date);
 	}
 
 	@Override
 	public void addHeader(String name, String value) {
-		_response.addHeader(name, value);
+		response.addHeader(name, value);
 	}
 
 	@Override
 	public void addIntHeader(String name, int value) {
-		_response.addIntHeader(name, value);
+		response.addIntHeader(name, value);
 	}
 
 	@Override
 	public void addProperty(Cookie cookie) {
-		_response.addCookie(cookie);
-	}
-
-	@Override
-	public PortletURL createActionURL() {
-		return super.createActionURL();
+		if (!(isCalledFlushBuffer() || isCommitted())) {
+			response.addCookie(cookie);
+		}
 	}
 
 	@Override
 	public LiferayPortletURL createLiferayPortletURL(
-		String portletName, String lifecycle) {
+		long plid, String portletName, String lifecycle,
+		boolean includeLinkToLayoutUuid) {
 
 		ResourceRequest resourceRequest = (ResourceRequest)getPortletRequest();
 
@@ -80,17 +81,8 @@ public class ResourceResponseImpl
 					"the cacheability is not set to PAGE");
 		}
 
-		return super.createLiferayPortletURL(portletName, lifecycle);
-	}
-
-	@Override
-	public PortletURL createRenderURL() {
-		return super.createRenderURL();
-	}
-
-	@Override
-	public ResourceURL createResourceURL() {
-		return super.createResourceURL();
+		return super.createLiferayPortletURL(
+			plid, portletName, lifecycle, includeLinkToLayoutUuid);
 	}
 
 	@Override
@@ -99,52 +91,82 @@ public class ResourceResponseImpl
 	}
 
 	@Override
+	public int getStatus() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void setCharacterEncoding(String charset) {
-		_response.setCharacterEncoding(charset);
+		response.setCharacterEncoding(charset);
+
+		_canSetLocaleEncoding = false;
 	}
 
 	@Override
 	public void setContentLength(int length) {
-		_response.setContentLength(length);
+		response.setContentLength(length);
+	}
+
+	@Override
+	public void setContentLengthLong(long length) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void setDateHeader(String name, long date) {
-		_response.setDateHeader(name, date);
+		response.setDateHeader(name, date);
 	}
 
 	@Override
 	public void setHeader(String name, String value) {
-		_response.setHeader(name, value);
+		response.setHeader(name, value);
 
 		if (name.equals(ResourceResponse.HTTP_STATUS_CODE)) {
 			int status = GetterUtil.getInteger(
 				value, HttpServletResponse.SC_OK);
 
-			_response.setStatus(status);
+			response.setStatus(status);
 		}
 	}
 
 	@Override
 	public void setIntHeader(String name, int value) {
-		_response.setIntHeader(name, value);
+		response.setIntHeader(name, value);
 	}
 
 	@Override
 	public void setLocale(Locale locale) {
-		_response.setLocale(locale);
+		if (locale == null) {
+			return;
+		}
+
+		response.setLocale(locale);
+
+		if (_canSetLocaleEncoding) {
+			Portlet portlet = getPortlet();
+
+			PortletApp portletApp = portlet.getPortletApp();
+
+			ExtraPortletAppConfig extraPortletAppConfig =
+				ExtraPortletAppConfigRegistry.getExtraPortletAppConfig(
+					portletApp.getServletContextName());
+
+			String characterEncoding = extraPortletAppConfig.getEncoding(
+				locale.toString());
+
+			if (characterEncoding != null) {
+				setCharacterEncoding(characterEncoding);
+
+				_canSetLocaleEncoding = true;
+			}
+		}
 	}
 
 	@Override
-	protected void init(
-		PortletRequestImpl portletRequestImpl, HttpServletResponse response,
-		String portletName, long companyId, long plid) {
-
-		super.init(portletRequestImpl, response, portletName, companyId, plid);
-
-		_response = response;
+	public void setStatus(int statusCode) {
+		throw new UnsupportedOperationException();
 	}
 
-	private HttpServletResponse _response;
+	private boolean _canSetLocaleEncoding = true;
 
 }

@@ -14,8 +14,8 @@
 
 package com.liferay.portal.security.pacl.test;
 
-import com.liferay.blogs.kernel.service.BlogsEntryLocalServiceUtil;
-import com.liferay.blogs.kernel.service.BlogsStatsUserLocalServiceUtil;
+import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
+import com.liferay.document.library.kernel.service.DLFolderLocalServiceUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.security.pacl.test.hook.action.FailureStrutsAction;
@@ -92,13 +92,12 @@ public class HookTest {
 	@Test
 	public void testServices1() throws Exception {
 		Assert.assertTrue(
-			BlogsEntryLocalServiceUtil.getBlogsEntriesCount() < 0);
+			DLFileEntryLocalServiceUtil.getDLFileEntriesCount() < 0);
 	}
 
 	@Test
 	public void testServices2() throws Exception {
-		Assert.assertTrue(
-			BlogsStatsUserLocalServiceUtil.getBlogsStatsUsersCount() >= 0);
+		Assert.assertTrue(DLFolderLocalServiceUtil.getDLFoldersCount() >= 0);
 	}
 
 	@Test

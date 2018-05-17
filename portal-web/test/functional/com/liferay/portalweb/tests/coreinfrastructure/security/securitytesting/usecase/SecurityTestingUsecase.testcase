@@ -1,5 +1,6 @@
 <definition component-name="portal-security">
 	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
 	<property name="testray.main.component.name" value="Security" />
 
 	<set-up>
@@ -19,16 +20,28 @@
 			<else>
 				<execute macro="PortalSettings#tearDownAuthenticationCP" />
 
-				<execute macro="Page#tearDownPG" />
+				<execute macro="Page#tearDownCP" />
 			</else>
 		</if>
 	</tear-down>
 
 	<command name="NoGuestRoleFromWCDArticleHistoryURL" priority="5">
-		<property name="portal.acceptance" value="true" />
-		<var name="url" value="http://localhost:8080/web/guest/home?&amp;p_p_id=com_liferay_journal_web_portlet_JournalPortlet&amp;p_p_lifecycle=0&amp;p_p_state=maximized&amp;p_p_mode=view&amp;_com_liferay_journal_web_portlet_JournalPortlet_struts_action=%2Fjournal%2Fview_article_history&amp;_com_liferay_journal_web_portlet_JournalPortlet_groupId=10180&amp;_com_liferay_journal_web_portlet_JournalPortlet_articleId=" />
+		<property name="portal.acceptance" value="quarantine" />
 
-		<execute macro="Page#add">
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+		<var name="url" value="${portalURL}/web/guest/home?&amp;p_p_id=com_liferay_journal_web_portlet_JournalPortlet&amp;p_p_lifecycle=0&amp;p_p_state=maximized&amp;p_p_mode=view&amp;_com_liferay_journal_web_portlet_JournalPortlet_struts_action=%2Fjournal%2Fview_article_history&amp;_com_liferay_journal_web_portlet_JournalPortlet_groupId=10180&amp;_com_liferay_journal_web_portlet_JournalPortlet_articleId=" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Web Content Display Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Web Content Display Page" />
 		</execute>
 
@@ -45,25 +58,27 @@
 			<var name="webContentContent" value="WC WebContent Content" />
 		</execute>
 
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletName" value="Web Content Display" />
-			<var name="portletOption" value="Edit Web Content" />
+		<execute macro="WebContentNavigator#gotoEditPGViaWCD">
+			<var name="menuItem" value="Edit Web Content" />
+			<var name="webContentTitle" value="WC WebContent Title" />
 		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
-
-		<var locator="WCEditWebContent#ARTICLE_ID" name="articleID" />
+		<var method="selenium#getText(WCEditWebContent#ARTICLE_ID)" name="articleID" />
 
 		<execute macro="User#logoutPG" />
 
-		<execute function="Open" locator1="${url}${articleID}" />
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="${url}${articleID}" />
+		</execute>
 
 		<execute function="AssertTextEquals" locator1="Message#ERROR" value1="You do not have the roles required to access this portlet." />
 	</command>
 
 	<command name="ValidateBeanIdentifierUserPermissions" priority="5">
 		<property name="portal.acceptance" value="true" />
-		<var name="url" value="http://localhost:8080/c/portal/json_service?serviceClassName=com.liferay.portal.service.AccountServiceUtil&amp;serviceMethodName=getBeanIdentifier&amp;p_auth=" />
+
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+		<var name="url" value="${portalURL}/c/portal/json_service?serviceClassName=com.liferay.portal.service.AccountServiceUtil&amp;serviceMethodName=getBeanIdentifier&amp;p_auth=" />
 
 		<execute macro="Api#gotoPAuthURL" />
 
@@ -72,7 +87,13 @@
 	</command>
 
 	<command name="ValidateCannotStealAdminAccount" priority="4">
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<property name="test.name.skip.portal.instance" value="SecurityTestingUsecase#ValidateCannotStealAdminAccount" />
+
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -83,7 +104,9 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -98,7 +121,7 @@
 		</execute>
 
 		<execute macro="Api#gotoPAuthURL">
-			<var name="url" value="http://localhost:8080/api/jsonws/user/update-status/user-id/20250/status/6?p_auth=" />
+			<var name="url" value="${portalURL}/api/jsonws/user/update-status/user-id/20250/status/6?p_auth=" />
 		</execute>
 
 		<execute function="AssertTextEquals#assertPartialText" locator1="JSONWS#SECURITY_TEST_PAGE_BODY" value1="must have DELETE permission for com.liferay.portal.kernel.model.User" />
@@ -112,31 +135,90 @@
 		<property name="custom.properties" value="virtual.hosts.valid.hosts=localhost,127.0.0.1,${ip.address}" />
 		<property name="portal.acceptance" value="true" />
 
-		<execute function="Open" locator1="http://localhost:8080/html/common/forward_jsp.jsp?FORWARD_URL=http://www.msn.com" />
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="${portalURL}/html/common/forward_jsp.jsp?FORWARD_URL=http://www.msn.com" />
+		</execute>
+
 		<execute function="Pause" locator1="3000" />
 
-		<var name="key_pageName" value="Welcome" />
+		<execute function="AssertElementPresent" locator1="Home#PAGE">
+			<var name="key_pageName" value="Welcome" />
+		</execute>
 
-		<execute function="AssertElementPresent" locator1="Home#PAGE" value1="Welcome" />
+		<execute function="AssertTextEquals#assertTextCaseInsensitive" locator1="HelloWorld#PORTLET_TITLE" value1="Hello World" />
+		<execute function="AssertElementPresent" locator1="HelloWorld#PORTLET_CONTENT" />
 
-		<execute function="AssertTextEquals#assertText" locator1="HelloWorld#PORTLET_TITLE" value1="Hello World" />
-		<execute function="AssertElementPresent" locator1="HelloWorld#PORTLET_CONTENT" value1="Welcome to Liferay Portal" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
 
-		<execute macro="Page#add">
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="Test" />
 		</execute>
 
-		<execute function="Open" locator1="http://localhost:8080/html/common/forward_jsp.jsp?FORWARD_URL=http://localhost:8080/web/guest/test" />
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url"><![CDATA[${portalURL}/html/common/forward_jsp.jsp?FORWARD_URL=${portalURL}/web/guest/test]]></var>
+		</execute>
 
-		<var name="key_pageName" value="Test" />
+		<execute function="AssertElementPresent" locator1="Home#PAGE">
+			<var name="key_pageName" value="Test" />
+		</execute>
+	</command>
 
-		<execute function="AssertElementPresent" locator1="Home#PAGE" value1="Test" />
+	<command name="ViewJSLoaderModulesURLNoWiki" priority="5">
+		<description message="This is a use case for LPS-73595." />
+
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="${portalURL}/o/js_loader_modules" />
+		</execute>
+
+		<execute function="AssertConsoleTextPresent" value1="com.liferay.wiki.engine.html" />
+		<execute function="AssertConsoleTextPresent" value1="com.liferay.wiki.engine.text" />
+
+		<execute function="AssertTextNotPresent" value1="com.liferay.wiki.engine.html" />
+		<execute function="AssertTextNotPresent" value1="com.liferay.wiki.engine.text" />
+	</command>
+
+	<command name="ViewNoInvokedPortletViaURL" priority="5">
+		<description message="This is a use case for LPS-55622." />
+
+		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
+
+		<var name="undeployedPortletURL">
+			<![CDATA[
+				${portalURL}/?p_p_id=asdf&p_p_lifecycle=0&p_p_state=maximized&_asdf_mvcPath=/html/portlet/portal_settings/edit_company.jsp
+			]]>
+		</var>
+
+		<execute macro="Navigator#openSpecificURL">
+			<var name="url" value="${undeployedPortletURL}" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="Message#INFO" value1="This portlet has been undeployed. Please redeploy it or remove it from the page." />
 	</command>
 
 	<command name="ViewUpdateUserViaJSONWS" priority="4">
-		<property name="custom.properties" value="company.security.strangers.verify=true" />
+		<property name="test.name.skip.portal.instance" value="SecurityTestingUsecase#ViewUpdateUserViaJSONWS" />
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Configuration" />
+			<var name="panel" value="Control Panel" />
+			<var name="portlet" value="Search" />
+		</execute>
+
+		<execute macro="SearchAdministration#executeSearchActions">
+			<var name="actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -144,7 +226,9 @@
 
 		<execute function="AssertClick" locator1="UsersAndOrganizations#USER_TABLE_SCREEN_NAME" value1="test" />
 
-		<var locator="UsersAndOrganizationsEditUser#DETAILS_USER_ID_FIELD" name="userId" />
+		<execute function="Pause" locator1="5000" />
+
+		<var method="selenium#getElementValue(UsersAndOrganizationsEditUser#DETAILS_USER_ID_FIELD)" name="userId" />
 
 		<execute macro="Api#apiJsonwsUserView" />
 
@@ -164,7 +248,9 @@
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 

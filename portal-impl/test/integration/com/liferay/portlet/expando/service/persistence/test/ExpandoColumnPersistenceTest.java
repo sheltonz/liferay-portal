@@ -28,15 +28,14 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -159,9 +158,9 @@ public class ExpandoColumnPersistenceTest {
 
 	@Test
 	public void testCountByT_N() throws Exception {
-		_persistence.countByT_N(RandomTestUtil.nextLong(), StringPool.BLANK);
+		_persistence.countByT_N(RandomTestUtil.nextLong(), "");
 
-		_persistence.countByT_N(0L, StringPool.NULL);
+		_persistence.countByT_N(0L, "null");
 
 		_persistence.countByT_N(0L, (String)null);
 	}
@@ -169,10 +168,7 @@ public class ExpandoColumnPersistenceTest {
 	@Test
 	public void testCountByT_NArrayable() throws Exception {
 		_persistence.countByT_N(RandomTestUtil.nextLong(),
-			new String[] {
-				RandomTestUtil.randomString(), StringPool.BLANK, StringPool.NULL,
-				null, null
-			});
+			new String[] { RandomTestUtil.randomString(), "", "null", null, null });
 	}
 
 	@Test

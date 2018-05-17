@@ -14,9 +14,12 @@
 
 package com.liferay.exportimport.kernel.lar;
 
+import aQute.bnd.annotation.ProviderType;
+
 /**
  * @author Raymond Augé
  */
+@ProviderType
 public class PortletDataHandlerChoice extends PortletDataHandlerControl {
 
 	public PortletDataHandlerChoice(String namespace, String controlName) {
@@ -61,8 +64,7 @@ public class PortletDataHandlerChoice extends PortletDataHandlerControl {
 		}
 	}
 
-	private static final String[] _DEFAULT_CHOICES =
-		new String[] {"false", "true"};
+	private static final String[] _DEFAULT_CHOICES = {"false", "true"};
 
 	private String[] _choices;
 	private final int _defaultChoice;

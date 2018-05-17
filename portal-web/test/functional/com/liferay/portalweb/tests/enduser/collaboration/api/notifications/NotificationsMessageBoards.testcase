@@ -1,5 +1,6 @@
 <definition component-name="portal-collaboration">
 	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
 	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Notifications" />
 
@@ -11,19 +12,35 @@
 
 		<execute macro="User#firstLoginPG" />
 
-		<execute macro="Page#add">
-			<var name="pageName" value="${pageName}" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
+		</execute>
+
+		<execute macro="SitePages#addPublicPage">
+			<var name="pageName" value="Message Boards Page" />
+			<var name="sitePageType" value="Layout" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="Message Boards Page" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
-			<var name="portletName" value="${portletName}" />
+			<var name="portletName" value="Message Boards" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -34,7 +51,9 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
@@ -44,12 +63,14 @@
 			<var name="userScreenName" value="usersn" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Users" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#assignRegularRoleCP">
-			<var name="roleName" value="Administrator" />
+			<var name="roleTitle" value="Administrator" />
 			<var name="userScreenName" value="usersn" />
 		</execute>
 	</set-up>
@@ -69,7 +90,7 @@
 
 				<execute macro="Notifications#tearDownUnreadNotifications" />
 
-				<execute macro="Page#tearDownPG" />
+				<execute macro="Page#tearDownCP" />
 
 				<execute macro="NotificationsPortlet#tearDownUserDeliveries" />
 
@@ -78,9 +99,106 @@
 		</if>
 	</tear-down>
 
+	<command name="FilterByReadAndUnread" priority="5">
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Message Boards Page" />
+		</execute>
+
+		<execute macro="MessageboardsPortlet#subscribePG" />
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="User#loginUserPG">
+			<var name="password" value="test" />
+			<var name="userEmailAddress" value="userea@liferay.com" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Message Boards Page" />
+		</execute>
+
+		<execute macro="MessageboardsThread#addPG">
+			<var name="threadBody" value="MB Thread Message Body" />
+			<var name="threadSubject" value="MB Thread Message Subject1" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Message Boards Page" />
+		</execute>
+
+		<execute macro="MessageboardsThread#addPG">
+			<var name="threadBody" value="MB Thread Message Body" />
+			<var name="threadSubject" value="MB Thread Message Subject2" />
+		</execute>
+
+		<execute macro="User#logoutPG" />
+
+		<execute macro="User#loginUserPG">
+			<var name="password" value="test" />
+			<var name="userEmailAddress" value="test@liferay.com" />
+		</execute>
+
+		<execute macro="Notifications#viewBadgeCount">
+			<var name="activePanel" value="Notifications" />
+			<var name="notificationCount" value="2" />
+		</execute>
+
+		<execute macro="Notifications#gotoNotifications" />
+
+		<execute macro="Notifications#goToFilterValues">
+			<var name="filterValues" value="Read" />
+		</execute>
+
+		<execute macro="Notifications#viewDefaultContent" />
+
+		<execute macro="Notifications#goToFilterValues">
+			<var name="filterValues" value="Unread" />
+		</execute>
+
+		<execute macro="Notifications#viewNewContent">
+			<var name="assetType" value="message boards message" />
+			<var name="contentBody" value="MB Thread Message Subject1" />
+			<var name="user" value="userfn userln" />
+		</execute>
+
+		<execute macro="Notifications#viewNewContent">
+			<var name="assetType" value="message boards message" />
+			<var name="contentBody" value="MB Thread Message Subject2" />
+			<var name="user" value="userfn userln" />
+		</execute>
+
+		<execute macro="PortletEntry#selectAll" />
+
+		<execute function="Click" locator1="Icon#MARK_AS_READ" />
+
+		<execute macro="Notifications#viewDefaultContent" />
+
+		<execute macro="Notifications#viewNoNotifications">
+			<var name="activePanel" value="Notifications" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="My Account" />
+			<var name="panel" value="User" />
+			<var name="portlet" value="Notifications" />
+		</execute>
+
+		<execute macro="PortletEntry#selectAll" />
+
+		<execute function="Click" locator1="Icon#MARK_AS_UNREAD" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Notifications#viewBadgeCount">
+			<var name="notificationCount" value="2" />
+		</execute>
+	</command>
+
 	<command name="ViewNoWebsiteNotificationForNewThreadInCategory" priority="4">
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="NotificationsPortlet#gotoNotificationDelivery" />
@@ -94,7 +212,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#addPG">
@@ -117,7 +235,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#gotoPG">
@@ -147,7 +265,7 @@
 
 	<command name="ViewNoWebsiteNotificationForUpdatedThreadInCategory" priority="4">
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="NotificationsPortlet#gotoNotificationDelivery" />
@@ -161,7 +279,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#addPG">
@@ -193,7 +311,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#gotoPG">
@@ -202,13 +320,14 @@
 
 		<execute macro="MessageboardsThread#gotoPG">
 			<var name="lastPostUserName" value="Test Test" />
-			<var name="postCount" value="1" />
+			<var name="replyCount" value="0" />
 			<var name="threadBody" value="MB Thread Message Body" />
 			<var name="threadSubject" value="MB Thread Message Subject" />
 		</execute>
 
 		<execute macro="MessageboardsThread#editPG">
 			<var name="threadBodyEdit" value="MB Thread Message Body Edit" />
+			<var name="threadSubject" value="MB Thread Message Subject" />
 			<var name="threadSubjectEdit" value="MB Thread Message Subject Edit" />
 		</execute>
 
@@ -230,7 +349,7 @@
 
 	<command name="ViewWebsiteNotificationForNewThreadInCategory" priority="4">
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#addPG">
@@ -253,7 +372,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#gotoPG">
@@ -305,7 +424,7 @@
 
 	<command name="ViewWebsiteNotificationForUpdatedThreadInCategory" priority="4">
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#addPG">
@@ -337,7 +456,7 @@
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
-			<var name="pageName" value="${pageName}" />
+			<var name="pageName" value="Message Boards Page" />
 		</execute>
 
 		<execute macro="MessageboardsCategory#gotoPG">
@@ -346,13 +465,14 @@
 
 		<execute macro="MessageboardsThread#gotoPG">
 			<var name="lastPostUserName" value="Test Test" />
-			<var name="postCount" value="1" />
+			<var name="replyCount" value="0" />
 			<var name="threadBody" value="MB Thread Message Body" />
 			<var name="threadSubject" value="MB Thread Message Subject" />
 		</execute>
 
 		<execute macro="MessageboardsThread#editPG">
 			<var name="threadBodyEdit" value="MB Thread Message Body Edit" />
+			<var name="threadSubject" value="MB Thread Message Subject" />
 			<var name="threadSubjectEdit" value="MB Thread Message Subject Edit" />
 		</execute>
 

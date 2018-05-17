@@ -38,9 +38,9 @@ import com.liferay.portal.kernel.service.persistence.CompanyProvider;
 import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 
@@ -48,6 +48,9 @@ import com.liferay.portlet.documentlibrary.model.impl.DLFileVersionImpl;
 import com.liferay.portlet.documentlibrary.model.impl.DLFileVersionModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -232,7 +235,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -320,7 +323,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -369,7 +372,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("uuid=");
 		msg.append(uuid);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -461,7 +464,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_UUID_3);
 		}
 		else {
@@ -597,7 +600,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_UUID_3);
 			}
 			else {
@@ -676,7 +679,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			msg.append(", groupId=");
 			msg.append(groupId);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -739,7 +742,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -846,7 +849,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_G_UUID_3);
 			}
 			else {
@@ -1046,7 +1049,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1143,7 +1146,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -1199,7 +1202,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -1294,7 +1297,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (uuid == null) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 		}
-		else if (uuid.equals(StringPool.BLANK)) {
+		else if (uuid.equals("")) {
 			query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 		}
 		else {
@@ -1436,7 +1439,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (uuid == null) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_1);
 			}
-			else if (uuid.equals(StringPool.BLANK)) {
+			else if (uuid.equals("")) {
 				query.append(_FINDER_COLUMN_UUID_C_UUID_3);
 			}
 			else {
@@ -1701,7 +1704,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -1752,7 +1755,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -2210,7 +2213,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("fileEntryId=");
 		msg.append(fileEntryId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -2261,7 +2264,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("fileEntryId=");
 		msg.append(fileEntryId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -2643,7 +2646,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (mimeType == null) {
 				query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_1);
 			}
-			else if (mimeType.equals(StringPool.BLANK)) {
+			else if (mimeType.equals("")) {
 				query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_3);
 			}
 			else {
@@ -2732,7 +2735,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("mimeType=");
 		msg.append(mimeType);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -2783,7 +2786,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append("mimeType=");
 		msg.append(mimeType);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -2875,7 +2878,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (mimeType == null) {
 			query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_1);
 		}
-		else if (mimeType.equals(StringPool.BLANK)) {
+		else if (mimeType.equals("")) {
 			query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_3);
 		}
 		else {
@@ -3011,7 +3014,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (mimeType == null) {
 				query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_1);
 			}
-			else if (mimeType.equals(StringPool.BLANK)) {
+			else if (mimeType.equals("")) {
 				query.append(_FINDER_COLUMN_MIMETYPE_MIMETYPE_3);
 			}
 			else {
@@ -3272,7 +3275,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -3328,7 +3331,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -3619,7 +3622,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			msg.append(", version=");
 			msg.append(version);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -3684,7 +3687,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (version == null) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_1);
 			}
-			else if (version.equals(StringPool.BLANK)) {
+			else if (version.equals("")) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_3);
 			}
 			else {
@@ -3791,7 +3794,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (version == null) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_1);
 			}
-			else if (version.equals(StringPool.BLANK)) {
+			else if (version.equals("")) {
 				query.append(_FINDER_COLUMN_F_V_VERSION_3);
 			}
 			else {
@@ -4071,7 +4074,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -4127,7 +4130,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -4641,7 +4644,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -4702,7 +4705,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", status=");
 		msg.append(status);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -5149,7 +5152,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (title == null) {
 				query.append(_FINDER_COLUMN_G_F_T_V_TITLE_1);
 			}
-			else if (title.equals(StringPool.BLANK)) {
+			else if (title.equals("")) {
 				query.append(_FINDER_COLUMN_G_F_T_V_TITLE_3);
 			}
 			else {
@@ -5163,7 +5166,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (version == null) {
 				query.append(_FINDER_COLUMN_G_F_T_V_VERSION_1);
 			}
-			else if (version.equals(StringPool.BLANK)) {
+			else if (version.equals("")) {
 				query.append(_FINDER_COLUMN_G_F_T_V_VERSION_3);
 			}
 			else {
@@ -5273,7 +5276,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", version=");
 		msg.append(version);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -5341,7 +5344,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		msg.append(", version=");
 		msg.append(version);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchFileVersionException(msg.toString());
 	}
@@ -5446,7 +5449,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (title == null) {
 			query.append(_FINDER_COLUMN_G_F_T_V_TITLE_1);
 		}
-		else if (title.equals(StringPool.BLANK)) {
+		else if (title.equals("")) {
 			query.append(_FINDER_COLUMN_G_F_T_V_TITLE_3);
 		}
 		else {
@@ -5460,7 +5463,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		if (version == null) {
 			query.append(_FINDER_COLUMN_G_F_T_V_VERSION_1);
 		}
-		else if (version.equals(StringPool.BLANK)) {
+		else if (version.equals("")) {
 			query.append(_FINDER_COLUMN_G_F_T_V_VERSION_3);
 		}
 		else {
@@ -5616,7 +5619,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (title == null) {
 				query.append(_FINDER_COLUMN_G_F_T_V_TITLE_1);
 			}
-			else if (title.equals(StringPool.BLANK)) {
+			else if (title.equals("")) {
 				query.append(_FINDER_COLUMN_G_F_T_V_TITLE_3);
 			}
 			else {
@@ -5630,7 +5633,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			if (version == null) {
 				query.append(_FINDER_COLUMN_G_F_T_V_VERSION_1);
 			}
-			else if (version.equals(StringPool.BLANK)) {
+			else if (version.equals("")) {
 				query.append(_FINDER_COLUMN_G_F_T_V_VERSION_3);
 			}
 			else {
@@ -5690,6 +5693,25 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 	public DLFileVersionPersistenceImpl() {
 		setModelClass(DLFileVersion.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("uuid", "uuid_");
+			dbColumnNames.put("size", "size_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -5765,7 +5787,7 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((DLFileVersionModelImpl)dlFileVersion);
+		clearUniqueFindersCache((DLFileVersionModelImpl)dlFileVersion, true);
 	}
 
 	@Override
@@ -5777,75 +5799,48 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			entityCache.removeResult(DLFileVersionModelImpl.ENTITY_CACHE_ENABLED,
 				DLFileVersionImpl.class, dlFileVersion.getPrimaryKey());
 
-			clearUniqueFindersCache((DLFileVersionModelImpl)dlFileVersion);
+			clearUniqueFindersCache((DLFileVersionModelImpl)dlFileVersion, true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		DLFileVersionModelImpl dlFileVersionModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					dlFileVersionModelImpl.getUuid(),
-					dlFileVersionModelImpl.getGroupId()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-				dlFileVersionModelImpl);
-
-			args = new Object[] {
-					dlFileVersionModelImpl.getFileEntryId(),
-					dlFileVersionModelImpl.getVersion()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_F_V, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_F_V, args,
-				dlFileVersionModelImpl);
-		}
-		else {
-			if ((dlFileVersionModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						dlFileVersionModelImpl.getUuid(),
-						dlFileVersionModelImpl.getGroupId()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
-					dlFileVersionModelImpl);
-			}
-
-			if ((dlFileVersionModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_F_V.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						dlFileVersionModelImpl.getFileEntryId(),
-						dlFileVersionModelImpl.getVersion()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_F_V, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_F_V, args,
-					dlFileVersionModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		DLFileVersionModelImpl dlFileVersionModelImpl) {
 		Object[] args = new Object[] {
 				dlFileVersionModelImpl.getUuid(),
 				dlFileVersionModelImpl.getGroupId()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_UUID_G, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_UUID_G, args,
+			dlFileVersionModelImpl, false);
+
+		args = new Object[] {
+				dlFileVersionModelImpl.getFileEntryId(),
+				dlFileVersionModelImpl.getVersion()
+			};
+
+		finderCache.putResult(FINDER_PATH_COUNT_BY_F_V, args, Long.valueOf(1),
+			false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_F_V, args,
+			dlFileVersionModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		DLFileVersionModelImpl dlFileVersionModelImpl, boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					dlFileVersionModelImpl.getUuid(),
+					dlFileVersionModelImpl.getGroupId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
+		}
 
 		if ((dlFileVersionModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_UUID_G.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					dlFileVersionModelImpl.getOriginalUuid(),
 					dlFileVersionModelImpl.getOriginalGroupId()
 				};
@@ -5854,17 +5849,19 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			finderCache.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
 		}
 
-		args = new Object[] {
-				dlFileVersionModelImpl.getFileEntryId(),
-				dlFileVersionModelImpl.getVersion()
-			};
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					dlFileVersionModelImpl.getFileEntryId(),
+					dlFileVersionModelImpl.getVersion()
+				};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_F_V, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_F_V, args);
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_F_V, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_F_V, args);
+		}
 
 		if ((dlFileVersionModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_F_V.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					dlFileVersionModelImpl.getOriginalFileEntryId(),
 					dlFileVersionModelImpl.getOriginalVersion()
 				};
@@ -5951,8 +5948,6 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 	@Override
 	protected DLFileVersion removeImpl(DLFileVersion dlFileVersion) {
-		dlFileVersion = toUnwrappedModel(dlFileVersion);
-
 		Session session = null;
 
 		try {
@@ -5983,9 +5978,23 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 	@Override
 	public DLFileVersion updateImpl(DLFileVersion dlFileVersion) {
-		dlFileVersion = toUnwrappedModel(dlFileVersion);
-
 		boolean isNew = dlFileVersion.isNew();
+
+		if (!(dlFileVersion instanceof DLFileVersionModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(dlFileVersion.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(dlFileVersion);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in dlFileVersion proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom DLFileVersion implementation " +
+				dlFileVersion.getClass());
+		}
 
 		DLFileVersionModelImpl dlFileVersionModelImpl = (DLFileVersionModelImpl)dlFileVersion;
 
@@ -6041,8 +6050,77 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !DLFileVersionModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!DLFileVersionModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { dlFileVersionModelImpl.getUuid() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID,
+				args);
+
+			args = new Object[] {
+					dlFileVersionModelImpl.getUuid(),
+					dlFileVersionModelImpl.getCompanyId()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_UUID_C, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID_C,
+				args);
+
+			args = new Object[] { dlFileVersionModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			args = new Object[] { dlFileVersionModelImpl.getFileEntryId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_FILEENTRYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_FILEENTRYID,
+				args);
+
+			args = new Object[] { dlFileVersionModelImpl.getMimeType() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_MIMETYPE, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_MIMETYPE,
+				args);
+
+			args = new Object[] {
+					dlFileVersionModelImpl.getFileEntryId(),
+					dlFileVersionModelImpl.getStatus()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_F_S, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_F_S,
+				args);
+
+			args = new Object[] {
+					dlFileVersionModelImpl.getGroupId(),
+					dlFileVersionModelImpl.getFolderId(),
+					dlFileVersionModelImpl.getStatus()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_F_S, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_F_S,
+				args);
+
+			args = new Object[] {
+					dlFileVersionModelImpl.getGroupId(),
+					dlFileVersionModelImpl.getFolderId(),
+					dlFileVersionModelImpl.getTitle(),
+					dlFileVersionModelImpl.getVersion()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_F_T_V, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_F_T_V,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -6209,54 +6287,12 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 			DLFileVersionImpl.class, dlFileVersion.getPrimaryKey(),
 			dlFileVersion, false);
 
-		clearUniqueFindersCache(dlFileVersionModelImpl);
-		cacheUniqueFindersCache(dlFileVersionModelImpl, isNew);
+		clearUniqueFindersCache(dlFileVersionModelImpl, false);
+		cacheUniqueFindersCache(dlFileVersionModelImpl);
 
 		dlFileVersion.resetOriginalValues();
 
 		return dlFileVersion;
-	}
-
-	protected DLFileVersion toUnwrappedModel(DLFileVersion dlFileVersion) {
-		if (dlFileVersion instanceof DLFileVersionImpl) {
-			return dlFileVersion;
-		}
-
-		DLFileVersionImpl dlFileVersionImpl = new DLFileVersionImpl();
-
-		dlFileVersionImpl.setNew(dlFileVersion.isNew());
-		dlFileVersionImpl.setPrimaryKey(dlFileVersion.getPrimaryKey());
-
-		dlFileVersionImpl.setUuid(dlFileVersion.getUuid());
-		dlFileVersionImpl.setFileVersionId(dlFileVersion.getFileVersionId());
-		dlFileVersionImpl.setGroupId(dlFileVersion.getGroupId());
-		dlFileVersionImpl.setCompanyId(dlFileVersion.getCompanyId());
-		dlFileVersionImpl.setUserId(dlFileVersion.getUserId());
-		dlFileVersionImpl.setUserName(dlFileVersion.getUserName());
-		dlFileVersionImpl.setCreateDate(dlFileVersion.getCreateDate());
-		dlFileVersionImpl.setModifiedDate(dlFileVersion.getModifiedDate());
-		dlFileVersionImpl.setRepositoryId(dlFileVersion.getRepositoryId());
-		dlFileVersionImpl.setFolderId(dlFileVersion.getFolderId());
-		dlFileVersionImpl.setFileEntryId(dlFileVersion.getFileEntryId());
-		dlFileVersionImpl.setTreePath(dlFileVersion.getTreePath());
-		dlFileVersionImpl.setFileName(dlFileVersion.getFileName());
-		dlFileVersionImpl.setExtension(dlFileVersion.getExtension());
-		dlFileVersionImpl.setMimeType(dlFileVersion.getMimeType());
-		dlFileVersionImpl.setTitle(dlFileVersion.getTitle());
-		dlFileVersionImpl.setDescription(dlFileVersion.getDescription());
-		dlFileVersionImpl.setChangeLog(dlFileVersion.getChangeLog());
-		dlFileVersionImpl.setExtraSettings(dlFileVersion.getExtraSettings());
-		dlFileVersionImpl.setFileEntryTypeId(dlFileVersion.getFileEntryTypeId());
-		dlFileVersionImpl.setVersion(dlFileVersion.getVersion());
-		dlFileVersionImpl.setSize(dlFileVersion.getSize());
-		dlFileVersionImpl.setChecksum(dlFileVersion.getChecksum());
-		dlFileVersionImpl.setLastPublishDate(dlFileVersion.getLastPublishDate());
-		dlFileVersionImpl.setStatus(dlFileVersion.getStatus());
-		dlFileVersionImpl.setStatusByUserId(dlFileVersion.getStatusByUserId());
-		dlFileVersionImpl.setStatusByUserName(dlFileVersion.getStatusByUserName());
-		dlFileVersionImpl.setStatusDate(dlFileVersion.getStatusDate());
-
-		return dlFileVersionImpl;
 	}
 
 	/**
@@ -6408,14 +6444,14 @@ public class DLFileVersionPersistenceImpl extends BasePersistenceImpl<DLFileVers
 		query.append(_SQL_SELECT_DLFILEVERSION_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

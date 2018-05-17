@@ -14,6 +14,8 @@
 
 package com.liferay.portlet;
 
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Portlet;
@@ -22,7 +24,7 @@ import com.liferay.portal.kernel.portlet.FriendlyURLMapperTracker;
 import com.liferay.portal.kernel.portlet.Route;
 import com.liferay.portal.kernel.portlet.Router;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -34,7 +36,7 @@ import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceReference;
 import com.liferay.registry.ServiceRegistration;
 import com.liferay.registry.ServiceTracker;
-import com.liferay.registry.ServiceTrackerCustomizer;
+import com.liferay.registry.ServiceTrackerFieldUpdaterCustomizer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,14 +48,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 
-	public FriendlyURLMapperTrackerImpl(Portlet portlet) {
+	public FriendlyURLMapperTrackerImpl(Portlet portlet) throws Exception {
 		_portlet = portlet;
 
 		Registry registry = RegistryUtil.getRegistry();
 
 		Filter filter = registry.getFilter(
-			"(&(javax.portlet.name=" + portlet.getPortletId() +
-				")(objectClass=" + FriendlyURLMapper.class.getName() + "))");
+			StringBundler.concat(
+				"(&(|(javax.portlet.name=", portlet.getPortletId(),
+				")(javax.portlet.name=", portlet.getPortletName(),
+				"))(objectClass=", FriendlyURLMapper.class.getName(), "))"));
 
 		_serviceTracker = registry.trackServices(
 			filter, new FriendlyURLMapperServiceTrackerCustomizer());
@@ -76,7 +80,7 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 
 	@Override
 	public FriendlyURLMapper getFriendlyURLMapper() {
-		return _serviceTracker.getService();
+		return _friendlyURLMapper;
 	}
 
 	@Override
@@ -127,7 +131,6 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 		}
 
 		for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-			String name = entry.getKey();
 			String[] values = entry.getValue();
 
 			if (values.length == 0) {
@@ -136,7 +139,7 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 
 			String value = values[0];
 
-			xml = StringUtil.replace(xml, "@" + name + "@", value);
+			xml = StringUtil.replace(xml, "@" + entry.getKey() + "@", value);
 		}
 
 		return xml;
@@ -145,6 +148,7 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 	private static final Log _log = LogFactoryUtil.getLog(
 		FriendlyURLMapperTrackerImpl.class);
 
+	private volatile FriendlyURLMapper _friendlyURLMapper;
 	private final Portlet _portlet;
 	private final Map<FriendlyURLMapper, ServiceRegistration<?>>
 		_serviceRegistrations = new ConcurrentHashMap<>();
@@ -152,11 +156,12 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 		_serviceTracker;
 
 	private class FriendlyURLMapperServiceTrackerCustomizer
-		implements
-			ServiceTrackerCustomizer<FriendlyURLMapper, FriendlyURLMapper> {
+		extends
+			ServiceTrackerFieldUpdaterCustomizer
+				<FriendlyURLMapper, FriendlyURLMapper> {
 
 		@Override
-		public FriendlyURLMapper addingService(
+		protected FriendlyURLMapper doAddingService(
 			ServiceReference<FriendlyURLMapper> serviceReference) {
 
 			Registry registry = RegistryUtil.getRegistry();
@@ -198,22 +203,6 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 			}
 
 			return friendlyURLMapper;
-		}
-
-		@Override
-		public void modifiedService(
-			ServiceReference<FriendlyURLMapper> serviceReference,
-			FriendlyURLMapper friendlyURLMapper) {
-		}
-
-		@Override
-		public void removedService(
-			ServiceReference<FriendlyURLMapper> serviceReference,
-			FriendlyURLMapper friendlyURLMapper) {
-
-			Registry registry = RegistryUtil.getRegistry();
-
-			registry.ungetService(serviceReference);
 		}
 
 		protected Router newFriendlyURLRouter(String xml) throws Exception {
@@ -275,6 +264,13 @@ public class FriendlyURLMapperTrackerImpl implements FriendlyURLMapperTracker {
 			}
 
 			return router;
+		}
+
+		private FriendlyURLMapperServiceTrackerCustomizer() throws Exception {
+			super(
+				ReflectionUtil.getDeclaredField(
+					FriendlyURLMapperTrackerImpl.class, "_friendlyURLMapper"),
+				FriendlyURLMapperTrackerImpl.this, null);
 		}
 
 	}

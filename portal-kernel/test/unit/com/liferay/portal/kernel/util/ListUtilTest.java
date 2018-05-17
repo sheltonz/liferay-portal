@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.StringPool;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -317,8 +319,7 @@ public class ListUtilTest {
 		removeList.add("bbb");
 
 		Assert.assertEquals(
-			Collections.emptyList(),
-			ListUtil.remove(list, removeList));
+			Collections.emptyList(), ListUtil.remove(list, removeList));
 	}
 
 	@Test
@@ -511,7 +512,7 @@ public class ListUtilTest {
 
 				@Override
 				public Long get(String string) {
-					return Long.parseLong(string);
+					return GetterUtil.getLong(string);
 				}
 
 				@Override
@@ -539,7 +540,7 @@ public class ListUtilTest {
 
 				@Override
 				public Long get(String string) {
-					return Long.parseLong(string);
+					return GetterUtil.getLong(string);
 				}
 
 				@Override

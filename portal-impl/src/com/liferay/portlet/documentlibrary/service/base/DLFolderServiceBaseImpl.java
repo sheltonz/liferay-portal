@@ -392,18 +392,18 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the web d a v props local service.
+	 * Returns the web dav props local service.
 	 *
-	 * @return the web d a v props local service
+	 * @return the web dav props local service
 	 */
 	public com.liferay.portal.kernel.service.WebDAVPropsLocalService getWebDAVPropsLocalService() {
 		return webDAVPropsLocalService;
 	}
 
 	/**
-	 * Sets the web d a v props local service.
+	 * Sets the web dav props local service.
 	 *
-	 * @param webDAVPropsLocalService the web d a v props local service
+	 * @param webDAVPropsLocalService the web dav props local service
 	 */
 	public void setWebDAVPropsLocalService(
 		com.liferay.portal.kernel.service.WebDAVPropsLocalService webDAVPropsLocalService) {
@@ -411,18 +411,18 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the web d a v props persistence.
+	 * Returns the web dav props persistence.
 	 *
-	 * @return the web d a v props persistence
+	 * @return the web dav props persistence
 	 */
 	public WebDAVPropsPersistence getWebDAVPropsPersistence() {
 		return webDAVPropsPersistence;
 	}
 
 	/**
-	 * Sets the web d a v props persistence.
+	 * Sets the web dav props persistence.
 	 *
-	 * @param webDAVPropsPersistence the web d a v props persistence
+	 * @param webDAVPropsPersistence the web dav props persistence
 	 */
 	public void setWebDAVPropsPersistence(
 		WebDAVPropsPersistence webDAVPropsPersistence) {
@@ -581,18 +581,18 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	}
 
 	/**
-	 * Returns the d l app helper local service.
+	 * Returns the dl app helper local service.
 	 *
-	 * @return the d l app helper local service
+	 * @return the dl app helper local service
 	 */
 	public com.liferay.document.library.kernel.service.DLAppHelperLocalService getDLAppHelperLocalService() {
 		return dlAppHelperLocalService;
 	}
 
 	/**
-	 * Sets the d l app helper local service.
+	 * Sets the dl app helper local service.
 	 *
-	 * @param dlAppHelperLocalService the d l app helper local service
+	 * @param dlAppHelperLocalService the dl app helper local service
 	 */
 	public void setDLAppHelperLocalService(
 		com.liferay.document.library.kernel.service.DLAppHelperLocalService dlAppHelperLocalService) {
@@ -963,6 +963,7 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public com.liferay.trash.kernel.service.TrashEntryLocalService getTrashEntryLocalService() {
 		return trashEntryLocalService;
 	}
@@ -972,6 +973,7 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param trashEntryLocalService the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public void setTrashEntryLocalService(
 		com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService) {
 		this.trashEntryLocalService = trashEntryLocalService;
@@ -982,6 +984,7 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @return the trash entry remote service
 	 */
+	@SuppressWarnings("deprecation")
 	public com.liferay.trash.kernel.service.TrashEntryService getTrashEntryService() {
 		return trashEntryService;
 	}
@@ -991,6 +994,7 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	 *
 	 * @param trashEntryService the trash entry remote service
 	 */
+	@SuppressWarnings("deprecation")
 	public void setTrashEntryService(
 		com.liferay.trash.kernel.service.TrashEntryService trashEntryService) {
 		this.trashEntryService = trashEntryService;
@@ -1158,8 +1162,10 @@ public abstract class DLFolderServiceBaseImpl extends BaseServiceImpl
 	@BeanReference(type = RatingsStatsFinder.class)
 	protected RatingsStatsFinder ratingsStatsFinder;
 	@BeanReference(type = com.liferay.trash.kernel.service.TrashEntryLocalService.class)
+	@SuppressWarnings("deprecation")
 	protected com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService;
 	@BeanReference(type = com.liferay.trash.kernel.service.TrashEntryService.class)
+	@SuppressWarnings("deprecation")
 	protected com.liferay.trash.kernel.service.TrashEntryService trashEntryService;
 	@BeanReference(type = TrashEntryPersistence.class)
 	protected TrashEntryPersistence trashEntryPersistence;

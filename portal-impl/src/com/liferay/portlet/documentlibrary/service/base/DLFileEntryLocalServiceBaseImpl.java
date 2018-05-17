@@ -20,6 +20,7 @@ import com.liferay.asset.kernel.service.persistence.AssetCategoryFinder;
 import com.liferay.asset.kernel.service.persistence.AssetCategoryPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetEntryFinder;
 import com.liferay.asset.kernel.service.persistence.AssetEntryPersistence;
+import com.liferay.asset.kernel.service.persistence.AssetLinkFinder;
 import com.liferay.asset.kernel.service.persistence.AssetLinkPersistence;
 import com.liferay.asset.kernel.service.persistence.AssetTagFinder;
 import com.liferay.asset.kernel.service.persistence.AssetTagPersistence;
@@ -76,6 +77,7 @@ import com.liferay.portal.kernel.service.persistence.UserFinder;
 import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.service.persistence.WebDAVPropsPersistence;
 import com.liferay.portal.kernel.service.persistence.WorkflowInstanceLinkPersistence;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 
@@ -133,6 +135,7 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	 * @return the new document library file entry
 	 */
 	@Override
+	@Transactional(enabled = false)
 	public DLFileEntry createDLFileEntry(long fileEntryId) {
 		return dlFileEntryPersistence.create(fileEntryId);
 	}
@@ -798,18 +801,18 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the web d a v props local service.
+	 * Returns the web dav props local service.
 	 *
-	 * @return the web d a v props local service
+	 * @return the web dav props local service
 	 */
 	public com.liferay.portal.kernel.service.WebDAVPropsLocalService getWebDAVPropsLocalService() {
 		return webDAVPropsLocalService;
 	}
 
 	/**
-	 * Sets the web d a v props local service.
+	 * Sets the web dav props local service.
 	 *
-	 * @param webDAVPropsLocalService the web d a v props local service
+	 * @param webDAVPropsLocalService the web dav props local service
 	 */
 	public void setWebDAVPropsLocalService(
 		com.liferay.portal.kernel.service.WebDAVPropsLocalService webDAVPropsLocalService) {
@@ -817,18 +820,18 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the web d a v props persistence.
+	 * Returns the web dav props persistence.
 	 *
-	 * @return the web d a v props persistence
+	 * @return the web dav props persistence
 	 */
 	public WebDAVPropsPersistence getWebDAVPropsPersistence() {
 		return webDAVPropsPersistence;
 	}
 
 	/**
-	 * Sets the web d a v props persistence.
+	 * Sets the web dav props persistence.
 	 *
-	 * @param webDAVPropsPersistence the web d a v props persistence
+	 * @param webDAVPropsPersistence the web dav props persistence
 	 */
 	public void setWebDAVPropsPersistence(
 		WebDAVPropsPersistence webDAVPropsPersistence) {
@@ -1024,6 +1027,24 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the asset link finder.
+	 *
+	 * @return the asset link finder
+	 */
+	public AssetLinkFinder getAssetLinkFinder() {
+		return assetLinkFinder;
+	}
+
+	/**
+	 * Sets the asset link finder.
+	 *
+	 * @param assetLinkFinder the asset link finder
+	 */
+	public void setAssetLinkFinder(AssetLinkFinder assetLinkFinder) {
+		this.assetLinkFinder = assetLinkFinder;
+	}
+
+	/**
 	 * Returns the asset tag local service.
 	 *
 	 * @return the asset tag local service
@@ -1079,18 +1100,18 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	}
 
 	/**
-	 * Returns the d l app helper local service.
+	 * Returns the dl app helper local service.
 	 *
-	 * @return the d l app helper local service
+	 * @return the dl app helper local service
 	 */
 	public com.liferay.document.library.kernel.service.DLAppHelperLocalService getDLAppHelperLocalService() {
 		return dlAppHelperLocalService;
 	}
 
 	/**
-	 * Sets the d l app helper local service.
+	 * Sets the dl app helper local service.
 	 *
-	 * @param dlAppHelperLocalService the d l app helper local service
+	 * @param dlAppHelperLocalService the dl app helper local service
 	 */
 	public void setDLAppHelperLocalService(
 		com.liferay.document.library.kernel.service.DLAppHelperLocalService dlAppHelperLocalService) {
@@ -1234,6 +1255,7 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	 *
 	 * @return the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public com.liferay.trash.kernel.service.TrashEntryLocalService getTrashEntryLocalService() {
 		return trashEntryLocalService;
 	}
@@ -1243,6 +1265,7 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	 *
 	 * @param trashEntryLocalService the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public void setTrashEntryLocalService(
 		com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService) {
 		this.trashEntryLocalService = trashEntryLocalService;
@@ -1584,6 +1607,8 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	protected com.liferay.asset.kernel.service.AssetLinkLocalService assetLinkLocalService;
 	@BeanReference(type = AssetLinkPersistence.class)
 	protected AssetLinkPersistence assetLinkPersistence;
+	@BeanReference(type = AssetLinkFinder.class)
+	protected AssetLinkFinder assetLinkFinder;
 	@BeanReference(type = com.liferay.asset.kernel.service.AssetTagLocalService.class)
 	protected com.liferay.asset.kernel.service.AssetTagLocalService assetTagLocalService;
 	@BeanReference(type = AssetTagPersistence.class)
@@ -1607,6 +1632,7 @@ public abstract class DLFileEntryLocalServiceBaseImpl
 	@BeanReference(type = RatingsStatsFinder.class)
 	protected RatingsStatsFinder ratingsStatsFinder;
 	@BeanReference(type = com.liferay.trash.kernel.service.TrashEntryLocalService.class)
+	@SuppressWarnings("deprecation")
 	protected com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService;
 	@BeanReference(type = TrashEntryPersistence.class)
 	protected TrashEntryPersistence trashEntryPersistence;

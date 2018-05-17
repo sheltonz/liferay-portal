@@ -39,13 +39,16 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.LayoutSetBranchPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.LayoutSetBranchImpl;
 import com.liferay.portal.model.impl.LayoutSetBranchModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.Date;
@@ -306,7 +309,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append("groupId=");
 		msg.append(groupId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -357,7 +360,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append("groupId=");
 		msg.append(groupId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -1083,7 +1086,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutSetBranch layoutSetBranch : list) {
 					if ((groupId != layoutSetBranch.getGroupId()) ||
-							(privateLayout != layoutSetBranch.getPrivateLayout())) {
+							(privateLayout != layoutSetBranch.isPrivateLayout())) {
 						list = null;
 
 						break;
@@ -1193,7 +1196,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append(", privateLayout=");
 		msg.append(privateLayout);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -1250,7 +1253,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append(", privateLayout=");
 		msg.append(privateLayout);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -1934,7 +1937,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			msg.append(", name=");
 			msg.append(name);
 
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
+			msg.append("}");
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(msg.toString());
@@ -1985,7 +1988,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			LayoutSetBranch layoutSetBranch = (LayoutSetBranch)result;
 
 			if ((groupId != layoutSetBranch.getGroupId()) ||
-					(privateLayout != layoutSetBranch.getPrivateLayout()) ||
+					(privateLayout != layoutSetBranch.isPrivateLayout()) ||
 					!Objects.equals(name, layoutSetBranch.getName())) {
 				result = null;
 			}
@@ -2005,7 +2008,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			if (name == null) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -2047,7 +2050,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 					cacheResult(layoutSetBranch);
 
 					if ((layoutSetBranch.getGroupId() != groupId) ||
-							(layoutSetBranch.getPrivateLayout() != privateLayout) ||
+							(layoutSetBranch.isPrivateLayout() != privateLayout) ||
 							(layoutSetBranch.getName() == null) ||
 							!layoutSetBranch.getName().equals(name)) {
 						finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N,
@@ -2120,7 +2123,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			if (name == null) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_1);
 			}
-			else if (name.equals(StringPool.BLANK)) {
+			else if (name.equals("")) {
 				query.append(_FINDER_COLUMN_G_P_N_NAME_3);
 			}
 			else {
@@ -2308,8 +2311,8 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			if ((list != null) && !list.isEmpty()) {
 				for (LayoutSetBranch layoutSetBranch : list) {
 					if ((groupId != layoutSetBranch.getGroupId()) ||
-							(privateLayout != layoutSetBranch.getPrivateLayout()) ||
-							(master != layoutSetBranch.getMaster())) {
+							(privateLayout != layoutSetBranch.isPrivateLayout()) ||
+							(master != layoutSetBranch.isMaster())) {
 						list = null;
 
 						break;
@@ -2428,7 +2431,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append(", master=");
 		msg.append(master);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -2491,7 +2494,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		msg.append(", master=");
 		msg.append(master);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchLayoutSetBranchException(msg.toString());
 	}
@@ -3167,6 +3170,24 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 	public LayoutSetBranchPersistenceImpl() {
 		setModelClass(LayoutSetBranch.class);
+
+		try {
+			Field field = BasePersistenceImpl.class.getDeclaredField(
+					"_dbColumnNames");
+
+			field.setAccessible(true);
+
+			Map<String, String> dbColumnNames = new HashMap<String, String>();
+
+			dbColumnNames.put("settings", "settings_");
+
+			field.set(this, dbColumnNames);
+		}
+		catch (Exception e) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(e, e);
+			}
+		}
 	}
 
 	/**
@@ -3182,7 +3203,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 		finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N,
 			new Object[] {
-				layoutSetBranch.getGroupId(), layoutSetBranch.getPrivateLayout(),
+				layoutSetBranch.getGroupId(), layoutSetBranch.isPrivateLayout(),
 				layoutSetBranch.getName()
 			}, layoutSetBranch);
 
@@ -3240,7 +3261,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 
-		clearUniqueFindersCache((LayoutSetBranchModelImpl)layoutSetBranch);
+		clearUniqueFindersCache((LayoutSetBranchModelImpl)layoutSetBranch, true);
 	}
 
 	@Override
@@ -3252,55 +3273,41 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			entityCache.removeResult(LayoutSetBranchModelImpl.ENTITY_CACHE_ENABLED,
 				LayoutSetBranchImpl.class, layoutSetBranch.getPrimaryKey());
 
-			clearUniqueFindersCache((LayoutSetBranchModelImpl)layoutSetBranch);
+			clearUniqueFindersCache((LayoutSetBranchModelImpl)layoutSetBranch,
+				true);
 		}
 	}
 
 	protected void cacheUniqueFindersCache(
-		LayoutSetBranchModelImpl layoutSetBranchModelImpl, boolean isNew) {
-		if (isNew) {
-			Object[] args = new Object[] {
-					layoutSetBranchModelImpl.getGroupId(),
-					layoutSetBranchModelImpl.getPrivateLayout(),
-					layoutSetBranchModelImpl.getName()
-				};
-
-			finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
-				Long.valueOf(1));
-			finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
-				layoutSetBranchModelImpl);
-		}
-		else {
-			if ((layoutSetBranchModelImpl.getColumnBitmask() &
-					FINDER_PATH_FETCH_BY_G_P_N.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						layoutSetBranchModelImpl.getGroupId(),
-						layoutSetBranchModelImpl.getPrivateLayout(),
-						layoutSetBranchModelImpl.getName()
-					};
-
-				finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
-					Long.valueOf(1));
-				finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
-					layoutSetBranchModelImpl);
-			}
-		}
-	}
-
-	protected void clearUniqueFindersCache(
 		LayoutSetBranchModelImpl layoutSetBranchModelImpl) {
 		Object[] args = new Object[] {
 				layoutSetBranchModelImpl.getGroupId(),
-				layoutSetBranchModelImpl.getPrivateLayout(),
+				layoutSetBranchModelImpl.isPrivateLayout(),
 				layoutSetBranchModelImpl.getName()
 			};
 
-		finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_N, args);
-		finderCache.removeResult(FINDER_PATH_FETCH_BY_G_P_N, args);
+		finderCache.putResult(FINDER_PATH_COUNT_BY_G_P_N, args,
+			Long.valueOf(1), false);
+		finderCache.putResult(FINDER_PATH_FETCH_BY_G_P_N, args,
+			layoutSetBranchModelImpl, false);
+	}
+
+	protected void clearUniqueFindersCache(
+		LayoutSetBranchModelImpl layoutSetBranchModelImpl, boolean clearCurrent) {
+		if (clearCurrent) {
+			Object[] args = new Object[] {
+					layoutSetBranchModelImpl.getGroupId(),
+					layoutSetBranchModelImpl.isPrivateLayout(),
+					layoutSetBranchModelImpl.getName()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_N, args);
+			finderCache.removeResult(FINDER_PATH_FETCH_BY_G_P_N, args);
+		}
 
 		if ((layoutSetBranchModelImpl.getColumnBitmask() &
 				FINDER_PATH_FETCH_BY_G_P_N.getColumnBitmask()) != 0) {
-			args = new Object[] {
+			Object[] args = new Object[] {
 					layoutSetBranchModelImpl.getOriginalGroupId(),
 					layoutSetBranchModelImpl.getOriginalPrivateLayout(),
 					layoutSetBranchModelImpl.getOriginalName()
@@ -3384,8 +3391,6 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 	@Override
 	protected LayoutSetBranch removeImpl(LayoutSetBranch layoutSetBranch) {
-		layoutSetBranch = toUnwrappedModel(layoutSetBranch);
-
 		Session session = null;
 
 		try {
@@ -3416,9 +3421,23 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 	@Override
 	public LayoutSetBranch updateImpl(LayoutSetBranch layoutSetBranch) {
-		layoutSetBranch = toUnwrappedModel(layoutSetBranch);
-
 		boolean isNew = layoutSetBranch.isNew();
+
+		if (!(layoutSetBranch instanceof LayoutSetBranchModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(layoutSetBranch.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(layoutSetBranch);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in layoutSetBranch proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom LayoutSetBranch implementation " +
+				layoutSetBranch.getClass());
+		}
 
 		LayoutSetBranchModelImpl layoutSetBranchModelImpl = (LayoutSetBranchModelImpl)layoutSetBranch;
 
@@ -3468,8 +3487,39 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !LayoutSetBranchModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!LayoutSetBranchModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { layoutSetBranchModelImpl.getGroupId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_GROUPID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID,
+				args);
+
+			args = new Object[] {
+					layoutSetBranchModelImpl.getGroupId(),
+					layoutSetBranchModelImpl.isPrivateLayout()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_P,
+				args);
+
+			args = new Object[] {
+					layoutSetBranchModelImpl.getGroupId(),
+					layoutSetBranchModelImpl.isPrivateLayout(),
+					layoutSetBranchModelImpl.isMaster()
+				};
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_M, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_G_P_M,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -3503,7 +3553,7 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 				args = new Object[] {
 						layoutSetBranchModelImpl.getGroupId(),
-						layoutSetBranchModelImpl.getPrivateLayout()
+						layoutSetBranchModelImpl.isPrivateLayout()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P, args);
@@ -3525,8 +3575,8 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 
 				args = new Object[] {
 						layoutSetBranchModelImpl.getGroupId(),
-						layoutSetBranchModelImpl.getPrivateLayout(),
-						layoutSetBranchModelImpl.getMaster()
+						layoutSetBranchModelImpl.isPrivateLayout(),
+						layoutSetBranchModelImpl.isMaster()
 					};
 
 				finderCache.removeResult(FINDER_PATH_COUNT_BY_G_P_M, args);
@@ -3539,45 +3589,12 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 			LayoutSetBranchImpl.class, layoutSetBranch.getPrimaryKey(),
 			layoutSetBranch, false);
 
-		clearUniqueFindersCache(layoutSetBranchModelImpl);
-		cacheUniqueFindersCache(layoutSetBranchModelImpl, isNew);
+		clearUniqueFindersCache(layoutSetBranchModelImpl, false);
+		cacheUniqueFindersCache(layoutSetBranchModelImpl);
 
 		layoutSetBranch.resetOriginalValues();
 
 		return layoutSetBranch;
-	}
-
-	protected LayoutSetBranch toUnwrappedModel(LayoutSetBranch layoutSetBranch) {
-		if (layoutSetBranch instanceof LayoutSetBranchImpl) {
-			return layoutSetBranch;
-		}
-
-		LayoutSetBranchImpl layoutSetBranchImpl = new LayoutSetBranchImpl();
-
-		layoutSetBranchImpl.setNew(layoutSetBranch.isNew());
-		layoutSetBranchImpl.setPrimaryKey(layoutSetBranch.getPrimaryKey());
-
-		layoutSetBranchImpl.setMvccVersion(layoutSetBranch.getMvccVersion());
-		layoutSetBranchImpl.setLayoutSetBranchId(layoutSetBranch.getLayoutSetBranchId());
-		layoutSetBranchImpl.setGroupId(layoutSetBranch.getGroupId());
-		layoutSetBranchImpl.setCompanyId(layoutSetBranch.getCompanyId());
-		layoutSetBranchImpl.setUserId(layoutSetBranch.getUserId());
-		layoutSetBranchImpl.setUserName(layoutSetBranch.getUserName());
-		layoutSetBranchImpl.setCreateDate(layoutSetBranch.getCreateDate());
-		layoutSetBranchImpl.setModifiedDate(layoutSetBranch.getModifiedDate());
-		layoutSetBranchImpl.setPrivateLayout(layoutSetBranch.isPrivateLayout());
-		layoutSetBranchImpl.setName(layoutSetBranch.getName());
-		layoutSetBranchImpl.setDescription(layoutSetBranch.getDescription());
-		layoutSetBranchImpl.setMaster(layoutSetBranch.isMaster());
-		layoutSetBranchImpl.setLogoId(layoutSetBranch.getLogoId());
-		layoutSetBranchImpl.setThemeId(layoutSetBranch.getThemeId());
-		layoutSetBranchImpl.setColorSchemeId(layoutSetBranch.getColorSchemeId());
-		layoutSetBranchImpl.setCss(layoutSetBranch.getCss());
-		layoutSetBranchImpl.setSettings(layoutSetBranch.getSettings());
-		layoutSetBranchImpl.setLayoutSetPrototypeUuid(layoutSetBranch.getLayoutSetPrototypeUuid());
-		layoutSetBranchImpl.setLayoutSetPrototypeLinkEnabled(layoutSetBranch.isLayoutSetPrototypeLinkEnabled());
-
-		return layoutSetBranchImpl;
 	}
 
 	/**
@@ -3729,14 +3746,14 @@ public class LayoutSetBranchPersistenceImpl extends BasePersistenceImpl<LayoutSe
 		query.append(_SQL_SELECT_LAYOUTSETBRANCH_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

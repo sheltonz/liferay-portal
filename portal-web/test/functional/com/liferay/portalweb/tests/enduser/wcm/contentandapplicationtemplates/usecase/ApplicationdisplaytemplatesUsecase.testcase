@@ -1,14 +1,17 @@
 <definition component-name="portal-wcm">
-	<property name="portal.release" value="true" />
-	<property name="testray.main.component.name" value="Content and Application Templates" />
 	<property name="custom.properties" value="default.layout.template.id=1_column" />
+	<property name="portal.release" value="true" />
+	<property name="portal.upstream" value="true" />
+	<property name="testray.main.component.name" value="Content and Application Templates" />
 
 	<set-up>
 		<execute macro="TestCase#setUpPortalInstance" />
 
 		<execute macro="User#firstLoginPG" />
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Sites" />
+			<var name="panel" value="Control Panel" />
 			<var name="portlet" value="Sites" />
 		</execute>
 
@@ -16,13 +19,22 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
 		</execute>
 
-		<execute macro="Page#add">
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="ADT Test Page" />
-			<var name="siteName" value="Test Site Name" />
+			<var name="sitePageType" value="Layout" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="ADT Test Page" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 	</set-up>
 
@@ -46,8 +58,8 @@
 	</tear-down>
 
 	<command name="AddRSSADTViaPortletConfiguration" priority="5">
-		<property name="portal.acceptance" value="false" />
-		<property name="portal.acceptance.quarantine" value="true" />
+		<property name="portal.acceptance" value="quarantine" />
+		<property name="testray.component.names" value="Content and Application Templates,RSS" />
 
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="ADT Test Page" />
@@ -56,6 +68,25 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="RSS Publisher" />
+		</execute>
+
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="RSS Publisher" />
+			<var name="portletOption" value="Configuration" />
+		</execute>
+
+		<execute macro="RSSPortlet#addFeed">
+			<var name="feedRowIndexNumber" value="0" />
+			<var name="feedTitle" value="Latimes > Technology News" />
+			<var name="feedType" value="file" />
+			<var name="feedUrlLink" value="rss2.0.xml" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="ADT Test Page" />
+			<var name="siteName" value="Test Site Name" />
 		</execute>
 
 		<execute macro="Portlet#gotoPortletOptions">
@@ -72,10 +103,10 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="RSS#waitForRSSLoad" />
+		<execute macro="RSSPortlet#waitForRSSLoad" />
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="RSS" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="RSS Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -83,14 +114,16 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="RSS#waitForRSSLoad" />
+		<execute macro="RSSPortlet#waitForRSSLoad" />
 
-		<execute macro="RSS#viewCustomADT">
+		<execute macro="RSSPortlet#viewCustomADT">
 			<var name="feedContentTitle" value="Technology" />
 		</execute>
 	</command>
 
 	<command name="AddRSSADTWithCorruptScript" priority="3">
+		<property name="testray.component.names" value="Content and Application Templates,RSS" />
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="ADT Test Page" />
 			<var name="siteName" value="Test Site Name" />
@@ -98,6 +131,25 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="RSS Publisher" />
+		</execute>
+
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="RSS Publisher" />
+			<var name="portletOption" value="Configuration" />
+		</execute>
+
+		<execute macro="RSSPortlet#addFeed">
+			<var name="feedRowIndexNumber" value="0" />
+			<var name="feedTitle" value="Latimes > Technology News" />
+			<var name="feedType" value="file" />
+			<var name="feedUrlLink" value="rss2.0.xml" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="ADT Test Page" />
+			<var name="siteName" value="Test Site Name" />
 		</execute>
 
 		<execute macro="ApplicationDisplayTemplates#addPG">
@@ -111,8 +163,8 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="RSS" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="RSS Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -120,10 +172,12 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="RSS#viewCorruptScript" />
+		<execute macro="RSSPortlet#viewCorruptScript" />
 	</command>
 
 	<command name="AddRSSADTWithScript" priority="3">
+		<property name="testray.component.names" value="Content and Application Templates,RSS" />
+
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="ADT Test Page" />
 			<var name="siteName" value="Test Site Name" />
@@ -131,6 +185,25 @@
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="RSS Publisher" />
+		</execute>
+
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="RSS Publisher" />
+			<var name="portletOption" value="Configuration" />
+		</execute>
+
+		<execute macro="RSSPortlet#addFeed">
+			<var name="feedRowIndexNumber" value="0" />
+			<var name="feedTitle" value="Technology" />
+			<var name="feedType" value="file" />
+			<var name="feedUrlLink" value="Technology.xml" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="ADT Test Page" />
+			<var name="siteName" value="Test Site Name" />
 		</execute>
 
 		<execute macro="ApplicationDisplayTemplates#addPG">
@@ -144,8 +217,8 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="RSS" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="RSS Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -153,13 +226,15 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="RSS#viewNavigationDisplayFeedTitle">
+		<execute macro="RSSPortlet#viewNavigationDisplayFeedTitle">
 			<var name="feedTitle" value="Technology" />
 			<var name="navigationNullADT" value="true" />
 		</execute>
 	</command>
 
 	<command name="ADTAssetPublisher" priority="3">
+		<property name="testray.component.names" value="Asset Publisher,Content and Application Templates" />
+
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Test Site Name" />
 		</execute>
@@ -199,7 +274,9 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="AssetPublisherPortlet#configureFlagAllDisplaySettingsCheckboxes" />
+		<execute macro="AssetPublisherPortlet#configureDisplaySettings">
+			<var name="displaySettings" value="Comments,Comment Ratings,Flags,Print,Ratings,Related Assets" />
+		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="ADT Test Page" />
@@ -211,8 +288,8 @@
 			<var name="assetTitle" value="WC Title" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Asset Publisher" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Asset Publisher Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -227,7 +304,8 @@
 	</command>
 
 	<command name="ADTBreadcrumb" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="quarantine" />
+		<property name="testray.component.names" value="Breadcrumb,Content and Application Templates" />
 
 		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="ADT Test Page" />
@@ -262,13 +340,16 @@
 	</command>
 
 	<command name="ADTCategoriesNavigation" priority="5">
-		<property name="portal.acceptance" value="true" />
+		<property name="portal.acceptance" value="quarantine" />
+		<property name="testray.component.names" value="Categories,Content and Application Templates" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Categorization" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Categories" />
 		</execute>
 
@@ -315,8 +396,8 @@
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Categories Navigation" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Categories Navigation Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -331,6 +412,8 @@
 	</command>
 
 	<command name="ADTDMMediaGallery" priority="3">
+		<property name="testray.component.names" value="Content and Application Templates,Documents Management" />
+
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Test Site Name" />
 		</execute>
@@ -413,8 +496,8 @@
 
 		<execute macro="MGPortlet#viewShowAllPG" />
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Documents and Media" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Documents and Media Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -426,6 +509,8 @@
 	</command>
 
 	<command name="ADTSiteMap" priority="3">
+		<property name="testray.component.names" value="Content and Application Templates,Sitemap" />
+
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Test Site Name" />
 		</execute>
@@ -439,38 +524,39 @@
 			<var name="portletName" value="Site Map" />
 		</execute>
 
-		<execute macro="Navigator#openSiteURL">
-			<var name="siteName" value="Test Site Name" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
 		</execute>
 
-		<execute macro="SitePageNavigator#gotoPages">
-			<var name="page" value="Public Pages" />
+		<execute macro="SitePages#addPublicChildPage">
+			<var name="childPageName" value="ADT Child Page Name" />
+			<var name="parentPageName" value="ADT Test Page" />
 		</execute>
 
-		<execute macro="Page#addChild">
-			<var name="page" value="Public Pages" />
-			<var name="pageName" value="ADT Test Page" />
-			<var name="siteChildPageName" value="ADT Child Page Name" />
-			<var name="siteName" value="Test Site Name" />
-			<var name="siteScopeSelected" value="true" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Page#add">
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="ADT Test Page 2" />
-			<var name="siteName" value="Test Site Name" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="ADT Test Page 2" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
-		<execute macro="Page#add">
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="ADT Test Page 3" />
-			<var name="siteName" value="Test Site Name" />
+			<var name="sitePageType" value="Layout" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="ADT Test Page 3" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -499,8 +585,8 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Site Map" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Site Map Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -515,13 +601,15 @@
 	</command>
 
 	<command name="ADTStagingCategoriesNavigation" priority="3">
-		<var name="siteName" value="Test Site Name" />
+		<property name="testray.component.names" value="Categories,Content and Application Templates,Staging" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Categorization" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Categories" />
 		</execute>
 
@@ -538,7 +626,9 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishing">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Publishing" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -576,8 +666,8 @@
 			<var name="vocabularyName" value="Vocabulary Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Categories Navigation" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Categories Navigation Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoStagedSitePage">
@@ -607,6 +697,7 @@
 
 	<command name="ADTTagsNavigationPortlet" priority="5">
 		<property name="portal.acceptance" value="true" />
+		<property name="testray.component.names" value="Content and Application Templates,Tags" />
 
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Test Site Name" />
@@ -621,13 +712,22 @@
 			<var name="portletName" value="Tags Navigation" />
 		</execute>
 
-		<execute macro="Navigator#gotoSitePage">
-			<var name="pageName" value="ADT Test Page" />
-			<var name="siteName" value="Test Site Name" />
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
+			<var name="portlet" value="Site Pages" />
 		</execute>
 
-		<execute macro="Page#add">
+		<execute macro="SitePages#addPublicPage">
 			<var name="pageName" value="Blogs Test Page" />
+			<var name="sitePageType" value="Layout" />
+		</execute>
+
+		<execute macro="SitePages#configurePage">
+			<var name="columnName" value="1 Column" />
+			<var name="pageName" value="Blogs Test Page" />
+			<var name="privacy" value="Public" />
+			<var name="sitePageType" value="Layout" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -644,7 +744,7 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="Tag#addMultipleViaBlogsPG">
+		<execute macro="Blogs#addEntryWithTags">
 			<var name="entryContent" value="Entry Content" />
 			<var name="entryTitle" value="Entry Title" />
 			<var name="tagNameList" value="tag name 1,tag name 2,tag name 3" />
@@ -655,7 +755,7 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="Tag#addMultipleViaBlogsPG">
+		<execute macro="Blogs#addEntryWithTags">
 			<var name="entryContent" value="Entry Content" />
 			<var name="entryTitle" value="Entry Title" />
 			<var name="tagNameList" value="tag name 2,tag name 3" />
@@ -666,7 +766,7 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="Tag#addMultipleViaBlogsPG">
+		<execute macro="Blogs#addEntryWithTags">
 			<var name="entryContent" value="Entry Content" />
 			<var name="entryTitle" value="Entry Title" />
 			<var name="tagNameList" value="tag name 3" />
@@ -692,8 +792,8 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Tags Navigation" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
+			<var name="templateName" value="Tags Navigation Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">
@@ -733,6 +833,8 @@
 	</command>
 
 	<command name="ADTWiki" priority="3">
+		<property name="testray.component.names" value="Content and Application Templates,Wiki" />
+
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Test Site Name" />
 		</execute>
@@ -765,7 +867,9 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesConfiguration">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Build" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Application Display Templates" />
 		</execute>
 
@@ -779,9 +883,9 @@
 			<var name="siteName" value="Test Site Name" />
 		</execute>
 
-		<execute macro="ApplicationDisplayTemplates#addADTviaPortletPG">
-			<var name="adtType" value="Wiki" />
+		<execute macro="ApplicationDisplayTemplates#selectPortletADT">
 			<var name="portletName" value="Wiki" />
+			<var name="templateName" value="Wiki Test ADT" />
 		</execute>
 
 		<execute macro="Navigator#gotoSitePage">

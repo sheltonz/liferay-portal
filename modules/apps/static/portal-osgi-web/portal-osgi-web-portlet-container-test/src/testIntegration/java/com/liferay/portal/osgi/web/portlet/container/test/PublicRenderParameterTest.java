@@ -15,27 +15,27 @@
 package com.liferay.portal.osgi.web.portlet.container.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.application.type.ApplicationType;
 import com.liferay.portal.kernel.model.LayoutConstants;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.PortletQName;
+import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.test.randomizerbumpers.NumericStringRandomizerBumper;
 import com.liferay.portal.kernel.test.randomizerbumpers.UniqueStringRandomizerBumper;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.HashMapDictionary;
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.test.randomizerbumpers.FriendlyURLRandomizerBumper;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.test.PortletContainerTestUtil;
 import com.liferay.portal.util.test.PortletContainerTestUtil.Response;
-import com.liferay.portlet.PortletURLImpl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -65,8 +65,7 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 	@ClassRule
 	@Rule
 	public static final AggregateTestRule aggregateTestRule =
-		new AggregateTestRule(
-			new LiferayIntegrationTestRule(), TransactionalTestRule.INSTANCE);
+		new LiferayIntegrationTestRule();
 
 	@Test
 	public void testWithModuleLayoutTypeController() throws Exception {
@@ -127,10 +126,18 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 			StringPool.SLASH + FriendlyURLNormalizerUtil.normalize(name),
 			ServiceContextTestUtil.getServiceContext());
 
+		UnicodeProperties typeSettingsProperties =
+			layout.getTypeSettingsProperties();
+
+		typeSettingsProperties.setProperty(
+			"fullPageApplicationPortlet", TEST_PORTLET_ID);
+
+		LayoutLocalServiceUtil.updateLayout(layout);
+
 		HttpServletRequest httpServletRequest =
 			PortletContainerTestUtil.getHttpServletRequest(group, layout);
 
-		PortletURL portletURL = new PortletURLImpl(
+		PortletURL portletURL = PortletURLFactoryUtil.create(
 			httpServletRequest, TEST_PORTLET_ID, layout.getPlid(),
 			PortletRequest.RENDER_PHASE);
 
@@ -139,12 +146,14 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 		String portletURLString = portletURL.toString();
 
 		Assert.assertTrue(
+			portletURLString,
 			portletURLString.contains(
 				PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE));
 
 		Response response = PortletContainerTestUtil.request(portletURLString);
 
 		Assert.assertEquals(200, response.getCode());
+
 		Assert.assertTrue(success.get());
 	}
 
@@ -187,7 +196,7 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 		HttpServletRequest httpServletRequest =
 			PortletContainerTestUtil.getHttpServletRequest(group, layout);
 
-		PortletURL portletURL = new PortletURLImpl(
+		PortletURL portletURL = PortletURLFactoryUtil.create(
 			httpServletRequest, TEST_PORTLET_ID, layout.getPlid(),
 			PortletRequest.RENDER_PHASE);
 
@@ -196,12 +205,14 @@ public class PublicRenderParameterTest extends BasePortletContainerTestCase {
 		String portletURLString = portletURL.toString();
 
 		Assert.assertTrue(
+			portletURLString,
 			portletURLString.contains(
 				PortletQName.PUBLIC_RENDER_PARAMETER_NAMESPACE));
 
 		Response response = PortletContainerTestUtil.request(portletURLString);
 
 		Assert.assertEquals(200, response.getCode());
+
 		Assert.assertTrue(success.get());
 	}
 

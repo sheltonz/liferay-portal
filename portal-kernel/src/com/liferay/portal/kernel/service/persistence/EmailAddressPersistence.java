@@ -45,7 +45,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param uuid the uuid
 	* @return the matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid(java.lang.String uuid);
+	public java.util.List<EmailAddress> findByUuid(String uuid);
 
 	/**
 	* Returns a range of all the email addresses where uuid = &#63;.
@@ -59,8 +59,8 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param end the upper bound of the range of email addresses (not inclusive)
 	* @return the range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid(java.lang.String uuid,
-		int start, int end);
+	public java.util.List<EmailAddress> findByUuid(String uuid, int start,
+		int end);
 
 	/**
 	* Returns an ordered range of all the email addresses where uuid = &#63;.
@@ -75,8 +75,8 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid(java.lang.String uuid,
-		int start, int end,
+	public java.util.List<EmailAddress> findByUuid(String uuid, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
 	/**
@@ -93,8 +93,8 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param retrieveFromCache whether to retrieve from the finder cache
 	* @return the ordered range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid(java.lang.String uuid,
-		int start, int end,
+	public java.util.List<EmailAddress> findByUuid(String uuid, int start,
+		int end,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator,
 		boolean retrieveFromCache);
 
@@ -106,7 +106,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @return the first matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
 	*/
-	public EmailAddress findByUuid_First(java.lang.String uuid,
+	public EmailAddress findByUuid_First(String uuid,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -117,7 +117,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address, or <code>null</code> if a matching email address could not be found
 	*/
-	public EmailAddress fetchByUuid_First(java.lang.String uuid,
+	public EmailAddress fetchByUuid_First(String uuid,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
 	/**
@@ -128,7 +128,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @return the last matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
 	*/
-	public EmailAddress findByUuid_Last(java.lang.String uuid,
+	public EmailAddress findByUuid_Last(String uuid,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -139,7 +139,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address, or <code>null</code> if a matching email address could not be found
 	*/
-	public EmailAddress fetchByUuid_Last(java.lang.String uuid,
+	public EmailAddress fetchByUuid_Last(String uuid,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
 	/**
@@ -152,7 +152,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @throws NoSuchEmailAddressException if a email address with the primary key could not be found
 	*/
 	public EmailAddress[] findByUuid_PrevAndNext(long emailAddressId,
-		java.lang.String uuid,
+		String uuid,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -161,7 +161,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param uuid the uuid
 	*/
-	public void removeByUuid(java.lang.String uuid);
+	public void removeByUuid(String uuid);
 
 	/**
 	* Returns the number of email addresses where uuid = &#63;.
@@ -169,7 +169,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param uuid the uuid
 	* @return the number of matching email addresses
 	*/
-	public int countByUuid(java.lang.String uuid);
+	public int countByUuid(String uuid);
 
 	/**
 	* Returns all the email addresses where uuid = &#63; and companyId = &#63;.
@@ -178,8 +178,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param companyId the company ID
 	* @return the matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid_C(java.lang.String uuid,
-		long companyId);
+	public java.util.List<EmailAddress> findByUuid_C(String uuid, long companyId);
 
 	/**
 	* Returns a range of all the email addresses where uuid = &#63; and companyId = &#63;.
@@ -194,7 +193,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param end the upper bound of the range of email addresses (not inclusive)
 	* @return the range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid_C(java.lang.String uuid,
+	public java.util.List<EmailAddress> findByUuid_C(String uuid,
 		long companyId, int start, int end);
 
 	/**
@@ -211,7 +210,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
 	* @return the ordered range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid_C(java.lang.String uuid,
+	public java.util.List<EmailAddress> findByUuid_C(String uuid,
 		long companyId, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
@@ -230,7 +229,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param retrieveFromCache whether to retrieve from the finder cache
 	* @return the ordered range of matching email addresses
 	*/
-	public java.util.List<EmailAddress> findByUuid_C(java.lang.String uuid,
+	public java.util.List<EmailAddress> findByUuid_C(String uuid,
 		long companyId, int start, int end,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator,
 		boolean retrieveFromCache);
@@ -244,8 +243,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @return the first matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
 	*/
-	public EmailAddress findByUuid_C_First(java.lang.String uuid,
-		long companyId,
+	public EmailAddress findByUuid_C_First(String uuid, long companyId,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -257,8 +255,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address, or <code>null</code> if a matching email address could not be found
 	*/
-	public EmailAddress fetchByUuid_C_First(java.lang.String uuid,
-		long companyId,
+	public EmailAddress fetchByUuid_C_First(String uuid, long companyId,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
 	/**
@@ -270,8 +267,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @return the last matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
 	*/
-	public EmailAddress findByUuid_C_Last(java.lang.String uuid,
-		long companyId,
+	public EmailAddress findByUuid_C_Last(String uuid, long companyId,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -283,8 +279,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address, or <code>null</code> if a matching email address could not be found
 	*/
-	public EmailAddress fetchByUuid_C_Last(java.lang.String uuid,
-		long companyId,
+	public EmailAddress fetchByUuid_C_Last(String uuid, long companyId,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator);
 
 	/**
@@ -298,7 +293,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @throws NoSuchEmailAddressException if a email address with the primary key could not be found
 	*/
 	public EmailAddress[] findByUuid_C_PrevAndNext(long emailAddressId,
-		java.lang.String uuid, long companyId,
+		String uuid, long companyId,
 		com.liferay.portal.kernel.util.OrderByComparator<EmailAddress> orderByComparator)
 		throws NoSuchEmailAddressException;
 
@@ -308,7 +303,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param uuid the uuid
 	* @param companyId the company ID
 	*/
-	public void removeByUuid_C(java.lang.String uuid, long companyId);
+	public void removeByUuid_C(String uuid, long companyId);
 
 	/**
 	* Returns the number of email addresses where uuid = &#63; and companyId = &#63;.
@@ -317,7 +312,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param companyId the company ID
 	* @return the number of matching email addresses
 	*/
-	public int countByUuid_C(java.lang.String uuid, long companyId);
+	public int countByUuid_C(String uuid, long companyId);
 
 	/**
 	* Returns all the email addresses where companyId = &#63;.
@@ -732,7 +727,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching email addresses
 	*/
 	public java.util.List<EmailAddress> findByC_C_C(long companyId,
@@ -747,7 +742,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
 	* @return the range of matching email addresses
@@ -764,7 +759,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -783,7 +778,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -800,7 +795,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
@@ -815,7 +810,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address, or <code>null</code> if a matching email address could not be found
 	*/
@@ -828,7 +823,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address
 	* @throws NoSuchEmailAddressException if a matching email address could not be found
@@ -843,7 +838,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address, or <code>null</code> if a matching email address could not be found
 	*/
@@ -857,7 +852,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param emailAddressId the primary key of the current email address
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next email address
 	* @throws NoSuchEmailAddressException if a email address with the primary key could not be found
@@ -872,7 +867,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	*/
 	public void removeByC_C_C(long companyId, long classNameId, long classPK);
 
@@ -881,7 +876,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching email addresses
 	*/
 	public int countByC_C_C(long companyId, long classNameId, long classPK);
@@ -891,7 +886,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @return the matching email addresses
 	*/
@@ -907,7 +902,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
@@ -925,7 +920,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
@@ -945,7 +940,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param start the lower bound of the range of email addresses
 	* @param end the upper bound of the range of email addresses (not inclusive)
@@ -963,7 +958,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address
@@ -979,7 +974,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching email address, or <code>null</code> if a matching email address could not be found
@@ -993,7 +988,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address
@@ -1009,7 +1004,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching email address, or <code>null</code> if a matching email address could not be found
@@ -1024,7 +1019,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	* @param emailAddressId the primary key of the current email address
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next email address
@@ -1040,7 +1035,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	*/
 	public void removeByC_C_C_P(long companyId, long classNameId, long classPK,
@@ -1051,7 +1046,7 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param primary the primary
 	* @return the number of matching email addresses
 	*/
@@ -1179,5 +1174,5 @@ public interface EmailAddressPersistence extends BasePersistence<EmailAddress> {
 	public int countAll();
 
 	@Override
-	public java.util.Set<java.lang.String> getBadColumnNames();
+	public java.util.Set<String> getBadColumnNames();
 }

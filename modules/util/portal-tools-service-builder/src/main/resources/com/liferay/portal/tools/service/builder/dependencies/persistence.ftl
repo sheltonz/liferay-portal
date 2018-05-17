@@ -1,6 +1,6 @@
 package ${apiPackagePath}.service.persistence;
 
-<#assign noSuchEntity = serviceBuilder.getNoSuchEntityException(entity)>
+<#assign noSuchEntity = serviceBuilder.getNoSuchEntityException(entity) />
 
 import ${apiPackagePath}.exception.${noSuchEntity}Exception;
 import ${apiPackagePath}.model.${entity.name};
@@ -11,6 +11,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.persistence.BasePersistence;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+
+import java.math.BigDecimal;
 
 import java.util.Date;
 
@@ -44,20 +46,20 @@ public interface ${entity.name}Persistence extends BasePersistence<${entity.name
 	 */
 
 	<#list methods as method>
-		<#if !method.isConstructor() && method.isPublic() && serviceBuilder.isCustomMethod(method) && !serviceBuilder.isBasePersistenceMethod(method)>
+		<#if method.isPublic() && serviceBuilder.isCustomMethod(method) && !serviceBuilder.isBasePersistenceMethod(method)>
 			${serviceBuilder.getJavadocComment(method)}
 
 			<#if serviceBuilder.hasAnnotation(method, "Deprecated")>
 				@Deprecated
 			</#if>
 
-			<#if (method.name == "fetchByPrimaryKeys") || (method.name == "getBadColumnNames")>
+			<#if stringUtil.equals(method.name, "fetchByPrimaryKeys") || stringUtil.equals(method.name, "getBadColumnNames")>
 				@Override
 			</#if>
 
 			public ${serviceBuilder.getTypeGenericsName(method.returns)} ${method.name} (
 
-			<#assign parameters = method.parameters>
+			<#assign parameters = method.parameters />
 
 			<#list parameters as parameter>
 				${serviceBuilder.getTypeGenericsName(parameter.type)} ${parameter.name}
@@ -74,7 +76,7 @@ public interface ${entity.name}Persistence extends BasePersistence<${entity.name
 					throws
 				</#if>
 
-				${exception.value}
+				${exception.fullyQualifiedName}
 
 				<#if exception_has_next>
 					,

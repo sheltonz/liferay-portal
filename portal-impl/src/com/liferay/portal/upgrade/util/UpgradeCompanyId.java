@@ -98,8 +98,7 @@ public abstract class UpgradeCompanyId extends UpgradeProcess {
 		@Override
 		public final Void call() throws Exception {
 			try (LoggingTimer loggingTimer = new LoggingTimer(_tableName);
-				Connection connection =
-					DataAccess.getUpgradeOptimizedConnection()) {
+				Connection connection = DataAccess.getConnection()) {
 
 				if (_createCompanyIdColumn) {
 					if (_log.isInfoEnabled()) {
@@ -109,7 +108,7 @@ public abstract class UpgradeCompanyId extends UpgradeProcess {
 
 					runSQL(
 						connection,
-						"alter table " + _tableName +" add companyId LONG");
+						"alter table " + _tableName + " add companyId LONG");
 				}
 				else {
 					if (_log.isInfoEnabled()) {
@@ -146,10 +145,17 @@ public abstract class UpgradeCompanyId extends UpgradeProcess {
 		protected List<Long> getCompanyIds(Connection connection)
 			throws SQLException {
 
+			return getCompanyIds(connection, "Company");
+		}
+
+		protected List<Long> getCompanyIds(
+				Connection connection, String tableName)
+			throws SQLException {
+
 			List<Long> companyIds = new ArrayList<>();
 
 			try (PreparedStatement ps = connection.prepareStatement(
-					"select companyId from Company");
+					"select distinct companyId from " + tableName);
 				ResultSet rs = ps.executeQuery()) {
 
 				while (rs.next()) {
@@ -167,7 +173,7 @@ public abstract class UpgradeCompanyId extends UpgradeProcess {
 				String foreignColumnName)
 			throws SQLException {
 
-			List<Long> companyIds = getCompanyIds(connection);
+			List<Long> companyIds = getCompanyIds(connection, foreignTableName);
 
 			if (companyIds.size() == 1) {
 				return String.valueOf(companyIds.get(0));

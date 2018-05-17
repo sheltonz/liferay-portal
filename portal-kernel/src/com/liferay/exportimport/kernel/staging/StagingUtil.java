@@ -27,12 +27,14 @@ import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.LayoutRevision;
 import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.security.auth.HttpPrincipal;
 import com.liferay.portal.kernel.service.ServiceContext;
-import com.liferay.portal.kernel.util.ProxyFactory;
+import com.liferay.portal.kernel.util.ServiceProxyFactory;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.xml.Element;
 
+import java.io.File;
 import java.io.Serializable;
 
 import java.util.Date;
@@ -50,6 +52,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 @ProviderType
 public class StagingUtil {
+
+	public static String buildRemoteURL(
+		ExportImportConfiguration exportImportConfiguration) {
+
+		return _staging.buildRemoteURL(exportImportConfiguration);
+	}
 
 	public static String buildRemoteURL(
 		String remoteAddress, int remotePort, String remotePathContext,
@@ -257,6 +265,10 @@ public class StagingUtil {
 		return _staging.getExceptionMessagesJSONObject(locale, e, contextMap);
 	}
 
+	public static Group getLiveGroup(Group group) {
+		return _staging.getLiveGroup(group);
+	}
+
 	public static Group getLiveGroup(long groupId) {
 		return _staging.getLiveGroup(groupId);
 	}
@@ -276,6 +288,10 @@ public class StagingUtil {
 		throws Exception {
 
 		return _staging.getMissingParentLayouts(layout, liveGroupId);
+	}
+
+	public static Group getPermissionStagingGroup(Group group) {
+		return _staging.getPermissionStagingGroup(group);
 	}
 
 	public static long getRecentLayoutRevisionId(
@@ -395,6 +411,10 @@ public class StagingUtil {
 		throws PortalException {
 
 		return _staging.isGroupAccessible(groupId, fromGroupId);
+	}
+
+	public static boolean isIncomplete(Layout layout) {
+		return _staging.isIncomplete(layout);
 	}
 
 	public static boolean isIncomplete(Layout layout, long layoutSetBranchId) {
@@ -631,6 +651,14 @@ public class StagingUtil {
 		return _staging.stripProtocolFromRemoteAddress(remoteAddress);
 	}
 
+	public static void transferFileToRemoteLive(
+			File file, long stagingRequestId, HttpPrincipal httpPrincipal)
+		throws Exception {
+
+		_staging.transferFileToRemoteLive(
+			file, stagingRequestId, httpPrincipal);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, see {@link
 	 *             com.liferay.portal.kernel.backgroundtask.BackgroundTaskExecutor#getIsolationLevel(
@@ -699,6 +727,12 @@ public class StagingUtil {
 			portletId, portletPreferences, lastPublishDate);
 	}
 
+	/**
+	 * @deprecated As of 4.0.0, replaced by {@link
+	 *             com.liferay.staging.configuration.web.internal.portlet.StagingConfigurationPortlet#editStagingConfiguration(
+	 *             javax.portlet.ActionRequest, javax.portlet.ActionResponse)}
+	 */
+	@Deprecated
 	public static void updateStaging(
 			PortletRequest portletRequest, Group liveGroup)
 		throws PortalException {
@@ -732,7 +766,8 @@ public class StagingUtil {
 			remoteGroupId);
 	}
 
-	private static final Staging _staging =
-		ProxyFactory.newServiceTrackedInstance(Staging.class);
+	private static volatile Staging _staging =
+		ServiceProxyFactory.newServiceTrackedInstance(
+			Staging.class, StagingUtil.class, "_staging", false);
 
 }

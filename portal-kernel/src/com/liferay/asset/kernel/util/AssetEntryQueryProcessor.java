@@ -27,14 +27,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Jorge Ferrer
+ * @author     Jorge Ferrer
+ * @deprecated As of 7.0.0, replaced by {@link
+ *             com.liferay.asset.util.AssetEntryQueryProcessor}
  */
+@Deprecated
 public interface AssetEntryQueryProcessor {
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	public String getKey();
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	public String getTitle(Locale locale);
 
+	/**
+	 * @deprecated As of 7.0.0
+	 */
+	@Deprecated
 	public void include(
 			HttpServletRequest request, HttpServletResponse response)
 		throws IOException;

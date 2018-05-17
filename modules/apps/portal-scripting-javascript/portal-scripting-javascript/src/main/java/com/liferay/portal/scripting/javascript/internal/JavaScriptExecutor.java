@@ -38,12 +38,14 @@ import org.osgi.service.component.annotations.Modified;
 
 /**
  * @author Alberto Montero
+ * @deprecated As of 3.0.0, with no direct replacement
  */
 @Component(
 	immediate = true,
-	property = {"scripting.language=" + JavaScriptExecutor.LANGUAGE},
+	property = "scripting.language=" + JavaScriptExecutor.LANGUAGE,
 	service = ScriptingExecutor.class
 )
+@Deprecated
 public class JavaScriptExecutor extends BaseScriptingExecutor {
 
 	public static final String LANGUAGE = "javascript";
@@ -61,9 +63,7 @@ public class JavaScriptExecutor extends BaseScriptingExecutor {
 
 			Scriptable scriptable = context.initStandardObjects();
 
-			Class<?> clazz = getClass();
-
-			context.setApplicationClassLoader(clazz.getClassLoader());
+			context.setApplicationClassLoader(getClassLoader());
 
 			for (Map.Entry<String, Object> entry : inputObjects.entrySet()) {
 				String key = entry.getKey();

@@ -15,14 +15,13 @@
 package com.liferay.portal.deploy.hot;
 
 import com.liferay.portal.kernel.bean.ClassLoaderBeanHandler;
+import com.liferay.portal.kernel.module.framework.service.IdentifiableOSGiService;
 import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.kernel.spring.aop.AdvisedSupport;
+import com.liferay.portal.kernel.util.AggregateClassLoader;
 import com.liferay.portal.kernel.util.ProxyUtil;
 
 import java.lang.reflect.InvocationHandler;
-
-import org.springframework.aop.TargetSource;
-import org.springframework.aop.framework.AdvisedSupport;
-import org.springframework.aop.target.SingletonTargetSource;
 
 /**
  * @author Raymond Augé
@@ -40,41 +39,46 @@ public class ServiceBag<V> {
 		if (!(previousService instanceof ServiceWrapper)) {
 			Class<?> previousServiceClass = previousService.getClass();
 
-			ClassLoader previousServiceClassLoader =
-				previousServiceClass.getClassLoader();
+			AggregateClassLoader previousServiceAggregateClassLoader =
+				new AggregateClassLoader(previousServiceClass.getClassLoader());
+
+			previousServiceAggregateClassLoader.addClassLoader(
+				IdentifiableOSGiService.class.getClassLoader());
 
 			previousService = ProxyUtil.newProxyInstance(
-				previousServiceClassLoader, new Class<?>[] {serviceTypeClass},
+				previousServiceAggregateClassLoader,
+				new Class<?>[] {
+					serviceTypeClass, IdentifiableOSGiService.class
+				},
 				new ClassLoaderBeanHandler(
-					previousService, previousServiceClassLoader));
+					previousService, previousServiceAggregateClassLoader));
 
 			serviceWrapper.setWrappedService((V)previousService);
 		}
 
+		AggregateClassLoader newServiceAggregateClassLoader =
+			new AggregateClassLoader(serviceTypeClass.getClassLoader());
+
+		newServiceAggregateClassLoader.addClassLoader(
+			IdentifiableOSGiService.class.getClassLoader());
+
 		Object nextTarget = ProxyUtil.newProxyInstance(
-			serviceTypeClass.getClassLoader(),
-			new Class<?>[] {serviceTypeClass, ServiceWrapper.class},
+			newServiceAggregateClassLoader,
+			new Class<?>[] {
+				serviceTypeClass, ServiceWrapper.class,
+				IdentifiableOSGiService.class
+			},
 			new ClassLoaderBeanHandler(serviceWrapper, classLoader));
 
-		TargetSource nextTargetSource = new SingletonTargetSource(nextTarget) {
-
-			@Override
-			public Class<?> getTargetClass() {
-				return serviceWrapper.getClass();
-			}
-
-		};
-
-		_advisedSupport.setTargetSource(nextTargetSource);
+		_advisedSupport.setTarget(nextTarget, serviceWrapper.getClass());
 
 		_serviceWrapper = (ServiceWrapper<?>)nextTarget;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> void replace() throws Exception {
-		TargetSource targetSource = _advisedSupport.getTargetSource();
+		Object currentService = _advisedSupport.getTarget();
 
-		Object currentService = targetSource.getTarget();
 		ServiceWrapper<T> previousService = null;
 
 		// Loop through services
@@ -108,10 +112,7 @@ public class ServiceBag<V> {
 						}
 					}
 
-					TargetSource previousTargetSource =
-						new SingletonTargetSource(wrappedService);
-
-					_advisedSupport.setTargetSource(previousTargetSource);
+					_advisedSupport.setTarget(wrappedService);
 				}
 				else {
 

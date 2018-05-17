@@ -1,32 +1,69 @@
 <definition>
-	<command name="editConfiguration">
-		<var name="key_rowEntry" value="${configurationName}" />
+	<command name="configureDisplayStyle">
+		<execute function="Click" locator1="Dropdown#TRIGGER" />
 
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
+		<execute function="Type" locator1="Dropdown#SEARCH_FIELD" value1="${displayStyle}" />
 
-		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
+		<execute function="Pause" locator1="3000" />
+
+		<execute function="AssertClick" locator1="Dropdown#RESULT" value1="${displayStyle}">
+			<var name="key_option" value="${displayStyle}" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="Dropdown#SELECTED_VALUE" value1="${displayStyle}" />
+
+		<execute macro="SystemSettings#saveConfiguration" />
+	</command>
+
+	<command name="editSecurityCredential">
+		<execute function="Type" locator1="SystemSettings#SECURITY_CREDENTIAL_FIELD" value1="${securityCredential}" />
+
+		<var name="key_fieldName" value="securityPrincipal" />
+
+		<execute function="Type" locator1="FormFields#TEXT_MULTILINE_FIELD" value1="test" />
+
+		<execute function="AssertElementPresent" locator1="SystemSettings#SECURITY_CREDENTIAL_FIELD" />
+
+		<execute function="SikuliAssertElementPresent" locator1="SystemSettings#SECURITY_CREDENTIAL_HIDDEN_IMAGE" />
+	</command>
+
+	<command name="editTextAreaSetting">
+		<execute function="Type" locator1="TextArea#ANY_LABELED" value1="${settingValue}">
+			<var name="key_label" value="${settingName}" />
+		</execute>
+	</command>
+
+	<command name="editTextSetting">
+		<execute function="Type" locator1="TextInput#GENERIC_TEXT_INPUT" value1="${settingValue}">
+			<var name="key_fieldLabel" value="${settingName}" />
+		</execute>
 	</command>
 
 	<command name="exitEditConfiguration">
 		<execute function="Click" locator1="Icon#ANGLE_LEFT_BACK" />
 	</command>
 
-	<command name="gotoCategory">
-		<var name="key_category" value="${category}" />
+	<command name="gotoConfiguration">
+		<execute function="Click" locator1="ListGroupItem#ITEM_TEXT">
+			<var name="key_itemName" value="${configurationCategory}" />
+		</execute>
 
-		<execute function="AssertClick" locator1="SystemSettings#MENUBAR_CATEGORY" value1="${category}" />
+		<execute function="Click" locator1="SystemSettings#SCOPED_CONFIGURATION_NAME">
+			<var name="key_configurationName" value="${configurationName}" />
+			<var name="key_configurationScope" value="${configurationScope}" />
+		</execute>
+
+		<execute function="AssertElementPresent" locator1="Header#H2_TITLE">
+			<var name="key_title" value="${configurationName}" />
+		</execute>
 	</command>
 
 	<command name="resetConfiguration">
-		<execute macro="SystemSettings#gotoCategory">
-			<var name="category" value="${category}" />
+		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
+
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Reset Default Values">
+			<var name="key_menuItem" value="Reset Default Values" />
 		</execute>
-
-		<var name="key_rowEntry" value="${configurationName}" />
-
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
-
-		<execute function="AssertClick" locator1="MenuItem#RESET_DEFAULT_VALUES" value1="Reset Default Values" />
 
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
@@ -35,39 +72,12 @@
 		<if>
 			<condition function="IsElementPresent" locator1="Button#SAVE" />
 			<then>
-				<execute macro="Button#clickSave" />
-
-				<execute macro="Alert#viewSuccessMessage" />
+				<execute macro="PortletEntry#save" />
 			</then>
 			<else>
 				<execute macro="Button#clickUpdate" />
 
 				<execute macro="Alert#viewSuccessMessage" />
-			</else>
-		</if>
-	</command>
-
-	<command name="viewPlatformSettingCP">
-		<var name="key_rowEntry" value="${configurationName}" />
-
-		<while>
-			<condition function="IsElementNotPresent" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
-			<then>
-				<execute function="Click" locator1="Pagination#NEXT_LINK" />
-			</then>
-		</while>
-
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#ROW_VERTICAL_ELLIPSIS" />
-
-		<execute function="AssertClick" locator1="MenuItem#VIEW" value1="View" />
-
-		<if>
-			<equals arg1="${LDAPEnabled}" arg2="true" />
-			<then>
-				<execute function="AssertElementPresent" locator1="SystemSettings#LDAP_ENTRY" />
-			</then>
-			<else>
-				<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="No configurations were found." />
 			</else>
 		</if>
 	</command>

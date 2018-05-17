@@ -14,11 +14,12 @@
 
 package com.liferay.portlet;
 
+import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
-import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.portlet.InvokerFilterContainer;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
@@ -26,6 +27,7 @@ import com.liferay.portal.kernel.portlet.LiferayPortletContext;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.PortletFilterUtil;
+import com.liferay.portal.kernel.portlet.PortletIdCodec;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.PluginContextListener;
@@ -35,9 +37,8 @@ import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.MapUtil;
-import com.liferay.portal.kernel.util.ReflectionUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -189,7 +190,7 @@ public class InvokerPortletImpl
 
 	@Override
 	public void destroy() {
-		if (PortletConstants.hasInstanceId(_portletModel.getPortletId())) {
+		if (PortletIdCodec.hasInstanceId(_portletModel.getPortletId())) {
 			if (_log.isWarnEnabled()) {
 				_log.warn("Destroying an instanced portlet is not allowed");
 			}
@@ -339,8 +340,9 @@ public class InvokerPortletImpl
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				"processAction for " + _portletId + " takes " +
-					stopWatch.getTime() + " ms");
+				StringBundler.concat(
+					"processAction for ", _portletId, " takes ",
+					String.valueOf(stopWatch.getTime()), " ms"));
 		}
 	}
 
@@ -361,8 +363,9 @@ public class InvokerPortletImpl
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				"processEvent for " + _portletId + " takes " +
-					stopWatch.getTime() + " ms");
+				StringBundler.concat(
+					"processEvent for ", _portletId, " takes ",
+					String.valueOf(stopWatch.getTime()), " ms"));
 		}
 	}
 
@@ -427,6 +430,7 @@ public class InvokerPortletImpl
 				String title = invokeRender(renderRequest, renderResponse);
 
 				response.setTitle(title);
+
 				response.setContent(bufferCacheServletResponse.getString());
 				response.setTime(now + Time.SECOND * _expCache.intValue());
 			}
@@ -449,8 +453,9 @@ public class InvokerPortletImpl
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				"render for " + _portletId + " takes " + stopWatch.getTime() +
-					" ms");
+				StringBundler.concat(
+					"render for ", _portletId, " takes ",
+					String.valueOf(stopWatch.getTime()), " ms"));
 		}
 	}
 
@@ -471,15 +476,12 @@ public class InvokerPortletImpl
 
 		if (_log.isDebugEnabled()) {
 			_log.debug(
-				"serveResource for " + _portletId + " takes " +
-					stopWatch.getTime() + " ms");
+				StringBundler.concat(
+					"serveResource for ", _portletId, " takes ",
+					String.valueOf(stopWatch.getTime()), " ms"));
 		}
 	}
 
-	/**
-	 * @deprecated As of 7.0.0
-	 */
-	@Deprecated
 	@Override
 	public void setPortletFilters() {
 	}
@@ -568,9 +570,9 @@ public class InvokerPortletImpl
 		throws IOException, PortletException {
 
 		LiferayPortletRequest portletRequest =
-			(LiferayPortletRequest)actionRequest;
+			PortalUtil.getLiferayPortletRequest(actionRequest);
 		LiferayPortletResponse portletResponse =
-			(LiferayPortletResponse)actionResponse;
+			PortalUtil.getLiferayPortletResponse(actionResponse);
 
 		invoke(
 			portletRequest, portletResponse, PortletRequest.ACTION_PHASE,
@@ -582,9 +584,9 @@ public class InvokerPortletImpl
 		throws IOException, PortletException {
 
 		LiferayPortletRequest portletRequest =
-			(LiferayPortletRequest)eventRequest;
+			PortalUtil.getLiferayPortletRequest(eventRequest);
 		LiferayPortletResponse portletResponse =
-			(LiferayPortletResponse)eventResponse;
+			PortalUtil.getLiferayPortletResponse(eventResponse);
 
 		invoke(
 			portletRequest, portletResponse, PortletRequest.EVENT_PHASE,
@@ -596,9 +598,9 @@ public class InvokerPortletImpl
 		throws IOException, PortletException {
 
 		LiferayPortletRequest portletRequest =
-			(LiferayPortletRequest)renderRequest;
+			PortalUtil.getLiferayPortletRequest(renderRequest);
 		LiferayPortletResponse portletResponse =
-			(LiferayPortletResponse)renderResponse;
+			PortalUtil.getLiferayPortletResponse(renderResponse);
 
 		try {
 			invoke(
@@ -622,9 +624,9 @@ public class InvokerPortletImpl
 		throws IOException, PortletException {
 
 		LiferayPortletRequest portletRequest =
-			(LiferayPortletRequest)resourceRequest;
+			PortalUtil.getLiferayPortletRequest(resourceRequest);
 		LiferayPortletResponse portletResponse =
-			(LiferayPortletResponse)resourceResponse;
+			PortalUtil.getLiferayPortletResponse(resourceResponse);
 
 		invoke(
 			portletRequest, portletResponse, PortletRequest.RESOURCE_PHASE,
@@ -662,6 +664,12 @@ public class InvokerPortletImpl
 		}
 
 		if (e instanceof PortletException) {
+			if ((portletResponse instanceof StateAwareResponseImpl) &&
+				!(e instanceof UnavailableException)) {
+
+				return;
+			}
+
 			if (!(portletRequest instanceof RenderRequest)) {
 				portletRequest.setAttribute(
 					_portletId + PortletException.class.getName(), e);
@@ -692,9 +700,12 @@ public class InvokerPortletImpl
 		_expCache = portletModel.getExpCache();
 
 		if (_log.isDebugEnabled()) {
+			com.liferay.portal.kernel.model.Portlet portletContextPortet =
+				_liferayPortletContext.getPortlet();
+
 			_log.debug(
 				"Create instance cache wrapper for " +
-					_liferayPortletContext.getPortlet().getPortletId());
+					portletContextPortet.getPortletId());
 		}
 	}
 

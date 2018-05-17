@@ -34,12 +34,17 @@ public class AnnouncementsEntryServiceWrapper
 		_announcementsEntryService = announcementsEntryService;
 	}
 
+	/**
+	* @deprecated As of 7.0.0, replaced by {@link #addEntry(long, long, String,
+	String, String, String, Date, Date, int, boolean)}
+	*/
+	@Deprecated
 	@Override
 	public com.liferay.announcements.kernel.model.AnnouncementsEntry addEntry(
-		long plid, long classNameId, long classPK, java.lang.String title,
-		java.lang.String content, java.lang.String url, java.lang.String type,
-		int displayDateMonth, int displayDateDay, int displayDateYear,
-		int displayDateHour, int displayDateMinute, boolean displayImmediately,
+		long plid, long classNameId, long classPK, String title,
+		String content, String url, String type, int displayDateMonth,
+		int displayDateDay, int displayDateYear, int displayDateHour,
+		int displayDateMinute, boolean displayImmediately,
 		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
 		int expirationDateHour, int expirationDateMinute, int priority,
 		boolean alert)
@@ -53,26 +58,26 @@ public class AnnouncementsEntryServiceWrapper
 	}
 
 	@Override
+	public com.liferay.announcements.kernel.model.AnnouncementsEntry addEntry(
+		long classNameId, long classPK, String title, String content,
+		String url, String type, java.util.Date displayDate,
+		java.util.Date expirationDate, int priority, boolean alert)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _announcementsEntryService.addEntry(classNameId, classPK, title,
+			content, url, type, displayDate, expirationDate, priority, alert);
+	}
+
+	@Override
+	public void deleteEntry(long entryId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		_announcementsEntryService.deleteEntry(entryId);
+	}
+
+	@Override
 	public com.liferay.announcements.kernel.model.AnnouncementsEntry getEntry(
 		long entryId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _announcementsEntryService.getEntry(entryId);
-	}
-
-	@Override
-	public com.liferay.announcements.kernel.model.AnnouncementsEntry updateEntry(
-		long entryId, java.lang.String title, java.lang.String content,
-		java.lang.String url, java.lang.String type, int displayDateMonth,
-		int displayDateDay, int displayDateYear, int displayDateHour,
-		int displayDateMinute, boolean displayImmediately,
-		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
-		int expirationDateHour, int expirationDateMinute, int priority)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _announcementsEntryService.updateEntry(entryId, title, content,
-			url, type, displayDateMonth, displayDateDay, displayDateYear,
-			displayDateHour, displayDateMinute, displayImmediately,
-			expirationDateMonth, expirationDateDay, expirationDateYear,
-			expirationDateHour, expirationDateMinute, priority);
 	}
 
 	/**
@@ -81,14 +86,37 @@ public class AnnouncementsEntryServiceWrapper
 	* @return the OSGi service identifier
 	*/
 	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
+	public String getOSGiServiceIdentifier() {
 		return _announcementsEntryService.getOSGiServiceIdentifier();
 	}
 
 	@Override
-	public void deleteEntry(long entryId)
+	public com.liferay.announcements.kernel.model.AnnouncementsEntry updateEntry(
+		long entryId, String title, String content, String url, String type,
+		java.util.Date displayDate, java.util.Date expirationDate, int priority)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		_announcementsEntryService.deleteEntry(entryId);
+		return _announcementsEntryService.updateEntry(entryId, title, content,
+			url, type, displayDate, expirationDate, priority);
+	}
+
+	/**
+	* @deprecated As of 7.0.0, replaced by {@link #updateEntry(long, String,
+	String, String, String, Date, Date, int)}
+	*/
+	@Deprecated
+	@Override
+	public com.liferay.announcements.kernel.model.AnnouncementsEntry updateEntry(
+		long entryId, String title, String content, String url, String type,
+		int displayDateMonth, int displayDateDay, int displayDateYear,
+		int displayDateHour, int displayDateMinute, boolean displayImmediately,
+		int expirationDateMonth, int expirationDateDay, int expirationDateYear,
+		int expirationDateHour, int expirationDateMinute, int priority)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _announcementsEntryService.updateEntry(entryId, title, content,
+			url, type, displayDateMonth, displayDateDay, displayDateYear,
+			displayDateHour, displayDateMinute, displayImmediately,
+			expirationDateMonth, expirationDateDay, expirationDateYear,
+			expirationDateHour, expirationDateMinute, priority);
 	}
 
 	@Override

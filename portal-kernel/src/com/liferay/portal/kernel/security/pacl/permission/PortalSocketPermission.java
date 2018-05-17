@@ -14,10 +14,11 @@
 
 package com.liferay.portal.kernel.security.pacl.permission;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -35,7 +36,8 @@ public class PortalSocketPermission {
 	public static void checkConnect(String location) {
 		String domainAndPort = HttpUtil.getDomain(location);
 
-		String[] domainAndPortArray = domainAndPort.split(StringPool.COLON);
+		String[] domainAndPortArray = StringUtil.split(
+			domainAndPort, CharPool.COLON);
 
 		String domain = domainAndPortArray[0];
 

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.events;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.events.ActionException;
 import com.liferay.portal.kernel.events.SimpleAction;
 import com.liferay.portal.kernel.log.Log;
@@ -24,7 +25,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -60,8 +60,11 @@ public class SampleAppStartupAction extends SimpleAction {
 
 		long creatorUserId = 0;
 		boolean autoPassword = false;
+
 		String password1 = PwdGenerator.getPassword();
+
 		String password2 = password1;
+
 		boolean autoScreenName = false;
 		String screenName = "paul";
 		String emailAddress = "paul@liferay.com";

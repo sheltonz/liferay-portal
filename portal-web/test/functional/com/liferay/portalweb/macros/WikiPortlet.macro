@@ -1,17 +1,18 @@
 <definition>
 	<command name="configureDisplaySettings">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
 		<for list="${uncheckSetting}" param="SettingName">
 			<execute function="Uncheck" locator1="Checkbox#${SettingName}" />
 		</for>
 
 		<execute function="Click" locator1="Button#SAVE" />
+
 		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
 	<command name="configureSharingAllowUsersToAddWikiToAnyWebsite">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="AssertClick" locator1="NavBar#SHARING" value1="Sharing" />
 
@@ -30,44 +31,50 @@
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
-	<command name="gotoConfiguration">
-		<execute function="Click" locator1="Icon#HEADER_VERTICAL_ELLIPSIS" />
-
-		<execute function="AssertClick" locator1="MenuItem#CONFIGURATION" value1="Configuration" />
-	</command>
-
 	<command name="subscribeToNodeCP">
 		<var name="key_wikiNodeName" value="${wikiNodeName}" />
 
-		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
-
-		<execute function="AssertClick" locator1="MenuItem#SUBSCRIBE" value1="Subscribe" />
+		<execute macro="LexiconEntry#gotoEllipsisMenuItem">
+			<var name="menuItem" value="Subscribe" />
+		</execute>
 
 		<execute macro="Alert#viewSuccessMessage" />
 
 		<execute function="Click#waitForMenuToggleJSClick" locator1="Icon#BODY_VERTICAL_ELLIPSIS" />
 
-		<execute function="AssertTextEquals" locator1="MenuItem#UNSUBSCRIBE" value1="Unsubscribe" />
+		<execute function="AssertTextEquals" locator1="MenuItem#ANY_MENU_ITEM" value1="Unsubscribe">
+			<var name="key_menuItem" value="Unsubscribe" />
+		</execute>
 	</command>
 
 	<command name="tearDownCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Wiki" />
 		</execute>
 
 		<var name="key_wikiNodeName" value="Main" />
 
 		<execute function="Click" locator1="Wiki#NODE_TABLE_ACTIONS_DROPDOWN" />
-		<execute function="AssertClick" locator1="MenuItem#UNSUBSCRIBE" value1="Unsubscribe" />
+
+		<execute function="AssertClick" locator1="MenuItem#ANY_MENU_ITEM" value1="Unsubscribe">
+			<var name="key_menuItem" value="Unsubscribe" />
+		</execute>
+
 		<execute macro="Alert#viewSuccessMessage" />
+
 		<execute function="Click" locator1="Wiki#NODE_TABLE_ACTIONS_DROPDOWN" />
-		<execute function="AssertTextEquals" locator1="MenuItem#SUBSCRIBE" value1="Subscribe" />
+
+		<execute function="AssertTextEquals" locator1="MenuItem#ANY_MENU_ITEM" value1="Subscribe">
+			<var name="key_menuItem" value="Subscribe" />
+		</execute>
 	</command>
 
 	<command name="viewConfigurationTabs">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
 		<for list="${isPresent}" param="isPresent">
 			<execute function="AssertElementPresent" locator1="Configuration#${isPresent}" />
@@ -79,17 +86,17 @@
 	</command>
 
 	<command name="viewConfigureSharingAllowUsersToAddWikiToAnyWebsite">
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="AssertClick" locator1="NavBar#SHARING" value1="Sharing" />
 
 		<if>
 			<equals arg1="${enabled}" arg2="true" />
 			<then>
-				<execute function="AssertChecked#assertCheckedToggleSwitch" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
+				<execute function="AssertChecked#assertCheckedNotVisible" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
 			</then>
 			<else>
-				<execute function="AssertNotChecked#assertNotCheckedToggleSwitch" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
+				<execute function="AssertNotChecked#assertNotCheckedNotVisible" locator1="WikiConfiguration#ALLOW_USERS_TO_ADD_WIKI_TO_ANY_WEBSITE_CHECKBOX" />
 			</else>
 		</if>
 
@@ -97,7 +104,7 @@
 	</command>
 
 	<command name="viewDisplaySettings">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 
 		<for list="${uncheckedSetting}" param="SettingName">
 			<execute function="AssertNotChecked" locator1="Checkbox#${SettingName}" />

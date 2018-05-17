@@ -26,16 +26,15 @@ import com.liferay.portal.kernel.service.UserTrackerLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.UserTrackerPersistence;
 import com.liferay.portal.kernel.service.persistence.UserTrackerUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -173,9 +172,9 @@ public class UserTrackerPersistenceTest {
 
 	@Test
 	public void testCountBySessionId() throws Exception {
-		_persistence.countBySessionId(StringPool.BLANK);
+		_persistence.countBySessionId("");
 
-		_persistence.countBySessionId(StringPool.NULL);
+		_persistence.countBySessionId("null");
 
 		_persistence.countBySessionId((String)null);
 	}

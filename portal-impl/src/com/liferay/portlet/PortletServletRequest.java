@@ -42,6 +42,7 @@ import javax.portlet.EventRequest;
 import javax.portlet.PortletRequest;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -62,9 +63,12 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 		super(request);
 
 		_request = request;
+
 		_portletRequest = portletRequest;
+
 		_portletRequestImpl = PortletRequestImpl.getPortletRequestImpl(
 			_portletRequest);
+
 		_pathInfo = pathInfo;
 		_queryString = queryString;
 		_requestURI = GetterUtil.getString(requestURI);
@@ -135,7 +139,7 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 	@Override
 	public Enumeration<String> getAttributeNames() {
-		return _request.getAttributeNames();
+		return _portletRequest.getAttributeNames();
 	}
 
 	@Override
@@ -191,7 +195,13 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 	@Override
 	public long getDateHeader(String name) {
-		return GetterUtil.getLong(getHeader(name), -1);
+		String header = getHeader(name);
+
+		if (header == null) {
+			return -1;
+		}
+
+		return GetterUtil.getLongStrict(getHeader(name));
 	}
 
 	@Override
@@ -231,7 +241,13 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 	@Override
 	public int getIntHeader(String name) {
-		return GetterUtil.getInteger(getHeader(name));
+		String header = getHeader(name);
+
+		if (header == null) {
+			return -1;
+		}
+
+		return GetterUtil.getIntegerStrict(header);
 	}
 
 	@Override
@@ -305,7 +321,13 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 	@Override
 	public String getPathTranslated() {
-		return _request.getPathTranslated();
+		ServletContext servletContext = _request.getServletContext();
+
+		if ((_pathInfo != null) && (servletContext != null)) {
+			return servletContext.getRealPath(_pathInfo);
+		}
+
+		return null;
 	}
 
 	@Override
@@ -363,7 +385,15 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 	@Override
 	public RequestDispatcher getRequestDispatcher(String path) {
-		return _request.getRequestDispatcher(path);
+		RequestDispatcher requestDispatcher = _request.getRequestDispatcher(
+			path);
+
+		if (requestDispatcher != null) {
+			requestDispatcher = new PortletRequestDispatcherImpl(
+				requestDispatcher, path);
+		}
+
+		return requestDispatcher;
 	}
 
 	@Override
@@ -494,9 +524,9 @@ public class PortletServletRequest extends HttpServletRequestWrapper {
 
 		Constructor<?> constructor =
 			jettyHttpSessionWrapperClass.getConstructor(
-				new Class[] {HttpSession.class});
+				new Class<?>[] {HttpSession.class});
 
-		return(HttpSession)constructor.newInstance(new Object[] {session});
+		return (HttpSession)constructor.newInstance(new Object[] {session});
 	}
 
 	private ClientDataRequest _getClientDataRequest() {

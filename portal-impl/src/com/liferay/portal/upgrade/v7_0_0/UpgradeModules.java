@@ -17,6 +17,7 @@ package com.liferay.portal.upgrade.v7_0_0;
 import com.liferay.portal.kernel.model.dao.ReleaseDAO;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.LoggingTimer;
+import com.liferay.portal.kernel.util.StringBundler;
 
 import java.io.IOException;
 
@@ -58,8 +59,8 @@ public class UpgradeModules extends UpgradeProcess {
 		throws SQLException {
 
 		try (PreparedStatement ps = connection.prepareStatement(
-				"select serviceComponentId from ServiceComponent " +
-					"where buildNamespace = ?")) {
+				"select serviceComponentId from ServiceComponent where " +
+					"buildNamespace = ?")) {
 
 			ps.setString(1, buildNamespace);
 
@@ -80,16 +81,17 @@ public class UpgradeModules extends UpgradeProcess {
 			for (String[] convertedLegacyModule : getConvertedLegacyModules()) {
 				String oldServletContextName = convertedLegacyModule[0];
 				String newServletContextName = convertedLegacyModule[1];
-				String buildNamespace = convertedLegacyModule[2];
 
 				try (PreparedStatement ps = connection.prepareStatement(
-						"select servletContextName, buildNumber from Release_" +
-							" where servletContextName = ?")) {
+						"select servletContextName, buildNumber from " +
+							"Release_ where servletContextName = ?")) {
 
 					ps.setString(1, oldServletContextName);
 
 					try (ResultSet rs = ps.executeQuery()) {
 						if (!rs.next()) {
+							String buildNamespace = convertedLegacyModule[2];
+
 							if (hasServiceComponent(buildNamespace)) {
 								addRelease(newServletContextName);
 							}
@@ -115,12 +117,13 @@ public class UpgradeModules extends UpgradeProcess {
 		throws IOException, SQLException {
 
 		runSQL(
-			"update Release_ set servletContextName = '" +
-				newServletContextName + "' where servletContextName = '" +
-					oldServletContextName + "'");
+			StringBundler.concat(
+				"update Release_ set servletContextName = '",
+				newServletContextName, "' where servletContextName = '",
+				oldServletContextName, "'"));
 	}
 
-	private static final String[] _BUNDLE_SYMBOLIC_NAMES = new String[] {
+	private static final String[] _BUNDLE_SYMBOLIC_NAMES = {
 		"com.liferay.amazon.rankings.web", "com.liferay.asset.browser.web",
 		"com.liferay.asset.categories.navigation.web",
 		"com.liferay.asset.publisher.web",
@@ -158,7 +161,6 @@ public class UpgradeModules extends UpgradeProcess {
 		"com.liferay.product.navigation.product.menu.web",
 		"com.liferay.quick.note.web", "com.liferay.ratings.page.ratings.web",
 		"com.liferay.rss.web", "com.liferay.server.admin.web",
-		"com.liferay.shopping.service", "com.liferay.shopping.web",
 		"com.liferay.site.browser.web", "com.liferay.site.my.sites.web",
 		"com.liferay.site.navigation.breadcrumb.web",
 		"com.liferay.site.navigation.directory.web",
@@ -177,13 +179,16 @@ public class UpgradeModules extends UpgradeProcess {
 
 	private static final String[][] _CONVERTED_LEGACY_MODULES = {
 		{"calendar-portlet", "com.liferay.calendar.service", "Calendar"},
+		{"chat-portlet", "com.liferay.chat.service", "Chat"},
+		{"contacts-portlet", "com.liferay.contacts.service", "Contacts"},
 		{
 			"kaleo-designer-portlet",
-			"com.liferay.portal.workflow.kaleo.designer.web", "KaleoDesigner"
+			"com.liferay.portal.workflow.kaleo.designer.service",
+			"KaleoDesigner"
 		},
 		{
 			"kaleo-forms-portlet",
-			"com.liferay.portal.workflow.kaleo.forms.web", "KaleoForms"
+			"com.liferay.portal.workflow.kaleo.forms.service", "KaleoForms"
 		},
 		{"kaleo-web", "com.liferay.portal.workflow.kaleo.service", "Kaleo"},
 		{
@@ -191,6 +196,10 @@ public class UpgradeModules extends UpgradeProcess {
 			"Marketplace"
 		},
 		{"microblogs-portlet", "com.liferay.microblogs.service", "Microblogs"},
+		{
+			"private-messaging-portlet",
+			"com.liferay.social.privatemessaging.service", "PM"
+		},
 		{"so-portlet", "com.liferay.invitation.invite.members.service", "SO"},
 		{
 			"social-networking-portlet",

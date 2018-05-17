@@ -922,7 +922,7 @@ public class ExpandoValueUtil {
 	* Returns all the expando values where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching expando values
 	*/
 	public static List<ExpandoValue> findByT_CPK(long tableId, long classPK) {
@@ -937,7 +937,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @return the range of matching expando values
@@ -955,7 +955,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -975,7 +975,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -994,7 +994,7 @@ public class ExpandoValueUtil {
 	* Returns the first expando value in the ordered set where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching expando value
 	* @throws NoSuchValueException if a matching expando value could not be found
@@ -1010,7 +1010,7 @@ public class ExpandoValueUtil {
 	* Returns the first expando value in the ordered set where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
@@ -1024,7 +1024,7 @@ public class ExpandoValueUtil {
 	* Returns the last expando value in the ordered set where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching expando value
 	* @throws NoSuchValueException if a matching expando value could not be found
@@ -1040,7 +1040,7 @@ public class ExpandoValueUtil {
 	* Returns the last expando value in the ordered set where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
@@ -1055,7 +1055,7 @@ public class ExpandoValueUtil {
 	*
 	* @param valueId the primary key of the current expando value
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next expando value
 	* @throws NoSuchValueException if a expando value with the primary key could not be found
@@ -1073,7 +1073,7 @@ public class ExpandoValueUtil {
 	* Removes all the expando values where tableId = &#63; and classPK = &#63; from the database.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	*/
 	public static void removeByT_CPK(long tableId, long classPK) {
 		getPersistence().removeByT_CPK(tableId, classPK);
@@ -1083,7 +1083,7 @@ public class ExpandoValueUtil {
 	* Returns the number of expando values where tableId = &#63; and classPK = &#63;.
 	*
 	* @param tableId the table ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching expando values
 	*/
 	public static int countByT_CPK(long tableId, long classPK) {
@@ -1154,7 +1154,7 @@ public class ExpandoValueUtil {
 	* Returns all the expando values where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching expando values
 	*/
 	public static List<ExpandoValue> findByC_C(long classNameId, long classPK) {
@@ -1169,7 +1169,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @return the range of matching expando values
@@ -1187,7 +1187,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -1208,7 +1208,7 @@ public class ExpandoValueUtil {
 	* </p>
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param start the lower bound of the range of expando values
 	* @param end the upper bound of the range of expando values (not inclusive)
 	* @param orderByComparator the comparator to order the results by (optionally <code>null</code>)
@@ -1227,7 +1227,7 @@ public class ExpandoValueUtil {
 	* Returns the first expando value in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching expando value
 	* @throws NoSuchValueException if a matching expando value could not be found
@@ -1243,7 +1243,7 @@ public class ExpandoValueUtil {
 	* Returns the first expando value in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
@@ -1257,7 +1257,7 @@ public class ExpandoValueUtil {
 	* Returns the last expando value in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching expando value
 	* @throws NoSuchValueException if a matching expando value could not be found
@@ -1273,7 +1273,7 @@ public class ExpandoValueUtil {
 	* Returns the last expando value in the ordered set where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the last matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
@@ -1288,7 +1288,7 @@ public class ExpandoValueUtil {
 	*
 	* @param valueId the primary key of the current expando value
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the previous, current, and next expando value
 	* @throws NoSuchValueException if a expando value with the primary key could not be found
@@ -1306,7 +1306,7 @@ public class ExpandoValueUtil {
 	* Removes all the expando values where classNameId = &#63; and classPK = &#63; from the database.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	*/
 	public static void removeByC_C(long classNameId, long classPK) {
 		getPersistence().removeByC_C(classNameId, classPK);
@@ -1316,7 +1316,7 @@ public class ExpandoValueUtil {
 	* Returns the number of expando values where classNameId = &#63; and classPK = &#63;.
 	*
 	* @param classNameId the class name ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching expando values
 	*/
 	public static int countByC_C(long classNameId, long classPK) {
@@ -1328,7 +1328,7 @@ public class ExpandoValueUtil {
 	*
 	* @param tableId the table ID
 	* @param columnId the column ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching expando value
 	* @throws NoSuchValueException if a matching expando value could not be found
 	*/
@@ -1343,7 +1343,7 @@ public class ExpandoValueUtil {
 	*
 	* @param tableId the table ID
 	* @param columnId the column ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
 	public static ExpandoValue fetchByT_C_C(long tableId, long columnId,
@@ -1356,7 +1356,7 @@ public class ExpandoValueUtil {
 	*
 	* @param tableId the table ID
 	* @param columnId the column ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @param retrieveFromCache whether to retrieve from the finder cache
 	* @return the matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
@@ -1371,7 +1371,7 @@ public class ExpandoValueUtil {
 	*
 	* @param tableId the table ID
 	* @param columnId the column ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the expando value that was removed
 	*/
 	public static ExpandoValue removeByT_C_C(long tableId, long columnId,
@@ -1385,7 +1385,7 @@ public class ExpandoValueUtil {
 	*
 	* @param tableId the table ID
 	* @param columnId the column ID
-	* @param classPK the class p k
+	* @param classPK the class pk
 	* @return the number of matching expando values
 	*/
 	public static int countByT_C_C(long tableId, long columnId, long classPK) {
@@ -1401,7 +1401,7 @@ public class ExpandoValueUtil {
 	* @return the matching expando values
 	*/
 	public static List<ExpandoValue> findByT_C_D(long tableId, long columnId,
-		java.lang.String data) {
+		String data) {
 		return getPersistence().findByT_C_D(tableId, columnId, data);
 	}
 
@@ -1420,7 +1420,7 @@ public class ExpandoValueUtil {
 	* @return the range of matching expando values
 	*/
 	public static List<ExpandoValue> findByT_C_D(long tableId, long columnId,
-		java.lang.String data, int start, int end) {
+		String data, int start, int end) {
 		return getPersistence().findByT_C_D(tableId, columnId, data, start, end);
 	}
 
@@ -1440,7 +1440,7 @@ public class ExpandoValueUtil {
 	* @return the ordered range of matching expando values
 	*/
 	public static List<ExpandoValue> findByT_C_D(long tableId, long columnId,
-		java.lang.String data, int start, int end,
+		String data, int start, int end,
 		OrderByComparator<ExpandoValue> orderByComparator) {
 		return getPersistence()
 				   .findByT_C_D(tableId, columnId, data, start, end,
@@ -1464,7 +1464,7 @@ public class ExpandoValueUtil {
 	* @return the ordered range of matching expando values
 	*/
 	public static List<ExpandoValue> findByT_C_D(long tableId, long columnId,
-		java.lang.String data, int start, int end,
+		String data, int start, int end,
 		OrderByComparator<ExpandoValue> orderByComparator,
 		boolean retrieveFromCache) {
 		return getPersistence()
@@ -1483,7 +1483,7 @@ public class ExpandoValueUtil {
 	* @throws NoSuchValueException if a matching expando value could not be found
 	*/
 	public static ExpandoValue findByT_C_D_First(long tableId, long columnId,
-		java.lang.String data, OrderByComparator<ExpandoValue> orderByComparator)
+		String data, OrderByComparator<ExpandoValue> orderByComparator)
 		throws com.liferay.expando.kernel.exception.NoSuchValueException {
 		return getPersistence()
 				   .findByT_C_D_First(tableId, columnId, data, orderByComparator);
@@ -1499,7 +1499,7 @@ public class ExpandoValueUtil {
 	* @return the first matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
 	public static ExpandoValue fetchByT_C_D_First(long tableId, long columnId,
-		java.lang.String data, OrderByComparator<ExpandoValue> orderByComparator) {
+		String data, OrderByComparator<ExpandoValue> orderByComparator) {
 		return getPersistence()
 				   .fetchByT_C_D_First(tableId, columnId, data,
 			orderByComparator);
@@ -1516,7 +1516,7 @@ public class ExpandoValueUtil {
 	* @throws NoSuchValueException if a matching expando value could not be found
 	*/
 	public static ExpandoValue findByT_C_D_Last(long tableId, long columnId,
-		java.lang.String data, OrderByComparator<ExpandoValue> orderByComparator)
+		String data, OrderByComparator<ExpandoValue> orderByComparator)
 		throws com.liferay.expando.kernel.exception.NoSuchValueException {
 		return getPersistence()
 				   .findByT_C_D_Last(tableId, columnId, data, orderByComparator);
@@ -1532,7 +1532,7 @@ public class ExpandoValueUtil {
 	* @return the last matching expando value, or <code>null</code> if a matching expando value could not be found
 	*/
 	public static ExpandoValue fetchByT_C_D_Last(long tableId, long columnId,
-		java.lang.String data, OrderByComparator<ExpandoValue> orderByComparator) {
+		String data, OrderByComparator<ExpandoValue> orderByComparator) {
 		return getPersistence()
 				   .fetchByT_C_D_Last(tableId, columnId, data, orderByComparator);
 	}
@@ -1549,7 +1549,7 @@ public class ExpandoValueUtil {
 	* @throws NoSuchValueException if a expando value with the primary key could not be found
 	*/
 	public static ExpandoValue[] findByT_C_D_PrevAndNext(long valueId,
-		long tableId, long columnId, java.lang.String data,
+		long tableId, long columnId, String data,
 		OrderByComparator<ExpandoValue> orderByComparator)
 		throws com.liferay.expando.kernel.exception.NoSuchValueException {
 		return getPersistence()
@@ -1564,8 +1564,7 @@ public class ExpandoValueUtil {
 	* @param columnId the column ID
 	* @param data the data
 	*/
-	public static void removeByT_C_D(long tableId, long columnId,
-		java.lang.String data) {
+	public static void removeByT_C_D(long tableId, long columnId, String data) {
 		getPersistence().removeByT_C_D(tableId, columnId, data);
 	}
 
@@ -1577,8 +1576,7 @@ public class ExpandoValueUtil {
 	* @param data the data
 	* @return the number of matching expando values
 	*/
-	public static int countByT_C_D(long tableId, long columnId,
-		java.lang.String data) {
+	public static int countByT_C_D(long tableId, long columnId, String data) {
 		return getPersistence().countByT_C_D(tableId, columnId, data);
 	}
 
@@ -1730,7 +1728,7 @@ public class ExpandoValueUtil {
 		return getPersistence().countAll();
 	}
 
-	public static java.util.Set<java.lang.String> getBadColumnNames() {
+	public static java.util.Set<String> getBadColumnNames() {
 		return getPersistence().getBadColumnNames();
 	}
 

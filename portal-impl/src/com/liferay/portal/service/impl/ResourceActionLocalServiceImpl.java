@@ -14,18 +14,25 @@
 
 package com.liferay.portal.service.impl;
 
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Property;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.NoSuchResourceActionException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.ResourceAction;
 import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.ResourcePermission;
 import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.comparator.ResourceActionBitwiseValueComparator;
+import com.liferay.portal.security.permission.PermissionCacheUtil;
 import com.liferay.portal.service.base.ResourceActionLocalServiceBaseImpl;
 
 import java.util.ArrayList;
@@ -86,7 +93,20 @@ public class ResourceActionLocalServiceImpl
 	public void checkResourceActions(
 		String name, List<String> actionIds, boolean addDefaultActions) {
 
-		long lastBitwiseValue = -1;
+		if ((actionIds.size() > Long.SIZE) ||
+			((actionIds.size() == Long.SIZE) &&
+			 !actionIds.contains(ActionKeys.VIEW))) {
+
+			throw new SystemException(
+				"There are too many actions for resource " + name);
+		}
+
+		long availableBits = -2;
+
+		for (ResourceAction resourceAction : getResourceActions(name)) {
+			availableBits &= ~resourceAction.getBitwiseValue();
+		}
+
 		List<ResourceAction> newResourceActions = null;
 
 		for (String actionId : actionIds) {
@@ -105,24 +125,9 @@ public class ResourceActionLocalServiceImpl
 				long bitwiseValue = 1;
 
 				if (!actionId.equals(ActionKeys.VIEW)) {
-					if (lastBitwiseValue < 0) {
-						ResourceAction lastResourceAction =
-							resourceActionPersistence.fetchByName_First(
-								name,
-								new ResourceActionBitwiseValueComparator());
+					bitwiseValue = Long.lowestOneBit(availableBits);
 
-						if (lastResourceAction != null) {
-							lastBitwiseValue =
-								lastResourceAction.getBitwiseValue();
-						}
-						else {
-							lastBitwiseValue = 1;
-						}
-					}
-
-					lastBitwiseValue = lastBitwiseValue << 1;
-
-					bitwiseValue = lastBitwiseValue;
+					availableBits ^= bitwiseValue;
 				}
 
 				try {
@@ -203,10 +208,67 @@ public class ResourceActionLocalServiceImpl
 
 	@Override
 	public ResourceAction deleteResourceAction(ResourceAction resourceAction) {
+		final String name = resourceAction.getName();
+		final long bitwiseValue = resourceAction.getBitwiseValue();
+
+		ActionableDynamicQuery.AddCriteriaMethod addCriteriaMethod =
+			new ActionableDynamicQuery.AddCriteriaMethod() {
+
+				@Override
+				public void addCriteria(DynamicQuery dynamicQuery) {
+					Property nameProperty = PropertyFactoryUtil.forName("name");
+
+					dynamicQuery.add(nameProperty.eq(name));
+				}
+
+			};
+
+		for (Company company : companyLocalService.getCompanies()) {
+			ActionableDynamicQuery actionableDynamicQuery =
+				resourcePermissionLocalService.getActionableDynamicQuery();
+
+			actionableDynamicQuery.setAddCriteriaMethod(addCriteriaMethod);
+			actionableDynamicQuery.setCompanyId(company.getCompanyId());
+			actionableDynamicQuery.setPerformActionMethod(
+				new ActionableDynamicQuery.
+					PerformActionMethod<ResourcePermission>() {
+
+					@Override
+					public void performAction(
+						ResourcePermission resourcePermission) {
+
+						long actionIds = resourcePermission.getActionIds();
+
+						if ((actionIds & bitwiseValue) != 0) {
+							actionIds &= ~bitwiseValue;
+
+							resourcePermission.setActionIds(actionIds);
+							resourcePermission.setViewActionId(
+								actionIds % 2 == 1);
+
+							resourcePermissionPersistence.update(
+								resourcePermission);
+						}
+					}
+
+				});
+
+			try {
+				actionableDynamicQuery.performActions();
+			}
+			catch (PortalException pe) {
+				throw new SystemException(pe);
+			}
+		}
+
 		_resourceActions.remove(
 			encodeKey(resourceAction.getName(), resourceAction.getActionId()));
 
-		return resourceActionPersistence.remove(resourceAction);
+		resourceActionPersistence.remove(resourceAction);
+
+		PermissionCacheUtil.clearCache();
+
+		return resourceAction;
 	}
 
 	@Override

@@ -48,6 +48,8 @@ public class UserSearchContainerResultsTag<R> extends IncludeTag {
 
 	@Override
 	protected void cleanUp() {
+		super.cleanUp();
+
 		_searchContainer = null;
 		_searchTerms = null;
 		_userParams = null;
@@ -71,6 +73,7 @@ public class UserSearchContainerResultsTag<R> extends IncludeTag {
 		request.setAttribute(
 			"liferay-ui:user-search-container-results:searchContainer",
 			_searchContainer);
+
 		request.setAttribute(
 			"liferay-ui:user-search-container-results:searchTerms",
 			_searchTerms);

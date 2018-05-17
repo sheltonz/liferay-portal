@@ -38,16 +38,19 @@ public class EventResponseImpl
 
 	@Override
 	public void setRenderParameters(EventRequest eventRequest) {
+		if (eventRequest == null) {
+			throw new IllegalArgumentException();
+		}
+
+		setRenderParameters(eventRequest.getParameterMap());
 	}
 
 	protected void init(
 			PortletRequestImpl portletRequestImpl, HttpServletResponse response,
-			String portletName, User user, Layout layout)
+			User user, Layout layout)
 		throws PortletModeException, WindowStateException {
 
-		init(
-			portletRequestImpl, response, portletName, user, layout, null,
-			null);
+		init(portletRequestImpl, response, user, layout, false);
 	}
 
 }

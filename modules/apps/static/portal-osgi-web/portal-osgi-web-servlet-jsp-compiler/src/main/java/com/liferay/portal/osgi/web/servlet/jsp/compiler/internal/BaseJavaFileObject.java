@@ -14,8 +14,8 @@
 
 package com.liferay.portal.osgi.web.servlet.jsp.compiler.internal;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,6 +123,7 @@ public abstract class BaseJavaFileObject implements JavaFileObject {
 		Class<?> clazz = getClass();
 
 		sb.append(clazz.getName());
+
 		sb.append(StringPool.OPEN_BRACKET);
 		sb.append(toUri());
 		sb.append(StringPool.CLOSE_BRACKET);

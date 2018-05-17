@@ -14,6 +14,7 @@
 
 package com.liferay.portal.kernel.jsonwebservice;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.servlet.HttpMethods;
 import com.liferay.portal.kernel.util.CamelCaseUtil;
 import com.liferay.portal.kernel.util.MethodParameter;
@@ -22,7 +23,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SetUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import java.io.InputStream;
@@ -56,9 +56,9 @@ public class JSONWebServiceNaming {
 	public String convertModelClassToImplClassName(Class<?> clazz) {
 		String className = clazz.getName();
 
+		className = StringUtil.replace(className, ".kernel.", ".");
 		className =
-			StringUtil.replace(className, ".model.", ".model.impl.") +
-				"ModelImpl";
+			StringUtil.replace(className, ".model.", ".model.impl.") + "Impl";
 
 		return className;
 	}

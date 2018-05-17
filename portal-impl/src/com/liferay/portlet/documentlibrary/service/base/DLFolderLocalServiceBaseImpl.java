@@ -46,6 +46,7 @@ import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Conjunction;
 import com.liferay.portal.kernel.dao.orm.Criterion;
 import com.liferay.portal.kernel.dao.orm.DefaultActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Disjunction;
@@ -73,6 +74,7 @@ import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.service.persistence.WebDAVPropsPersistence;
 import com.liferay.portal.kernel.service.persistence.WorkflowDefinitionLinkPersistence;
 import com.liferay.portal.kernel.service.persistence.WorkflowInstanceLinkPersistence;
+import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -130,6 +132,7 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 * @return the new document library folder
 	 */
 	@Override
+	@Transactional(enabled = false)
 	public DLFolder createDLFolder(long folderId) {
 		return dlFolderPersistence.create(folderId);
 	}
@@ -337,6 +340,27 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 				public void addCriteria(DynamicQuery dynamicQuery) {
 					Criterion modifiedDateCriterion = portletDataContext.getDateRangeCriteria(
 							"modifiedDate");
+
+					if (modifiedDateCriterion != null) {
+						Conjunction conjunction = RestrictionsFactoryUtil.conjunction();
+
+						conjunction.add(modifiedDateCriterion);
+
+						Disjunction disjunction = RestrictionsFactoryUtil.disjunction();
+
+						disjunction.add(RestrictionsFactoryUtil.gtProperty(
+								"modifiedDate", "lastPublishDate"));
+
+						Property lastPublishDateProperty = PropertyFactoryUtil.forName(
+								"lastPublishDate");
+
+						disjunction.add(lastPublishDateProperty.isNull());
+
+						conjunction.add(disjunction);
+
+						modifiedDateCriterion = conjunction;
+					}
+
 					Criterion statusDateCriterion = portletDataContext.getDateRangeCriteria(
 							"statusDate");
 
@@ -861,18 +885,18 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the web d a v props local service.
+	 * Returns the web dav props local service.
 	 *
-	 * @return the web d a v props local service
+	 * @return the web dav props local service
 	 */
 	public com.liferay.portal.kernel.service.WebDAVPropsLocalService getWebDAVPropsLocalService() {
 		return webDAVPropsLocalService;
 	}
 
 	/**
-	 * Sets the web d a v props local service.
+	 * Sets the web dav props local service.
 	 *
-	 * @param webDAVPropsLocalService the web d a v props local service
+	 * @param webDAVPropsLocalService the web dav props local service
 	 */
 	public void setWebDAVPropsLocalService(
 		com.liferay.portal.kernel.service.WebDAVPropsLocalService webDAVPropsLocalService) {
@@ -880,18 +904,18 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the web d a v props persistence.
+	 * Returns the web dav props persistence.
 	 *
-	 * @return the web d a v props persistence
+	 * @return the web dav props persistence
 	 */
 	public WebDAVPropsPersistence getWebDAVPropsPersistence() {
 		return webDAVPropsPersistence;
 	}
 
 	/**
-	 * Sets the web d a v props persistence.
+	 * Sets the web dav props persistence.
 	 *
-	 * @param webDAVPropsPersistence the web d a v props persistence
+	 * @param webDAVPropsPersistence the web dav props persistence
 	 */
 	public void setWebDAVPropsPersistence(
 		WebDAVPropsPersistence webDAVPropsPersistence) {
@@ -1031,18 +1055,18 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
-	 * Returns the d l app helper local service.
+	 * Returns the dl app helper local service.
 	 *
-	 * @return the d l app helper local service
+	 * @return the dl app helper local service
 	 */
 	public com.liferay.document.library.kernel.service.DLAppHelperLocalService getDLAppHelperLocalService() {
 		return dlAppHelperLocalService;
 	}
 
 	/**
-	 * Sets the d l app helper local service.
+	 * Sets the dl app helper local service.
 	 *
-	 * @param dlAppHelperLocalService the d l app helper local service
+	 * @param dlAppHelperLocalService the dl app helper local service
 	 */
 	public void setDLAppHelperLocalService(
 		com.liferay.document.library.kernel.service.DLAppHelperLocalService dlAppHelperLocalService) {
@@ -1337,6 +1361,7 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @return the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public com.liferay.trash.kernel.service.TrashEntryLocalService getTrashEntryLocalService() {
 		return trashEntryLocalService;
 	}
@@ -1346,6 +1371,7 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 *
 	 * @param trashEntryLocalService the trash entry local service
 	 */
+	@SuppressWarnings("deprecation")
 	public void setTrashEntryLocalService(
 		com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService) {
 		this.trashEntryLocalService = trashEntryLocalService;
@@ -1499,6 +1525,7 @@ public abstract class DLFolderLocalServiceBaseImpl extends BaseLocalServiceImpl
 	@BeanReference(type = RatingsStatsFinder.class)
 	protected RatingsStatsFinder ratingsStatsFinder;
 	@BeanReference(type = com.liferay.trash.kernel.service.TrashEntryLocalService.class)
+	@SuppressWarnings("deprecation")
 	protected com.liferay.trash.kernel.service.TrashEntryLocalService trashEntryLocalService;
 	@BeanReference(type = TrashEntryPersistence.class)
 	protected TrashEntryPersistence trashEntryPersistence;

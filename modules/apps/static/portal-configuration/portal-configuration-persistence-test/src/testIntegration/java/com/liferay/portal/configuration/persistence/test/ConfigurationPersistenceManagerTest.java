@@ -14,9 +14,9 @@
 
 package com.liferay.portal.configuration.persistence.test;
 
+import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.osgi.util.ServiceTrackerFactory;
-import com.liferay.portal.configuration.persistence.ConfigurationPersistenceManager;
-import com.liferay.portal.kernel.test.rule.Sync;
+import com.liferay.petra.string.StringPool;
 
 import java.io.IOException;
 
@@ -24,8 +24,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.apache.felix.cm.PersistenceManager;
-
-import org.jboss.arquillian.junit.Arquillian;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,7 +41,6 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author Raymond Augé
  */
 @RunWith(Arquillian.class)
-@Sync
 public class ConfigurationPersistenceManagerTest {
 
 	@Before
@@ -73,15 +70,19 @@ public class ConfigurationPersistenceManagerTest {
 
 	@Test
 	public void testConfigurationPersistenceManager() throws Exception {
+		Class<?> clazz = _persistenceManager.getClass();
+
 		Assert.assertEquals(
-			ConfigurationPersistenceManager.class,
-			_persistenceManager.getClass());
+			"com.liferay.portal.configuration.persistence.internal." +
+				"ConfigurationPersistenceManager",
+			clazz.getName());
 	}
 
 	@Test
 	public void testCreateFactoryConfiguration() throws Exception {
 		Configuration configuration =
-			_configurationAdmin.createFactoryConfiguration("test.pid");
+			_configurationAdmin.createFactoryConfiguration(
+				"test.pid", StringPool.QUESTION);
 
 		assertConfiguration(configuration);
 	}
@@ -89,7 +90,7 @@ public class ConfigurationPersistenceManagerTest {
 	@Test
 	public void testExists() throws Exception {
 		Configuration configuration = _configurationAdmin.getConfiguration(
-			"test.pid");
+			"test.pid", StringPool.QUESTION);
 
 		Assert.assertTrue(_persistenceManager.exists("test.pid"));
 

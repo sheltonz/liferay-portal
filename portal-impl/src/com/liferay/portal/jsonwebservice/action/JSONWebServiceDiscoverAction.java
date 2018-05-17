@@ -14,6 +14,7 @@
 
 package com.liferay.portal.jsonwebservice.action;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.json.data.FileData;
 import com.liferay.portal.json.transformer.BeanAnalyzerTransformer;
 import com.liferay.portal.kernel.javadoc.JavadocManagerUtil;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.util.MethodParameter;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -73,6 +73,7 @@ public class JSONWebServiceDiscoverAction implements JSONWebServiceAction {
 			ParamUtil.getString(
 				request, "contextName",
 				servletContext.getServletContextName()));
+
 		_jsonWebServiceNaming =
 			JSONWebServiceActionsManagerUtil.getJSONWebServiceNaming();
 	}
@@ -399,7 +400,7 @@ public class JSONWebServiceDiscoverAction implements JSONWebServiceAction {
 
 		Type[] genericTypes = parameterizedType.getActualTypeArguments();
 
-		Class<?>[] genericReturnTypes = new Class[genericTypes.length];
+		Class<?>[] genericReturnTypes = new Class<?>[genericTypes.length];
 
 		for (int i = 0; i < genericTypes.length; i++) {
 			Type genericType = genericTypes[i];

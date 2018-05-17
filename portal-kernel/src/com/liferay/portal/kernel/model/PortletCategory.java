@@ -14,7 +14,7 @@
 
 package com.liferay.portal.kernel.model;
 
-import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.petra.string.StringPool;
 
 import java.io.Serializable;
 
@@ -124,7 +124,7 @@ public class PortletCategory implements Serializable {
 			portletCategory.separate(portletIds);
 		}
 
-		Iterator<String>itr = _portletIds.iterator();
+		Iterator<String> itr = _portletIds.iterator();
 
 		while (itr.hasNext()) {
 			String portletId = itr.next();

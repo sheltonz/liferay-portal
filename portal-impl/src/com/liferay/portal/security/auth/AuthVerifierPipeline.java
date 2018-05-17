@@ -14,6 +14,7 @@
 
 package com.liferay.portal.security.auth;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -24,7 +25,6 @@ import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.registry.Filter;
 import com.liferay.registry.Registry;
@@ -345,25 +345,15 @@ public class AuthVerifierPipeline {
 			ServiceReference<AuthVerifier> serviceReference,
 			AuthVerifierConfiguration authVerifierConfiguration) {
 
-			AuthVerifierConfiguration newAuthVerifierConfiguration =
-				new AuthVerifierConfiguration();
+			_authVerifierConfigurations.remove(authVerifierConfiguration);
 
-			newAuthVerifierConfiguration.setAuthVerifier(
-				authVerifierConfiguration.getAuthVerifier());
-			newAuthVerifierConfiguration.setAuthVerifierClassName(
-				authVerifierConfiguration.getAuthVerifierClassName());
-			newAuthVerifierConfiguration.setProperties(
+			authVerifierConfiguration.setProperties(
 				_loadProperties(
 					serviceReference,
 					authVerifierConfiguration.getAuthVerifierClassName()));
 
-			if (_authVerifierConfigurations.remove(authVerifierConfiguration)) {
-				if (!_validate(authVerifierConfiguration)) {
-					return;
-				}
-
-				_authVerifierConfigurations.add(
-					0, newAuthVerifierConfiguration);
+			if (_validate(authVerifierConfiguration)) {
+				_authVerifierConfigurations.add(0, authVerifierConfiguration);
 			}
 		}
 

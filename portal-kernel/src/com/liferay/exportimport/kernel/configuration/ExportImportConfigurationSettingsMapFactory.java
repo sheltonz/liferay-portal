@@ -14,8 +14,11 @@
 
 package com.liferay.exportimport.kernel.configuration;
 
+import aQute.bnd.annotation.ProviderType;
+
 import com.liferay.exportimport.kernel.lar.ExportImportHelperUtil;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
@@ -25,7 +28,6 @@ import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -48,6 +50,7 @@ import javax.portlet.PortletRequest;
  * @author Akos Thurzo
  * @since  7.0
  */
+@ProviderType
 public class ExportImportConfigurationSettingsMapFactory {
 
 	public static Map<String, Serializable> buildExportLayoutSettingsMap(

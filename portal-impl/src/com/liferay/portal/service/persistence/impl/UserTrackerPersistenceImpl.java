@@ -35,12 +35,14 @@ import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.UserTrackerPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.impl.UserTrackerImpl;
 import com.liferay.portal.model.impl.UserTrackerModelImpl;
 
 import java.io.Serializable;
+
+import java.lang.reflect.InvocationHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -297,7 +299,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -348,7 +350,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("companyId=");
 		msg.append(companyId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -799,7 +801,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -848,7 +850,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("userId=");
 		msg.append(userId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -1228,7 +1230,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 			if (sessionId == null) {
 				query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_1);
 			}
-			else if (sessionId.equals(StringPool.BLANK)) {
+			else if (sessionId.equals("")) {
 				query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_3);
 			}
 			else {
@@ -1317,7 +1319,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("sessionId=");
 		msg.append(sessionId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -1368,7 +1370,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		msg.append("sessionId=");
 		msg.append(sessionId);
 
-		msg.append(StringPool.CLOSE_CURLY_BRACE);
+		msg.append("}");
 
 		throw new NoSuchUserTrackerException(msg.toString());
 	}
@@ -1460,7 +1462,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		if (sessionId == null) {
 			query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_1);
 		}
-		else if (sessionId.equals(StringPool.BLANK)) {
+		else if (sessionId.equals("")) {
 			query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_3);
 		}
 		else {
@@ -1596,7 +1598,7 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 			if (sessionId == null) {
 				query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_1);
 			}
-			else if (sessionId.equals(StringPool.BLANK)) {
+			else if (sessionId.equals("")) {
 				query.append(_FINDER_COLUMN_SESSIONID_SESSIONID_3);
 			}
 			else {
@@ -1793,8 +1795,6 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 
 	@Override
 	protected UserTracker removeImpl(UserTracker userTracker) {
-		userTracker = toUnwrappedModel(userTracker);
-
 		Session session = null;
 
 		try {
@@ -1825,9 +1825,23 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 
 	@Override
 	public UserTracker updateImpl(UserTracker userTracker) {
-		userTracker = toUnwrappedModel(userTracker);
-
 		boolean isNew = userTracker.isNew();
+
+		if (!(userTracker instanceof UserTrackerModelImpl)) {
+			InvocationHandler invocationHandler = null;
+
+			if (ProxyUtil.isProxyClass(userTracker.getClass())) {
+				invocationHandler = ProxyUtil.getInvocationHandler(userTracker);
+
+				throw new IllegalArgumentException(
+					"Implement ModelWrapper in userTracker proxy " +
+					invocationHandler.getClass());
+			}
+
+			throw new IllegalArgumentException(
+				"Implement ModelWrapper in custom UserTracker implementation " +
+				userTracker.getClass());
+		}
 
 		UserTrackerModelImpl userTrackerModelImpl = (UserTrackerModelImpl)userTracker;
 
@@ -1854,8 +1868,32 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 
 		finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		if (isNew || !UserTrackerModelImpl.COLUMN_BITMASK_ENABLED) {
+		if (!UserTrackerModelImpl.COLUMN_BITMASK_ENABLED) {
 			finderCache.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
+		}
+		else
+		 if (isNew) {
+			Object[] args = new Object[] { userTrackerModelImpl.getCompanyId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_COMPANYID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID,
+				args);
+
+			args = new Object[] { userTrackerModelImpl.getUserId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID,
+				args);
+
+			args = new Object[] { userTrackerModelImpl.getSessionId() };
+
+			finderCache.removeResult(FINDER_PATH_COUNT_BY_SESSIONID, args);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_SESSIONID,
+				args);
+
+			finderCache.removeResult(FINDER_PATH_COUNT_ALL, FINDER_ARGS_EMPTY);
+			finderCache.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_ALL,
+				FINDER_ARGS_EMPTY);
 		}
 
 		else {
@@ -1918,29 +1956,6 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		userTracker.resetOriginalValues();
 
 		return userTracker;
-	}
-
-	protected UserTracker toUnwrappedModel(UserTracker userTracker) {
-		if (userTracker instanceof UserTrackerImpl) {
-			return userTracker;
-		}
-
-		UserTrackerImpl userTrackerImpl = new UserTrackerImpl();
-
-		userTrackerImpl.setNew(userTracker.isNew());
-		userTrackerImpl.setPrimaryKey(userTracker.getPrimaryKey());
-
-		userTrackerImpl.setMvccVersion(userTracker.getMvccVersion());
-		userTrackerImpl.setUserTrackerId(userTracker.getUserTrackerId());
-		userTrackerImpl.setCompanyId(userTracker.getCompanyId());
-		userTrackerImpl.setUserId(userTracker.getUserId());
-		userTrackerImpl.setModifiedDate(userTracker.getModifiedDate());
-		userTrackerImpl.setSessionId(userTracker.getSessionId());
-		userTrackerImpl.setRemoteAddr(userTracker.getRemoteAddr());
-		userTrackerImpl.setRemoteHost(userTracker.getRemoteHost());
-		userTrackerImpl.setUserAgent(userTracker.getUserAgent());
-
-		return userTrackerImpl;
 	}
 
 	/**
@@ -2092,14 +2107,14 @@ public class UserTrackerPersistenceImpl extends BasePersistenceImpl<UserTracker>
 		query.append(_SQL_SELECT_USERTRACKER_WHERE_PKS_IN);
 
 		for (Serializable primaryKey : uncachedPrimaryKeys) {
-			query.append(String.valueOf(primaryKey));
+			query.append((long)primaryKey);
 
-			query.append(StringPool.COMMA);
+			query.append(",");
 		}
 
 		query.setIndex(query.index() - 1);
 
-		query.append(StringPool.CLOSE_PARENTHESIS);
+		query.append(")");
 
 		String sql = query.toString();
 

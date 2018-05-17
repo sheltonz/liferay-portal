@@ -1,26 +1,11 @@
 <definition>
-	<command name="checkSocialBookmarks">
-		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
-	</command>
-
 	<command name="configureScopePG">
-		<if>
-			<equals arg1="${soPage}" arg2="true" />
-			<then>
-				<execute macro="SOPortlet#gotoPortletOptions">
-					<var name="portletName" value="Blogs" />
-					<var name="portletOption" value="Configuration" />
-				</execute>
-			</then>
-			<else>
-				<execute macro="Portlet#gotoPortletOptions">
-					<var name="portletName" value="${portletName}" />
-					<var name="portletOption" value="Configuration" />
-				</execute>
-			</else>
-		</if>
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="${portletName}" />
+			<var name="portletOption" value="Configuration" />
+		</execute>
 
-		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="AssertClick" locator1="NavBar#SCOPE" value1="Scope" />
 
@@ -30,9 +15,13 @@
 	</command>
 
 	<command name="enableSocialBookmarkSites">
-		<var name="key_socialBookmarkSite" value="${socialBookmarkSite}" />
+		<for list="${enableSocialBookmarkSites}" param="socialBookmarkSite">
+			<execute function="AddSelection" locator1="SocialBookmarks#ENABLE_SOCIAL_BOOKMARK_AVAILABLE_SELECT" value1="${socialBookmarkSite}" />
 
-		<execute function="Check" locator1="SocialBookmarks#SOCIAL_BOOKMARKS_CONFIGURATION_CHECKBOX" />
+			<execute function="Click" locator1="Button#MOVE_AVAILABLE_TO_CURRENT" />
+
+			<execute function="AssertTextEquals#assertPartialText" locator1="SocialBookmarks#ENABLE_SOCIAL_BOOKMARK_CURRENT_SELECT" value1="${socialBookmarkSite}" />
+		</for>
 	</command>
 
 	<command name="gotoRSS">
@@ -44,7 +33,7 @@
 	</command>
 
 	<command name="selectConfigurationIFrame">
-		<execute function="SelectFrame" locator1="Configuration#CONFIGURATION_IFRAME" />
+		<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 	</command>
 
 	<command name="selectDisplayTemplate">
@@ -62,7 +51,9 @@
 
 		<var name="key_scopeSelection" value="${scopeSelection}" />
 
-		<execute function="AssertClick#assertPartialTextClickAt" locator1="MenuItem#SCOPE_SELECTION" value1="${scopeSelection}" />
+		<execute function="AssertClick#assertPartialTextClickAt" locator1="MenuItem#ANY_MENU_ITEM" value1="${scopeSelection}">
+			<var name="key_menuItem" value="${scopeSelection}" />
+		</execute>
 
 		<execute function="AssertTextEquals#assertPartialText" locator1="ProductMenu#PRODUCT_MENU_PANEL_SCOPE" value1="${scopeSelection}" />
 	</command>
@@ -88,7 +79,7 @@
 	</command>
 
 	<command name="uncheckRelatedAssets">
-		<execute function="Uncheck" locator1="Checkbox#ENABLE_RELATED_ASSETS" />
+		<execute function="Uncheck" locator1="Checkbox#SHOW_RELATED_ASSETS" />
 	</command>
 
 	<command name="uncheckRSSSubscriptionCheckbox">
@@ -100,36 +91,46 @@
 	</command>
 
 	<command name="viewAsSiteMemberPG">
-		<execute function="AssertElementNotPresent" locator1="Portlet#TITLE" />
-		<execute function="AssertElementNotPresent" locator1="Blogs#ADD_BLOGS_ENTRY" value1="Add Blog Entry" />
+		<var name="key_portletName" value="Blogs" />
+
+		<execute function="AssertElementPresent" locator1="Portlet#TITLE" />
+		<var name="key_text" value="New Entry" />
+
+		<execute function="AssertElementNotPresent" locator1="Button#ANY" />
 
 		<if>
-			<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_ICON" />
+			<condition function="IsElementPresent" locator1="Portlet#OPTIONS_ICON" />
 			<then>
-				<execute function="Click#mouseOverClick" locator1="BasePortlet#OPTIONS_ICON" />
+				<execute function="Click#mouseOverClick" locator1="Portlet#OPTIONS_ICON" />
 
-				<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
+				<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM">
+					<var name="key_menuItem" value="Permissions" />
+				</execute>
 			</then>
 		</if>
 
-		<execute function="AssertTextEquals" locator1="Link#SUBSCRIBE" value1="Subscribe" />
-		<execute function="AssertTextEquals" locator1="Link#RSS" value1="RSS" />
+		<execute function="AssertTextEquals" locator1="Blogs#SUBSCRIBE_LINK" value1="Subscribe" />
+
+		<var name="key_text" value="rss RSS" />
+
+		<execute function="AssertTextEquals" locator1="Button#ANY" value1="rss RSS" />
 	</command>
 
 	<command name="viewDefaultConfiguration">
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_DISPLAY_SETTINGS_MAXIMUM_ITEMS_TO_DISPLAY_SELECT" value1="20" />
 		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_DISPLAY_SETTINGS_DISPLAY_TEMPLATE_SELECT" value1="abstract" />
-		<execute function="AssertChecked" locator1="Checkbox#ENABLE_FLAGS" />
-		<execute function="AssertChecked" locator1="Checkbox#ENABLE_RELATED_ASSETS" />
+		<execute function="AssertChecked" locator1="Checkbox#ENABLE_REPORT_INAPPROPRIATE_CONTENT" />
+		<execute function="AssertChecked" locator1="Checkbox#SHOW_RELATED_ASSETS" />
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_RATINGS" />
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_COMMENTS" />
 		<execute function="AssertChecked" locator1="Checkbox#ENABLE_COMMENT_RATINGS" />
-		<execute function="Check#checkToggleSwitch" locator1="Checkbox#ENABLE_SOCIAL_BOOKMARKS" />
-		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_SOCIAL_BOOKMARKS_DISPLAY_STYLE_SELECT" value1="menu" />
-		<execute function="AssertTextEquals#assertValue" locator1="Configuration#SETUP_SOCIAL_BOOKMARKS_DISPLAY_POSITION_SELECT" value1="bottom" />
-		<execute function="AssertChecked" locator1="Checkbox#TWITTER" />
-		<execute function="AssertChecked" locator1="Checkbox#FACEBOOK" />
-		<execute function="AssertChecked" locator1="Checkbox#GOOGLE_PLUS" />
+
+		<var name="key_displayStyle" value="Inline" />
+
+		<execute function="AssertChecked" locator1="Radio#SOCIAL_BOOKMARKS_DISPLAY_STYLE" value1="Inline" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="SocialBookmarks#ENABLE_SOCIAL_BOOKMARK_CURRENT_SELECT" value1="Twitter" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="SocialBookmarks#ENABLE_SOCIAL_BOOKMARK_CURRENT_SELECT" value1="Facebook" />
+		<execute function="AssertTextEquals#assertPartialText" locator1="SocialBookmarks#ENABLE_SOCIAL_BOOKMARK_CURRENT_SELECT" value1="Google+" />
 	</command>
 
 	<command name="viewDefaultConfigurationRSS">
@@ -142,31 +143,45 @@
 	<command name="viewNoPermissionCP">
 		<var name="key_portletTitle" value="Blogs" />
 
-		<execute function="AssertTextEquals" locator1="Home#SITE_ADMINISTRATION_PORTLET_TITLE" value1="Blogs" />
+		<execute function="AssertTextEquals#assertTextCaseInsensitive" locator1="Home#SITE_ADMINISTRATION_PORTLET_TITLE" value1="Blogs" />
 		<execute function="AssertElementPresent" locator1="NavBar#CONTAINER" />
 		<execute function="AssertTextEquals" locator1="Message#EMPTY_INFO" value1="No entries were found." />
 	</command>
 
 	<command name="viewNoPermissionPG">
-		<execute function="AssertElementNotPresent" locator1="Blogs#ADD_BLOGS_ENTRY" value1="Add Blog Entry" />
-		<execute function="AssertElementNotPresent" locator1="Link#SUBSCRIBE" />
-		<execute function="AssertTextEquals" locator1="Link#RSS" value1="RSS" />
+		<var name="key_text" value="New Entry" />
+
+		<execute function="AssertElementNotPresent" locator1="Button#ANY" />
+		<execute function="AssertElementNotPresent" locator1="Blogs#SUBSCRIBE_LINK" />
+
+		<var name="key_text" value="rss RSS" />
+
+		<execute function="AssertTextEquals" locator1="Button#ANY" value1="rss RSS" />
 
 		<if>
-			<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_ICON" />
+			<condition function="IsElementPresent" locator1="Portlet#OPTIONS_ICON" />
 			<then>
-				<execute function="Click#mouseOverClick" locator1="BasePortlet#OPTIONS_ICON" />
+				<execute function="Click#mouseOverClick" locator1="Portlet#OPTIONS_ICON" />
 
-				<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
+				<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM">
+					<var name="key_menuItem" value="Permissions" />
+				</execute>
 
 				<if>
-					<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" />
+					<condition function="IsElementPresent" locator1="MenuItem#ANY_MENU_ITEM">
+						<var name="key_menuItem" value="Configuration" />
+					</condition>
+
 					<then>
-						<execute function="Click" locator1="BasePortlet#OPTIONS_MENULIST_CONFIGURATION" />
+						<execute function="Click" locator1="MenuItem#ANY_MENU_ITEM" value1="Configuration">
+							<var name="key_menuItem" value="Configuration" />
+						</execute>
 
-						<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
+						<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
-						<execute function="AssertElementNotPresent" locator1="MenuItem#PERMISSIONS" value1="Permissions" />
+						<execute function="AssertElementNotPresent" locator1="MenuItem#ANY_MENU_ITEM">
+							<var name="key_menuItem" value="Permissions" />
+						</execute>
 					</then>
 				</if>
 			</then>
@@ -174,28 +189,32 @@
 	</command>
 
 	<command name="viewNoSubscribePG">
-		<execute function="AssertElementNotPresent" locator1="Link#SUBSCRIBE" />
+		<execute function="AssertElementNotPresent" locator1="Blogs#SUBSCRIBE_LINK" />
 	</command>
 
 	<command name="viewPermissionsPG">
-		<execute function="Click#mouseOverClick" locator1="BasePortlet#OPTIONS_ICON" />
+		<execute function="Click#mouseOverClick" locator1="Portlet#OPTIONS_ICON" />
 
 		<if>
-			<condition function="IsElementPresent" locator1="BasePortlet#OPTIONS_MENULIST_PERMISSIONS" />
+			<condition function="IsElementPresent" locator1="Portlet#OPTIONS_MENULIST_PERMISSIONS" />
 			<then>
-				<execute function="Click" locator1="BasePortlet#OPTIONS_MENULIST_PERMISSIONS" />
+				<execute function="Click" locator1="Portlet#OPTIONS_MENULIST_PERMISSIONS" />
 
 				<execute function="SelectFrame" locator1="IFrame#DIALOG" />
 			</then>
 		</if>
 
-		<execute function="AssertElementPresent" locator1="MenuItem#PERMISSIONS" />
+		<execute function="AssertElementPresent" locator1="MenuItem#ANY_MENU_ITEM">
+			<var name="key_menuItem" value="Permissions" />
+		</execute>
 	</command>
 
 	<command name="viewScopeCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
 
@@ -208,9 +227,13 @@
 	<command name="viewScopeDefaultNoEntryCP">
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
+		<execute macro="ProductMenu#gotoPortlet">
+			<var name="category" value="Content" />
+			<var name="panel" value="Site Administration" />
 			<var name="portlet" value="Blogs" />
 		</execute>
+
+		<execute function="AssertElementPresent" locator1="ProductMenu#PRODUCT_MENU_PANEL_SCOPE" />
 
 		<execute function="AssertTextEquals" locator1="ProductMenu#PRODUCT_MENU_PANEL_SCOPE" value1="${contentScopeName}" />
 
@@ -222,6 +245,6 @@
 	</command>
 
 	<command name="viewSubscribePG">
-		<execute function="AssertTextEquals" locator1="Link#SUBSCRIBE" value1="Subscribe" />
+		<execute function="AssertTextEquals" locator1="Blogs#SUBSCRIBE_LINK" value1="Subscribe" />
 	</command>
 </definition>

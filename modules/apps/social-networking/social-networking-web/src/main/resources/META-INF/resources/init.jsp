@@ -21,16 +21,19 @@
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/frontend" prefix="liferay-frontend" %><%@
 taglib uri="http://liferay.com/tld/portlet" prefix="liferay-portlet" %><%@
+taglib uri="http://liferay.com/tld/rss" prefix="liferay-rss" %><%@
+taglib uri="http://liferay.com/tld/social-activities" prefix="liferay-social-activities" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
 taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 
-<%@ page import="com.liferay.blogs.kernel.model.BlogsEntry" %><%@
-page import="com.liferay.blogs.kernel.service.BlogsStatsUserLocalServiceUtil" %><%@
+<%@ page import="com.liferay.blogs.model.BlogsEntry" %><%@
+page import="com.liferay.blogs.service.BlogsStatsUserLocalService" %><%@
 page import="com.liferay.expando.kernel.service.ExpandoValueLocalServiceUtil" %><%@
 page import="com.liferay.ip.geocoder.IPGeocoder" %><%@
 page import="com.liferay.ip.geocoder.IPInfo" %><%@
-page import="com.liferay.message.boards.kernel.model.MBMessage" %><%@
-page import="com.liferay.message.boards.kernel.service.MBStatsUserLocalServiceUtil" %><%@
+page import="com.liferay.message.boards.model.MBMessage" %><%@
+page import="com.liferay.message.boards.service.MBStatsUserLocalServiceUtil" %><%@
+page import="com.liferay.petra.string.StringPool" %><%@
 page import="com.liferay.portal.kernel.dao.search.SearchContainer" %><%@
 page import="com.liferay.portal.kernel.exception.NoSuchUserException" %><%@
 page import="com.liferay.portal.kernel.language.LanguageUtil" %><%@
@@ -55,13 +58,12 @@ page import="com.liferay.portal.kernel.util.HtmlUtil" %><%@
 page import="com.liferay.portal.kernel.util.ParamUtil" %><%@
 page import="com.liferay.portal.kernel.util.PortalUtil" %><%@
 page import="com.liferay.portal.kernel.util.PrefsPropsUtil" %><%@
-page import="com.liferay.portal.kernel.util.RSSUtil" %><%@
-page import="com.liferay.portal.kernel.util.StringPool" %><%@
 page import="com.liferay.portal.kernel.util.Validator" %><%@
 page import="com.liferay.portal.kernel.util.WebKeys" %><%@
 page import="com.liferay.portal.kernel.util.comparator.UserLoginDateComparator" %><%@
 page import="com.liferay.portal.kernel.webserver.WebServerServletTokenUtil" %><%@
 page import="com.liferay.portal.kernel.workflow.WorkflowConstants" %><%@
+page import="com.liferay.rss.util.RSSUtil" %><%@
 page import="com.liferay.social.kernel.model.SocialActivity" %><%@
 page import="com.liferay.social.kernel.model.SocialRelationConstants" %><%@
 page import="com.liferay.social.kernel.model.SocialRequestConstants" %><%@
@@ -71,17 +73,17 @@ page import="com.liferay.social.kernel.service.SocialRequestLocalServiceUtil" %>
 page import="com.liferay.social.networking.constants.SocialNetworkingPortletKeys" %><%@
 page import="com.liferay.social.networking.exception.NoSuchMeetupsEntryException" %><%@
 page import="com.liferay.social.networking.exception.NoSuchMeetupsRegistrationException" %><%@
-page import="com.liferay.social.networking.friends.social.FriendsRequestKeys" %><%@
-page import="com.liferay.social.networking.members.social.MembersRequestKeys" %><%@
 page import="com.liferay.social.networking.model.MeetupsEntry" %><%@
 page import="com.liferay.social.networking.model.MeetupsRegistration" %><%@
 page import="com.liferay.social.networking.model.WallEntry" %><%@
 page import="com.liferay.social.networking.service.MeetupsEntryLocalServiceUtil" %><%@
 page import="com.liferay.social.networking.service.MeetupsRegistrationLocalServiceUtil" %><%@
 page import="com.liferay.social.networking.service.WallEntryLocalServiceUtil" %><%@
-page import="com.liferay.social.networking.web.constants.SocialNetworkingWebKeys" %><%@
-page import="com.liferay.social.networking.web.meetups.util.MeetupsConstants" %><%@
-page import="com.liferay.social.networking.web.util.WallUtil" %><%@
+page import="com.liferay.social.networking.web.internal.constants.SocialNetworkingWebKeys" %><%@
+page import="com.liferay.social.networking.web.internal.friends.social.FriendsRequestKeys" %><%@
+page import="com.liferay.social.networking.web.internal.meetups.util.MeetupsConstants" %><%@
+page import="com.liferay.social.networking.web.internal.members.social.MembersRequestKeys" %><%@
+page import="com.liferay.social.networking.web.internal.util.WallUtil" %><%@
 page import="com.liferay.taglib.search.ResultRow" %>
 
 <%@ page import="java.text.Format" %>

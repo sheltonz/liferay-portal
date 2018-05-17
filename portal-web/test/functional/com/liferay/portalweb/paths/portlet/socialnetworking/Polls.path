@@ -9,8 +9,33 @@
 </thead>
 <tbody>
 <tr>
-	<td>ACTIONS_DROPDOWN_PERMISSIONS</td>
-	<td>//ul[contains(@class,'dropdown-menu')]//span[contains(.,'Permissions')]</td>
+	<td>CHOICE_FIELD</td>
+	<td>//input[contains(@id,'choiceDescription${key_choiceField}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHOICE_A_FIELD</td>
+	<td>//input[contains(@id,'choiceDescriptiona')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHOICE_B_FIELD</td>
+	<td>//input[contains(@id,'choiceDescriptionb')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHOICE_C_FIELD</td>
+	<td>//input[contains(@id,'choiceDescriptionc')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHOICE_D_FIELD</td>
+	<td>//input[contains(@id,'choiceDescriptiond')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CHOICE_E_FIELD</td>
+	<td>//input[contains(@id,'choiceDescriptione')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -35,7 +60,7 @@
 </tr>
 <tr>
 	<td>POLL_QUESTION_CHOICE</td>
-	<td>//fieldset[contains(@class,'fieldset')]//label[contains(.,'${key_pollsQuestionChoice}')]/input</td>
+	<td>//label[contains(.,'${key_pollsQuestionChoice}')]/input</td>
 	<td></td>
 </tr>
 <tr>

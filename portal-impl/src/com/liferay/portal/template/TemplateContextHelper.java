@@ -18,8 +18,10 @@ import com.liferay.expando.kernel.service.ExpandoColumnLocalService;
 import com.liferay.expando.kernel.service.ExpandoRowLocalService;
 import com.liferay.expando.kernel.service.ExpandoTableLocalService;
 import com.liferay.expando.kernel.service.ExpandoValueLocalService;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.audit.AuditMessageFactoryUtil;
 import com.liferay.portal.kernel.audit.AuditRouterUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -77,7 +79,6 @@ import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.SessionClicks_IW;
 import com.liferay.portal.kernel.util.StaticFieldGetter;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil_IW;
 import com.liferay.portal.kernel.util.TimeZoneUtil_IW;
 import com.liferay.portal.kernel.util.UnicodeFormatter_IW;
@@ -301,10 +302,15 @@ public class TemplateContextHelper {
 			// Navigation items
 
 			if (layout != null) {
-				List<NavItem> navItems = NavItem.fromLayouts(
-					request, layouts, contextObjects);
+				try {
+					List<NavItem> navItems = NavItem.fromLayouts(
+						request, themeDisplay, contextObjects);
 
-				contextObjects.put("navItems", navItems);
+					contextObjects.put("navItems", navItems);
+				}
+				catch (PortalException pe) {
+					_log.error(pe, pe);
+				}
 			}
 
 			// Deprecated

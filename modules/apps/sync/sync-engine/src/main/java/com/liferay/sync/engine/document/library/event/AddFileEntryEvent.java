@@ -14,10 +14,14 @@
 
 package com.liferay.sync.engine.document.library.event;
 
+import com.liferay.sync.engine.document.library.event.constants.EventURLPaths;
 import com.liferay.sync.engine.document.library.handler.AddFileFolderHandler;
 import com.liferay.sync.engine.document.library.handler.Handler;
 import com.liferay.sync.engine.model.SyncFile;
 import com.liferay.sync.engine.service.SyncFileService;
+import com.liferay.sync.engine.util.FileUtil;
+
+import java.nio.file.Paths;
 
 import java.util.Map;
 
@@ -29,7 +33,7 @@ public class AddFileEntryEvent extends BaseEvent {
 	public AddFileEntryEvent(
 		long syncAccountId, Map<String, Object> parameters) {
 
-		super(syncAccountId, _URL_PATH, parameters);
+		super(syncAccountId, EventURLPaths.ADD_FILE_ENTRY, parameters);
 
 		_handler = new AddFileFolderHandler(this);
 	}
@@ -43,6 +47,9 @@ public class AddFileEntryEvent extends BaseEvent {
 	protected void processRequest() throws Exception {
 		SyncFile syncFile = (SyncFile)getParameterValue("syncFile");
 
+		syncFile.setPreviousModifiedTime(
+			FileUtil.getLastModifiedTime(
+				Paths.get(syncFile.getFilePathName())));
 		syncFile.setState(SyncFile.STATE_IN_PROGRESS);
 		syncFile.setUiEvent(SyncFile.UI_EVENT_UPLOADING);
 
@@ -50,9 +57,6 @@ public class AddFileEntryEvent extends BaseEvent {
 
 		processAsynchronousRequest();
 	}
-
-	private static final String _URL_PATH =
-		"/sync-web.syncdlobject/add-file-entry";
 
 	private final Handler<Void> _handler;
 

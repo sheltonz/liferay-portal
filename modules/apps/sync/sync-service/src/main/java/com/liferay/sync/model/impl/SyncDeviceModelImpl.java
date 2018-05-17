@@ -25,6 +25,7 @@ import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
 import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ModelWrapper;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -33,7 +34,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 
 import com.liferay.sync.model.SyncDevice;
 import com.liferay.sync.model.SyncDeviceModel;
@@ -83,6 +83,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 			{ "type_", Types.VARCHAR },
 			{ "buildNumber", Types.BIGINT },
 			{ "featureSet", Types.INTEGER },
+			{ "hostname", Types.VARCHAR },
 			{ "status", Types.INTEGER }
 		};
 	public static final Map<String, Integer> TABLE_COLUMNS_MAP = new HashMap<String, Integer>();
@@ -98,10 +99,11 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		TABLE_COLUMNS_MAP.put("type_", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("buildNumber", Types.BIGINT);
 		TABLE_COLUMNS_MAP.put("featureSet", Types.INTEGER);
+		TABLE_COLUMNS_MAP.put("hostname", Types.VARCHAR);
 		TABLE_COLUMNS_MAP.put("status", Types.INTEGER);
 	}
 
-	public static final String TABLE_SQL_CREATE = "create table SyncDevice (uuid_ VARCHAR(75) null,syncDeviceId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,type_ VARCHAR(75) null,buildNumber LONG,featureSet INTEGER,status INTEGER)";
+	public static final String TABLE_SQL_CREATE = "create table SyncDevice (uuid_ VARCHAR(75) null,syncDeviceId LONG not null primary key,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,modifiedDate DATE null,type_ VARCHAR(75) null,buildNumber LONG,featureSet INTEGER,hostname VARCHAR(75) null,status INTEGER)";
 	public static final String TABLE_SQL_DROP = "drop table SyncDevice";
 	public static final String ORDER_BY_JPQL = " ORDER BY syncDevice.syncDeviceId ASC";
 	public static final String ORDER_BY_SQL = " ORDER BY SyncDevice.syncDeviceId ASC";
@@ -118,9 +120,10 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 				"value.object.column.bitmask.enabled.com.liferay.sync.model.SyncDevice"),
 			true);
 	public static final long COMPANYID_COLUMN_BITMASK = 1L;
-	public static final long USERNAME_COLUMN_BITMASK = 2L;
-	public static final long UUID_COLUMN_BITMASK = 4L;
-	public static final long SYNCDEVICEID_COLUMN_BITMASK = 8L;
+	public static final long USERID_COLUMN_BITMASK = 2L;
+	public static final long USERNAME_COLUMN_BITMASK = 4L;
+	public static final long UUID_COLUMN_BITMASK = 8L;
+	public static final long SYNCDEVICEID_COLUMN_BITMASK = 16L;
 
 	/**
 	 * Converts the soap model instance into a normal model instance.
@@ -145,6 +148,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		model.setType(soapModel.getType());
 		model.setBuildNumber(soapModel.getBuildNumber());
 		model.setFeatureSet(soapModel.getFeatureSet());
+		model.setHostname(soapModel.getHostname());
 		model.setStatus(soapModel.getStatus());
 
 		return model;
@@ -220,6 +224,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		attributes.put("type", getType());
 		attributes.put("buildNumber", getBuildNumber());
 		attributes.put("featureSet", getFeatureSet());
+		attributes.put("hostname", getHostname());
 		attributes.put("status", getStatus());
 
 		attributes.put("entityCacheEnabled", isEntityCacheEnabled());
@@ -290,6 +295,12 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 			setFeatureSet(featureSet);
 		}
 
+		String hostname = (String)attributes.get("hostname");
+
+		if (hostname != null) {
+			setHostname(hostname);
+		}
+
 		Integer status = (Integer)attributes.get("status");
 
 		if (status != null) {
@@ -301,7 +312,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	@Override
 	public String getUuid() {
 		if (_uuid == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _uuid;
@@ -363,6 +374,14 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 	@Override
 	public void setUserId(long userId) {
+		_columnBitmask |= USERID_COLUMN_BITMASK;
+
+		if (!_setOriginalUserId) {
+			_setOriginalUserId = true;
+
+			_originalUserId = _userId;
+		}
+
 		_userId = userId;
 	}
 
@@ -374,7 +393,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 			return user.getUuid();
 		}
 		catch (PortalException pe) {
-			return StringPool.BLANK;
+			return "";
 		}
 	}
 
@@ -382,11 +401,15 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	public void setUserUuid(String userUuid) {
 	}
 
+	public long getOriginalUserId() {
+		return _originalUserId;
+	}
+
 	@JSON
 	@Override
 	public String getUserName() {
 		if (_userName == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _userName;
@@ -440,7 +463,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	@Override
 	public String getType() {
 		if (_type == null) {
-			return StringPool.BLANK;
+			return "";
 		}
 		else {
 			return _type;
@@ -472,6 +495,22 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	@Override
 	public void setFeatureSet(int featureSet) {
 		_featureSet = featureSet;
+	}
+
+	@JSON
+	@Override
+	public String getHostname() {
+		if (_hostname == null) {
+			return "";
+		}
+		else {
+			return _hostname;
+		}
+	}
+
+	@Override
+	public void setHostname(String hostname) {
+		_hostname = hostname;
 	}
 
 	@JSON
@@ -532,6 +571,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		syncDeviceImpl.setType(getType());
 		syncDeviceImpl.setBuildNumber(getBuildNumber());
 		syncDeviceImpl.setFeatureSet(getFeatureSet());
+		syncDeviceImpl.setHostname(getHostname());
 		syncDeviceImpl.setStatus(getStatus());
 
 		syncDeviceImpl.resetOriginalValues();
@@ -601,6 +641,10 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 		syncDeviceModelImpl._setOriginalCompanyId = false;
 
+		syncDeviceModelImpl._originalUserId = syncDeviceModelImpl._userId;
+
+		syncDeviceModelImpl._setOriginalUserId = false;
+
 		syncDeviceModelImpl._originalUserName = syncDeviceModelImpl._userName;
 
 		syncDeviceModelImpl._setModifiedDate = false;
@@ -664,6 +708,14 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 		syncDeviceCacheModel.featureSet = getFeatureSet();
 
+		syncDeviceCacheModel.hostname = getHostname();
+
+		String hostname = syncDeviceCacheModel.hostname;
+
+		if ((hostname != null) && (hostname.length() == 0)) {
+			syncDeviceCacheModel.hostname = null;
+		}
+
 		syncDeviceCacheModel.status = getStatus();
 
 		return syncDeviceCacheModel;
@@ -671,7 +723,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(23);
+		StringBundler sb = new StringBundler(25);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -693,6 +745,8 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		sb.append(getBuildNumber());
 		sb.append(", featureSet=");
 		sb.append(getFeatureSet());
+		sb.append(", hostname=");
+		sb.append(getHostname());
 		sb.append(", status=");
 		sb.append(getStatus());
 		sb.append("}");
@@ -702,7 +756,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 	@Override
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(37);
+		StringBundler sb = new StringBundler(40);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.sync.model.SyncDevice");
@@ -749,6 +803,10 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 		sb.append(getFeatureSet());
 		sb.append("]]></column-value></column>");
 		sb.append(
+			"<column><column-name>hostname</column-name><column-value><![CDATA[");
+		sb.append(getHostname());
+		sb.append("]]></column-value></column>");
+		sb.append(
 			"<column><column-name>status</column-name><column-value><![CDATA[");
 		sb.append(getStatus());
 		sb.append("]]></column-value></column>");
@@ -760,7 +818,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 
 	private static final ClassLoader _classLoader = SyncDevice.class.getClassLoader();
 	private static final Class<?>[] _escapedModelInterfaces = new Class[] {
-			SyncDevice.class
+			SyncDevice.class, ModelWrapper.class
 		};
 	private String _uuid;
 	private String _originalUuid;
@@ -769,6 +827,8 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	private long _originalCompanyId;
 	private boolean _setOriginalCompanyId;
 	private long _userId;
+	private long _originalUserId;
+	private boolean _setOriginalUserId;
 	private String _userName;
 	private String _originalUserName;
 	private Date _createDate;
@@ -777,6 +837,7 @@ public class SyncDeviceModelImpl extends BaseModelImpl<SyncDevice>
 	private String _type;
 	private long _buildNumber;
 	private int _featureSet;
+	private String _hostname;
 	private int _status;
 	private long _columnBitmask;
 	private SyncDevice _escapedModel;

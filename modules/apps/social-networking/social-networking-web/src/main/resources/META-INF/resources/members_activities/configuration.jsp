@@ -18,45 +18,55 @@
 
 <liferay-portlet:actionURL portletConfiguration="<%= true %>" var="configurationActionURL" />
 
-<aui:form action="<%= configurationActionURL %>" method="post" name="fm">
+<liferay-frontend:edit-form
+	action="<%= configurationActionURL %>"
+	method="post"
+	name="fm"
+>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 
 	<liferay-portlet:renderURL portletConfiguration="<%= true %>" var="configurationRenderURL" />
 
 	<aui:input name="redirect" type="hidden" value="<%= configurationRenderURL %>" />
 
-	<aui:fieldset>
-		<aui:select label="maximum-activities-to-display" name="preferences--max--" value="<%= max %>">
-			<aui:option label="1" />
-			<aui:option label="2" />
-			<aui:option label="3" />
-			<aui:option label="4" />
-			<aui:option label="5" />
-			<aui:option label="10" />
-			<aui:option label="15" />
-			<aui:option label="20" />
-			<aui:option label="25" />
-			<aui:option label="30" />
-			<aui:option label="40" />
-			<aui:option label="50" />
-			<aui:option label="60" />
-			<aui:option label="70" />
-			<aui:option label="80" />
-			<aui:option label="90" />
-			<aui:option label="100" />
-		</aui:select>
-	</aui:fieldset>
+	<liferay-frontend:edit-form-body>
+		<liferay-frontend:fieldset-group>
+			<liferay-frontend:fieldset>
+				<aui:select label="maximum-activities-to-display" name="preferences--max--" value="<%= max %>">
+					<aui:option label="1" />
+					<aui:option label="2" />
+					<aui:option label="3" />
+					<aui:option label="4" />
+					<aui:option label="5" />
+					<aui:option label="10" />
+					<aui:option label="15" />
+					<aui:option label="20" />
+					<aui:option label="25" />
+					<aui:option label="30" />
+					<aui:option label="40" />
+					<aui:option label="50" />
+					<aui:option label="60" />
+					<aui:option label="70" />
+					<aui:option label="80" />
+					<aui:option label="90" />
+					<aui:option label="100" />
+				</aui:select>
+			</liferay-frontend:fieldset>
 
-	<c:if test="<%= PortalUtil.isRSSFeedsEnabled() %>">
-		<liferay-ui:rss-settings
-			delta="<%= rssDelta %>"
-			displayStyle="<%= rssDisplayStyle %>"
-			enabled="<%= enableRSS %>"
-			feedType="<%= rssFeedType %>"
-		/>
-	</c:if>
+			<c:if test="<%= PortalUtil.isRSSFeedsEnabled() %>">
+				<liferay-rss:rss-settings
+					delta="<%= rssDelta %>"
+					displayStyle="<%= rssDisplayStyle %>"
+					enabled="<%= enableRSS %>"
+					feedType="<%= rssFeedType %>"
+				/>
+			</c:if>
+		</liferay-frontend:fieldset-group>
+	</liferay-frontend:edit-form-body>
 
-	<aui:button-row>
-		<aui:button cssClass="btn-lg" type="submit" />
-	</aui:button-row>
-</aui:form>
+	<liferay-frontend:edit-form-footer>
+		<aui:button type="submit" />
+
+		<aui:button type="cancel" />
+	</liferay-frontend:edit-form-footer>
+</liferay-frontend:edit-form>

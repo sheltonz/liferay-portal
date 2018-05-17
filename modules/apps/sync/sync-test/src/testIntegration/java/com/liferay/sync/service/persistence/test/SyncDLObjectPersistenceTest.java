@@ -24,16 +24,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import com.liferay.sync.exception.NoSuchDLObjectException;
 import com.liferay.sync.model.SyncDLObject;
@@ -69,7 +68,8 @@ public class SyncDLObjectPersistenceTest {
 	@Rule
 	public static final AggregateTestRule aggregateTestRule = new AggregateTestRule(new LiferayIntegrationTestRule(),
 			PersistenceTestRule.INSTANCE,
-			new TransactionalTestRule(Propagation.REQUIRED));
+			new TransactionalTestRule(Propagation.REQUIRED,
+				"com.liferay.sync.service"));
 
 	@Before
 	public void setUp() {
@@ -162,6 +162,8 @@ public class SyncDLObjectPersistenceTest {
 
 		newSyncDLObject.setEvent(RandomTestUtil.randomString());
 
+		newSyncDLObject.setLanTokenKey(RandomTestUtil.randomString());
+
 		newSyncDLObject.setLastPermissionChangeDate(RandomTestUtil.nextDate());
 
 		newSyncDLObject.setLockExpirationDate(RandomTestUtil.nextDate());
@@ -220,6 +222,8 @@ public class SyncDLObjectPersistenceTest {
 			newSyncDLObject.getChecksum());
 		Assert.assertEquals(existingSyncDLObject.getEvent(),
 			newSyncDLObject.getEvent());
+		Assert.assertEquals(existingSyncDLObject.getLanTokenKey(),
+			newSyncDLObject.getLanTokenKey());
 		Assert.assertEquals(Time.getShortTimestamp(
 				existingSyncDLObject.getLastPermissionChangeDate()),
 			Time.getShortTimestamp(
@@ -241,9 +245,9 @@ public class SyncDLObjectPersistenceTest {
 
 	@Test
 	public void testCountByTreePath() throws Exception {
-		_persistence.countByTreePath(StringPool.BLANK);
+		_persistence.countByTreePath("");
 
-		_persistence.countByTreePath(StringPool.NULL);
+		_persistence.countByTreePath("null");
 
 		_persistence.countByTreePath((String)null);
 	}
@@ -266,45 +270,45 @@ public class SyncDLObjectPersistenceTest {
 
 	@Test
 	public void testCountByR_NotE() throws Exception {
-		_persistence.countByR_NotE(RandomTestUtil.nextLong(), StringPool.BLANK);
+		_persistence.countByR_NotE(RandomTestUtil.nextLong(), "");
 
-		_persistence.countByR_NotE(0L, StringPool.NULL);
+		_persistence.countByR_NotE(0L, "null");
 
 		_persistence.countByR_NotE(0L, (String)null);
 	}
 
 	@Test
 	public void testCountByR_T() throws Exception {
-		_persistence.countByR_T(RandomTestUtil.nextLong(), StringPool.BLANK);
+		_persistence.countByR_T(RandomTestUtil.nextLong(), "");
 
-		_persistence.countByR_T(0L, StringPool.NULL);
+		_persistence.countByR_T(0L, "null");
 
 		_persistence.countByR_T(0L, (String)null);
 	}
 
 	@Test
 	public void testCountByT_NotE() throws Exception {
-		_persistence.countByT_NotE(StringPool.BLANK, StringPool.BLANK);
+		_persistence.countByT_NotE("", "");
 
-		_persistence.countByT_NotE(StringPool.NULL, StringPool.NULL);
+		_persistence.countByT_NotE("null", "null");
 
 		_persistence.countByT_NotE((String)null, (String)null);
 	}
 
 	@Test
 	public void testCountByV_T() throws Exception {
-		_persistence.countByV_T(StringPool.BLANK, StringPool.BLANK);
+		_persistence.countByV_T("", "");
 
-		_persistence.countByV_T(StringPool.NULL, StringPool.NULL);
+		_persistence.countByV_T("null", "null");
 
 		_persistence.countByV_T((String)null, (String)null);
 	}
 
 	@Test
 	public void testCountByT_T() throws Exception {
-		_persistence.countByT_T(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByT_T("", RandomTestUtil.nextLong());
 
-		_persistence.countByT_T(StringPool.NULL, 0L);
+		_persistence.countByT_T("null", 0L);
 
 		_persistence.countByT_T((String)null, 0L);
 	}
@@ -312,9 +316,9 @@ public class SyncDLObjectPersistenceTest {
 	@Test
 	public void testCountByM_R_NotE() throws Exception {
 		_persistence.countByM_R_NotE(RandomTestUtil.nextLong(),
-			RandomTestUtil.nextLong(), StringPool.BLANK);
+			RandomTestUtil.nextLong(), "");
 
-		_persistence.countByM_R_NotE(0L, 0L, StringPool.NULL);
+		_persistence.countByM_R_NotE(0L, 0L, "null");
 
 		_persistence.countByM_R_NotE(0L, 0L, (String)null);
 	}
@@ -323,18 +327,15 @@ public class SyncDLObjectPersistenceTest {
 	public void testCountByM_R_NotEArrayable() throws Exception {
 		_persistence.countByM_R_NotE(RandomTestUtil.nextLong(),
 			RandomTestUtil.nextLong(),
-			new String[] {
-				RandomTestUtil.randomString(), StringPool.BLANK, StringPool.NULL,
-				null, null
-			});
+			new String[] { RandomTestUtil.randomString(), "", "null", null, null });
 	}
 
 	@Test
 	public void testCountByR_P_T() throws Exception {
 		_persistence.countByR_P_T(RandomTestUtil.nextLong(),
-			RandomTestUtil.nextLong(), StringPool.BLANK);
+			RandomTestUtil.nextLong(), "");
 
-		_persistence.countByR_P_T(0L, 0L, StringPool.NULL);
+		_persistence.countByR_P_T(0L, 0L, "null");
 
 		_persistence.countByR_P_T(0L, 0L, (String)null);
 	}
@@ -343,10 +344,7 @@ public class SyncDLObjectPersistenceTest {
 	public void testCountByR_P_TArrayable() throws Exception {
 		_persistence.countByR_P_T(RandomTestUtil.nextLong(),
 			RandomTestUtil.nextLong(),
-			new String[] {
-				RandomTestUtil.randomString(), StringPool.BLANK, StringPool.NULL,
-				null, null
-			});
+			new String[] { RandomTestUtil.randomString(), "", "null", null, null });
 	}
 
 	@Test
@@ -378,7 +376,7 @@ public class SyncDLObjectPersistenceTest {
 			"repositoryId", true, "parentFolderId", true, "treePath", true,
 			"name", true, "extension", true, "mimeType", true, "description",
 			true, "changeLog", true, "version", true, "versionId", true,
-			"size", true, "checksum", true, "event", true,
+			"size", true, "checksum", true, "event", true, "lanTokenKey", true,
 			"lastPermissionChangeDate", true, "lockExpirationDate", true,
 			"lockUserId", true, "lockUserName", true, "type", true, "typePK",
 			true, "typeUuid", true);
@@ -636,6 +634,8 @@ public class SyncDLObjectPersistenceTest {
 		syncDLObject.setChecksum(RandomTestUtil.randomString());
 
 		syncDLObject.setEvent(RandomTestUtil.randomString());
+
+		syncDLObject.setLanTokenKey(RandomTestUtil.randomString());
 
 		syncDLObject.setLastPermissionChangeDate(RandomTestUtil.nextDate());
 

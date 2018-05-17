@@ -27,15 +27,14 @@ import com.liferay.portal.kernel.service.persistence.LayoutBranchPersistence;
 import com.liferay.portal.kernel.service.persistence.LayoutBranchUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -161,8 +160,8 @@ public class LayoutBranchPersistenceTest {
 			newLayoutBranch.getName());
 		Assert.assertEquals(existingLayoutBranch.getDescription(),
 			newLayoutBranch.getDescription());
-		Assert.assertEquals(existingLayoutBranch.getMaster(),
-			newLayoutBranch.getMaster());
+		Assert.assertEquals(existingLayoutBranch.isMaster(),
+			newLayoutBranch.isMaster());
 	}
 
 	@Test
@@ -183,9 +182,9 @@ public class LayoutBranchPersistenceTest {
 	@Test
 	public void testCountByL_P_N() throws Exception {
 		_persistence.countByL_P_N(RandomTestUtil.nextLong(),
-			RandomTestUtil.nextLong(), StringPool.BLANK);
+			RandomTestUtil.nextLong(), "");
 
-		_persistence.countByL_P_N(0L, 0L, StringPool.NULL);
+		_persistence.countByL_P_N(0L, 0L, "null");
 
 		_persistence.countByL_P_N(0L, 0L, (String)null);
 	}

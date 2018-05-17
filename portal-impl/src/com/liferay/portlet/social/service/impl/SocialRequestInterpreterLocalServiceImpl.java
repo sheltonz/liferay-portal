@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.social.service.impl;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -21,7 +22,6 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portlet.social.service.base.SocialRequestInterpreterLocalServiceBaseImpl;
 import com.liferay.registry.Filter;
@@ -93,6 +93,8 @@ public class SocialRequestInterpreterLocalServiceImpl
 
 	@Override
 	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+
 		Registry registry = RegistryUtil.getRegistry();
 
 		Filter filter = registry.getFilter(
@@ -245,7 +247,8 @@ public class SocialRequestInterpreterLocalServiceImpl
 		}
 		catch (JSONException jsone) {
 			_log.error(
-				"Unable to create JSON object from " + request.getExtraData());
+				"Unable to create JSON object from " + request.getExtraData(),
+				jsone);
 
 			return StringPool.BLANK;
 		}
@@ -293,10 +296,10 @@ public class SocialRequestInterpreterLocalServiceImpl
 			SocialRequestInterpreter requestInterpreter = registry.getService(
 				serviceReference);
 
-			String portletId = (String)serviceReference.getProperty(
-				"javax.portlet.name");
-
 			if (!(requestInterpreter instanceof SocialRequestInterpreterImpl)) {
+				String portletId = (String)serviceReference.getProperty(
+					"javax.portlet.name");
+
 				requestInterpreter = new SocialRequestInterpreterImpl(
 					portletId, requestInterpreter);
 			}

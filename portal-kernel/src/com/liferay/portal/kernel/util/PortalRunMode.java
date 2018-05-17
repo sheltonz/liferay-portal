@@ -14,6 +14,8 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.petra.string.StringPool;
+
 /**
  * @author Michael C. Han
  */
@@ -29,6 +31,10 @@ public class PortalRunMode {
 		return false;
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	public static void setTestMode(boolean mode) {
 		if (mode) {
 			SystemProperties.set("liferay.mode", "test");

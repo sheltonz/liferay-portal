@@ -15,6 +15,7 @@
 package com.liferay.portal.action;
 
 import com.liferay.layouts.admin.kernel.util.SitemapUtil;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchLayoutSetException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,7 +31,6 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -59,9 +59,8 @@ public class SitemapAction extends Action {
 			ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
 				WebKeys.THEME_DISPLAY);
 
+			String layoutUuid = ParamUtil.getString(request, "layoutUuid");
 			long groupId = ParamUtil.getLong(request, "groupId");
-			boolean privateLayout = ParamUtil.getBoolean(
-				request, "privateLayout");
 
 			LayoutSet layoutSet = null;
 
@@ -71,6 +70,9 @@ public class SitemapAction extends Action {
 				if (group.isStagingGroup()) {
 					groupId = group.getLiveGroupId();
 				}
+
+				boolean privateLayout = ParamUtil.getBoolean(
+					request, "privateLayout");
 
 				layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
 					groupId, privateLayout);
@@ -107,7 +109,7 @@ public class SitemapAction extends Action {
 			}
 
 			String sitemap = SitemapUtil.getSitemap(
-				layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
+				layoutUuid, layoutSet.getGroupId(), layoutSet.isPrivateLayout(),
 				themeDisplay);
 
 			ServletResponseUtil.sendFile(

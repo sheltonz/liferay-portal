@@ -23,7 +23,7 @@ import com.liferay.portal.kernel.nio.intraband.welder.WelderFactoryUtil;
 import com.liferay.portal.kernel.process.ProcessCallable;
 import com.liferay.portal.kernel.process.ProcessException;
 import com.liferay.portal.kernel.process.local.LocalProcessLauncher;
-import com.liferay.portal.kernel.process.log.ProcessOutputStream;
+import com.liferay.portal.kernel.process.local.LocalProcessLauncher.ProcessContext;
 import com.liferay.portal.kernel.resiliency.mpi.MPI;
 import com.liferay.portal.kernel.resiliency.mpi.MPIHelperUtil;
 import com.liferay.portal.kernel.resiliency.spi.SPI;
@@ -81,10 +81,7 @@ public abstract class RemoteSPI implements ProcessCallable<SPI>, Remote, SPI {
 
 			RegisterCallback registerCallback = new RegisterCallback(uuid, spi);
 
-			ProcessOutputStream processOutputStream =
-				LocalProcessLauncher.ProcessContext.getProcessOutputStream();
-
-			processOutputStream.writeProcessCallable(registerCallback);
+			ProcessContext.writeProcessCallable(registerCallback);
 
 			registrationReference = welder.weld(MPIHelperUtil.getIntraband());
 
@@ -250,7 +247,7 @@ public abstract class RemoteSPI implements ProcessCallable<SPI>, Remote, SPI {
 			}
 
 			if (unregistered || !_waitForMPI()) {
-				_doShutdown();
+				_shutdown();
 			}
 		}
 
@@ -260,12 +257,12 @@ public abstract class RemoteSPI implements ProcessCallable<SPI>, Remote, SPI {
 
 			runtime.removeShutdownHook(this);
 
-			_doShutdown();
+			_shutdown();
 
 			return true;
 		}
 
-		private void _doShutdown() {
+		private void _shutdown() {
 			try {
 				RemoteSPI.this.stop();
 			}

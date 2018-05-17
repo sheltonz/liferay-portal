@@ -55,7 +55,6 @@ public class ThemeServicePreAction extends Action {
 			WebKeys.THEME_DISPLAY);
 
 		Theme theme = themeDisplay.getTheme();
-		ColorScheme colorScheme = themeDisplay.getColorScheme();
 
 		if (theme != null) {
 			if (_log.isInfoEnabled()) {
@@ -65,6 +64,7 @@ public class ThemeServicePreAction extends Action {
 			return;
 		}
 
+		ColorScheme colorScheme = themeDisplay.getColorScheme();
 		Layout layout = themeDisplay.getLayout();
 
 		if (layout != null) {
@@ -79,6 +79,7 @@ public class ThemeServicePreAction extends Action {
 
 			theme = ThemeLocalServiceUtil.getTheme(
 				themeDisplay.getCompanyId(), themeId);
+
 			colorScheme = ThemeLocalServiceUtil.getColorScheme(
 				themeDisplay.getCompanyId(), theme.getThemeId(), colorSchemeId);
 		}

@@ -14,7 +14,8 @@
 
 package com.liferay.portal.kernel.servlet;
 
-import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.KeyValuePair;
@@ -22,7 +23,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.SortedProperties;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Validator;
@@ -145,9 +145,10 @@ public class SanitizedServletResponse extends HttpServletResponseWrapper {
 
 		for (KeyValuePair xFrameOptionKVP : _xFrameOptionKVPs) {
 			String url = xFrameOptionKVP.getKey();
-			String value = xFrameOptionKVP.getValue();
 
 			if (requestURI.startsWith(url)) {
+				String value = xFrameOptionKVP.getValue();
+
 				if (value != null) {
 					response.setHeader(
 						HttpHeaders.X_FRAME_OPTIONS,
@@ -176,7 +177,7 @@ public class SanitizedServletResponse extends HttpServletResponseWrapper {
 			return;
 		}
 
-		if (Validator.isNull(_X_XSS_PROTECTION)) {
+		if (_X_XSS_PROTECTION == null) {
 			return;
 		}
 
@@ -202,8 +203,7 @@ public class SanitizedServletResponse extends HttpServletResponseWrapper {
 
 	private static final boolean _X_FRAME_OPTIONS;
 
-	private static final String _X_XSS_PROTECTION = SystemProperties.get(
-		"http.header.secure.x.xss.protection");
+	private static final String _X_XSS_PROTECTION;
 
 	private static final KeyValuePair[] _xFrameOptionKVPs;
 
@@ -269,6 +269,16 @@ public class SanitizedServletResponse extends HttpServletResponseWrapper {
 		else {
 			_X_FRAME_OPTIONS = GetterUtil.getBoolean(
 				SystemProperties.get(httpHeaderSecureXFrameOptionsKey), true);
+		}
+
+		String xXssProtection = SystemProperties.get(
+			"http.header.secure.x.xss.protection");
+
+		if (Validator.isNull(xXssProtection)) {
+			_X_XSS_PROTECTION = null;
+		}
+		else {
+			_X_XSS_PROTECTION = xXssProtection;
 		}
 	}
 

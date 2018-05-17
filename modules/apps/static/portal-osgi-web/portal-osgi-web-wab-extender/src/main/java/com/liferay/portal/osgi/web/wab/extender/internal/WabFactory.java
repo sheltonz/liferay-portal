@@ -14,8 +14,11 @@
 
 package com.liferay.portal.osgi.web.wab.extender.internal;
 
+import com.liferay.osgi.felix.util.AbstractExtender;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.osgi.web.servlet.JSPServletFactory;
+import com.liferay.portal.osgi.web.servlet.JSPTaglibHelper;
 import com.liferay.portal.osgi.web.servlet.context.helper.ServletContextHelperFactory;
 import com.liferay.portal.osgi.web.wab.extender.internal.configuration.WabExtenderConfiguration;
 import com.liferay.portal.osgi.web.wab.extender.internal.event.EventUtil;
@@ -25,7 +28,6 @@ import java.util.Dictionary;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.felix.utils.extender.AbstractExtender;
 import org.apache.felix.utils.extender.Extension;
 import org.apache.felix.utils.log.Logger;
 
@@ -51,11 +53,10 @@ public class WabFactory extends AbstractExtender {
 
 	@Activate
 	public void activate(ComponentContext componentContext) {
-		setSynchronous(true);
+		BundleContext bundleContext = componentContext.getBundleContext();
 
-		_bundleContext = componentContext.getBundleContext();
-		_eventUtil = new EventUtil(_bundleContext);
-		_logger = new Logger(_bundleContext);
+		_eventUtil = new EventUtil(bundleContext);
+		_logger = new Logger(bundleContext);
 
 		Dictionary<String, Object> properties =
 			componentContext.getProperties();
@@ -65,9 +66,10 @@ public class WabFactory extends AbstractExtender {
 
 		try {
 			_webBundleDeployer = new WebBundleDeployer(
-				_bundleContext, properties, _eventUtil, _logger);
+				bundleContext, _jspServletFactory, _jspTaglibHelper, properties,
+				_eventUtil, _logger);
 
-			super.start(_bundleContext);
+			start(bundleContext);
 		}
 		catch (Exception e) {
 			_logger.log(Logger.LOG_ERROR, e.getMessage(), e);
@@ -75,10 +77,8 @@ public class WabFactory extends AbstractExtender {
 	}
 
 	@Deactivate
-	public void deactivate() throws Exception {
-		super.stop(_bundleContext);
-
-		_bundleContext = null;
+	public void deactivate(BundleContext bundleContext) throws Exception {
+		stop(bundleContext);
 
 		_eventUtil.close();
 
@@ -116,8 +116,14 @@ public class WabFactory extends AbstractExtender {
 		_logger.log(Logger.LOG_WARNING, "[" + bundle + "] " + message, t);
 	}
 
-	private BundleContext _bundleContext;
 	private EventUtil _eventUtil;
+
+	@Reference
+	private JSPServletFactory _jspServletFactory;
+
+	@Reference
+	private JSPTaglibHelper _jspTaglibHelper;
+
 	private Logger _logger;
 
 	@Reference

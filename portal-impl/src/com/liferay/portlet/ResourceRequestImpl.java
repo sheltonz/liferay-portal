@@ -14,23 +14,31 @@
 
 package com.liferay.portlet;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PublicRenderParameter;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import javax.portlet.PortletAsyncContext;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.ResourceParameters;
 import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceURL;
 import javax.portlet.WindowState;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -45,6 +53,11 @@ public class ResourceRequestImpl
 	}
 
 	@Override
+	public DispatcherType getDispatcherType() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public String getETag() {
 		return null;
 	}
@@ -55,13 +68,78 @@ public class ResourceRequestImpl
 	}
 
 	@Override
+	public PortletAsyncContext getPortletAsyncContext() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Map<String, String[]> getPrivateRenderParameterMap() {
-		return null;
+		Map<String, String[]> renderParameters = RenderParametersPool.get(
+			getOriginalHttpServletRequest(), getPlid(), getPortletName());
+
+		if ((renderParameters == null) || renderParameters.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Portlet portlet = getPortlet();
+
+		Set<PublicRenderParameter> publicRenderParameters =
+			portlet.getPublicRenderParameters();
+
+		if (publicRenderParameters.isEmpty()) {
+			return Collections.unmodifiableMap(renderParameters);
+		}
+
+		Map<String, String[]> privateRenderParameters = new HashMap<>();
+
+		for (Map.Entry<String, String[]> entry : renderParameters.entrySet()) {
+			if (portlet.getPublicRenderParameter(entry.getKey()) != null) {
+				continue;
+			}
+
+			privateRenderParameters.put(entry.getKey(), entry.getValue());
+		}
+
+		if (privateRenderParameters.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		return Collections.unmodifiableMap(privateRenderParameters);
 	}
 
 	@Override
 	public String getResourceID() {
 		return _resourceID;
+	}
+
+	@Override
+	public ResourceParameters getResourceParameters() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public PortletAsyncContext startPortletAsync()
+		throws IllegalStateException {
+
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public PortletAsyncContext startPortletAsync(
+			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
+		throws IllegalStateException {
+
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

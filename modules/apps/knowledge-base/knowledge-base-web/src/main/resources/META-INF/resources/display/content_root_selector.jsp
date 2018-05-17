@@ -23,7 +23,7 @@ KBNavigationDisplayContext kbNavigationDisplayContext = (KBNavigationDisplayCont
 
 String currentKBFolderURLTitle = kbNavigationDisplayContext.getCurrentKBFolderURLTitle();
 
-List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGroupId, kbDisplayPortletInstanceConfiguration.resourcePrimKey());
+List<KBFolder> kbFolders = KBUtil.getAlternateRootKBFolders(scopeGroupId, kbDisplayPortletInstanceConfiguration.resourcePrimKey());
 %>
 
 <c:if test="<%= kbFolders.size() > 1 %>">
@@ -33,7 +33,7 @@ List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGrou
 		</c:if>
 	</liferay-portlet:actionURL>
 
-	<div class="kb-field-wrapper kbarticle-root-selector">
+	<div class="kbarticle-root-selector">
 		<aui:form action="<%= updateRootKBFolderIdURL %>" name="updateRootKBFolderIdFm">
 			<aui:select label="" name="rootKBFolderId">
 
@@ -41,11 +41,8 @@ List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGrou
 				for (KBFolder kbFolder : kbFolders) {
 				%>
 
-					<aui:option
-						selected="<%= currentKBFolderURLTitle.equals(kbFolder.getUrlTitle()) %>"
-						value="<%= kbFolder.getKbFolderId() %>"
-					>
-						<%= kbDisplayPortletInstanceConfiguration.contentRootPrefix() + " " + kbFolder.getName() %>
+					<aui:option selected="<%= currentKBFolderURLTitle.equals(kbFolder.getUrlTitle()) %>" value="<%= kbFolder.getKbFolderId() %>">
+						<%= HtmlUtil.escape(kbDisplayPortletInstanceConfiguration.contentRootPrefix() + " " + kbFolder.getName()) %>
 					</aui:option>
 
 				<%
@@ -56,15 +53,16 @@ List<KBFolder> kbFolders = KnowledgeBaseUtil.getAlternateRootKBFolders(scopeGrou
 		</aui:form>
 	</div>
 
-	<aui:script use="aui-base">
-		var updateRootKBFolderIdFm = A.one('#<portlet:namespace />updateRootKBFolderIdFm');
-		var rootKBFolderIdSelect = A.one('#<portlet:namespace />rootKBFolderId');
+	<aui:script>
+		var <portlet:namespace />form = document.querySelector('#<portlet:namespace />updateRootKBFolderIdFm');
 
-		rootKBFolderIdSelect.on(
-			'change',
-			function() {
-				updateRootKBFolderIdFm.submit();
-			}
-		);
+		if (<portlet:namespace />form) {
+			<portlet:namespace />form.querySelector('#<portlet:namespace />rootKBFolderId').addEventListener(
+				'change',
+				function() {
+					<portlet:namespace />form.submit();
+				}
+			);
+		}
 	</aui:script>
 </c:if>

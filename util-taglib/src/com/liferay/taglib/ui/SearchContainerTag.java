@@ -14,6 +14,7 @@
 
 package com.liferay.taglib.ui;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
@@ -21,8 +22,6 @@ import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.ParamUtil;
-import com.liferay.portal.kernel.util.SearchContainerReference;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.taglib.util.ParamAndPropertyAncestorTagImpl;
@@ -89,7 +88,7 @@ public class SearchContainerTag<R> extends ParamAndPropertyAncestorTagImpl {
 			}
 
 			if (_searchContainer == null) {
-				_searchContainer = new SearchContainer<R>(
+				_searchContainer = new SearchContainer<>(
 					portletRequest, _displayTerms, _searchTerms, getCurParam(),
 					getDelta(), _iteratorURL, null, _emptyResultsMessage);
 			}
@@ -168,16 +167,6 @@ public class SearchContainerTag<R> extends ParamAndPropertyAncestorTagImpl {
 			pageContext.setAttribute(
 				_searchContainer.getTotalVar(), _searchContainer.getTotal());
 			pageContext.setAttribute(_var, _searchContainer);
-
-			SearchContainerReference searchContainerReference =
-				(SearchContainerReference)pageContext.getAttribute(
-					"searchContainerReference");
-
-			if ((searchContainerReference != null) &&
-				!_var.equals(SearchContainer.DEFAULT_VAR)) {
-
-				searchContainerReference.register(_var, _searchContainer);
-			}
 
 			return EVAL_BODY_INCLUDE;
 		}

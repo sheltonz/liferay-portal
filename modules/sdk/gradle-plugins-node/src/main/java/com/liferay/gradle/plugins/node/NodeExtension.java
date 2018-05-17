@@ -14,7 +14,7 @@
 
 package com.liferay.gradle.plugins.node;
 
-import com.liferay.gradle.plugins.node.util.GradleUtil;
+import com.liferay.gradle.plugins.node.internal.util.GradleUtil;
 import com.liferay.gradle.util.OSDetector;
 import com.liferay.gradle.util.Validator;
 
@@ -40,44 +40,13 @@ public class NodeExtension {
 
 			@Override
 			public File call() throws Exception {
-				return new File(project.getBuildDir(), "node");
-			}
+				Project curProject = project;
 
-		};
-
-		_nodeExeUrl = new Callable<String>() {
-
-			@Override
-			public String call() throws Exception {
-				String nodeVersion = getNodeVersion();
-
-				if (Validator.isNull(nodeVersion)) {
-					return null;
+				if (isGlobal()) {
+					curProject = curProject.getRootProject();
 				}
 
-				StringBuilder sb = new StringBuilder();
-
-				sb.append("http://nodejs.org/dist/v");
-				sb.append(nodeVersion);
-				sb.append('/');
-
-				String bitmode = OSDetector.getBitmode();
-
-				if (bitmode.equals("64")) {
-					if (nodeVersion.charAt(0) != '0') {
-						sb.append("win-x64");
-					}
-					else {
-						sb.append("x64");
-					}
-				}
-				else if (nodeVersion.charAt(0) != '0') {
-					sb.append("win-x86");
-				}
-
-				sb.append("/node.exe");
-
-				return sb.toString();
+				return new File(curProject.getBuildDir(), "node");
 			}
 
 		};
@@ -105,20 +74,45 @@ public class NodeExtension {
 				if (OSDetector.isApple()) {
 					os = "darwin";
 				}
+				else if (OSDetector.isWindows()) {
+					os = "win";
+				}
 
 				sb.append(os);
 				sb.append("-x");
 
 				String bitmode = OSDetector.getBitmode();
 
-				if (bitmode.equals("32") || OSDetector.isWindows()) {
+				if (bitmode.equals("32")) {
 					bitmode = "86";
 				}
 
 				sb.append(bitmode);
-				sb.append(".tar.gz");
+
+				if (OSDetector.isWindows()) {
+					sb.append(".zip");
+				}
+				else {
+					sb.append(".tar.gz");
+				}
 
 				return sb.toString();
+			}
+
+		};
+
+		_npmUrl = new Callable<String>() {
+
+			@Override
+			public String call() throws Exception {
+				String npmVersion = getNpmVersion();
+
+				if (Validator.isNull(npmVersion)) {
+					return null;
+				}
+
+				return "https://registry.npmjs.org/npm/-/npm-" + npmVersion +
+					".tgz";
 			}
 
 		};
@@ -128,10 +122,6 @@ public class NodeExtension {
 
 	public File getNodeDir() {
 		return GradleUtil.toFile(_project, _nodeDir);
-	}
-
-	public String getNodeExeUrl() {
-		return GradleUtil.toString(_nodeExeUrl);
 	}
 
 	public String getNodeUrl() {
@@ -146,8 +136,20 @@ public class NodeExtension {
 		return GradleUtil.toStringList(_npmArgs);
 	}
 
+	public String getNpmUrl() {
+		return GradleUtil.toString(_npmUrl);
+	}
+
+	public String getNpmVersion() {
+		return GradleUtil.toString(_npmVersion);
+	}
+
 	public boolean isDownload() {
 		return _download;
+	}
+
+	public boolean isGlobal() {
+		return _global;
 	}
 
 	public NodeExtension npmArgs(Iterable<?> npmArgs) {
@@ -164,12 +166,12 @@ public class NodeExtension {
 		_download = download;
 	}
 
-	public void setNodeDir(Object nodeDir) {
-		_nodeDir = nodeDir;
+	public void setGlobal(boolean global) {
+		_global = global;
 	}
 
-	public void setNodeExeUrl(Object nodeExeUrl) {
-		_nodeExeUrl = nodeExeUrl;
+	public void setNodeDir(Object nodeDir) {
+		_nodeDir = nodeDir;
 	}
 
 	public void setNodeUrl(Object nodeUrl) {
@@ -190,12 +192,22 @@ public class NodeExtension {
 		setNpmArgs(Arrays.asList(npmArgs));
 	}
 
+	public void setNpmUrl(Object npmUrl) {
+		_npmUrl = npmUrl;
+	}
+
+	public void setNpmVersion(Object npmVersion) {
+		_npmVersion = npmVersion;
+	}
+
 	private boolean _download;
+	private boolean _global;
 	private Object _nodeDir;
-	private Object _nodeExeUrl;
 	private Object _nodeUrl;
 	private Object _nodeVersion = "5.5.0";
 	private final List<Object> _npmArgs = new ArrayList<>();
+	private Object _npmUrl;
+	private Object _npmVersion;
 	private final Project _project;
 
 }

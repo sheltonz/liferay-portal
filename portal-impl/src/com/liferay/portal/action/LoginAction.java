@@ -14,17 +14,17 @@
 
 package com.liferay.portal.action;
 
+import com.liferay.petra.string.CharPool;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.security.auth.session.AuthenticatedSessionManagerUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -85,10 +85,11 @@ public class LoginAction extends Action {
 
 		String login = ParamUtil.getString(request, "login");
 		String password = request.getParameter("password");
-		boolean rememberMe = ParamUtil.getBoolean(request, "rememberMe");
-		String authType = ParamUtil.getString(request, "authType");
 
 		if (Validator.isNotNull(login) && Validator.isNotNull(password)) {
+			boolean rememberMe = ParamUtil.getBoolean(request, "rememberMe");
+			String authType = ParamUtil.getString(request, "authType");
+
 			AuthenticatedSessionManagerUtil.login(
 				request, response, login, password, rememberMe, authType);
 		}
@@ -132,8 +133,7 @@ public class LoginAction extends Action {
 
 		if (Validator.isNull(redirect)) {
 			PortletURL portletURL = PortletURLFactoryUtil.create(
-				request, PortletKeys.LOGIN, themeDisplay.getPlid(),
-				PortletRequest.RENDER_PHASE);
+				request, PortletKeys.LOGIN, PortletRequest.RENDER_PHASE);
 
 			portletURL.setParameter("saveLastPath", Boolean.FALSE.toString());
 			portletURL.setParameter("mvcRenderCommandName", "/login/login");

@@ -22,23 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 public class ResourceResponseFactory {
 
 	public static ResourceResponseImpl create(
-			ResourceRequestImpl resourceRequestImpl,
-			HttpServletResponse response, String portletName, long companyId)
-		throws Exception {
-
-		return create(resourceRequestImpl, response, portletName, companyId, 0);
-	}
-
-	public static ResourceResponseImpl create(
-			ResourceRequestImpl resourceRequestImpl,
-			HttpServletResponse response, String portletName, long companyId,
-			long plid)
-		throws Exception {
+		ResourceRequestImpl resourceRequestImpl, HttpServletResponse response) {
 
 		ResourceResponseImpl resourceResponseImpl = new ResourceResponseImpl();
 
-		resourceResponseImpl.init(
-			resourceRequestImpl, response, portletName, companyId, plid);
+		resourceResponseImpl.init(resourceRequestImpl, response);
 
 		return resourceResponseImpl;
 	}

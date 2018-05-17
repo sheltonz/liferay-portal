@@ -28,16 +28,15 @@ import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
-import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.IntegerWrapper;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
+import com.liferay.portal.test.rule.TransactionalTestRule;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -183,8 +182,8 @@ public class DLFileShortcutPersistenceTest {
 			newDLFileShortcut.getToFileEntryId());
 		Assert.assertEquals(existingDLFileShortcut.getTreePath(),
 			newDLFileShortcut.getTreePath());
-		Assert.assertEquals(existingDLFileShortcut.getActive(),
-			newDLFileShortcut.getActive());
+		Assert.assertEquals(existingDLFileShortcut.isActive(),
+			newDLFileShortcut.isActive());
 		Assert.assertEquals(Time.getShortTimestamp(
 				existingDLFileShortcut.getLastPublishDate()),
 			Time.getShortTimestamp(newDLFileShortcut.getLastPublishDate()));
@@ -201,27 +200,27 @@ public class DLFileShortcutPersistenceTest {
 
 	@Test
 	public void testCountByUuid() throws Exception {
-		_persistence.countByUuid(StringPool.BLANK);
+		_persistence.countByUuid("");
 
-		_persistence.countByUuid(StringPool.NULL);
+		_persistence.countByUuid("null");
 
 		_persistence.countByUuid((String)null);
 	}
 
 	@Test
 	public void testCountByUUID_G() throws Exception {
-		_persistence.countByUUID_G(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByUUID_G("", RandomTestUtil.nextLong());
 
-		_persistence.countByUUID_G(StringPool.NULL, 0L);
+		_persistence.countByUUID_G("null", 0L);
 
 		_persistence.countByUUID_G((String)null, 0L);
 	}
 
 	@Test
 	public void testCountByUuid_C() throws Exception {
-		_persistence.countByUuid_C(StringPool.BLANK, RandomTestUtil.nextLong());
+		_persistence.countByUuid_C("", RandomTestUtil.nextLong());
 
-		_persistence.countByUuid_C(StringPool.NULL, 0L);
+		_persistence.countByUuid_C("null", 0L);
 
 		_persistence.countByUuid_C((String)null, 0L);
 	}

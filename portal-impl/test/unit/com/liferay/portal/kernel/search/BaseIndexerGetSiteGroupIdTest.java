@@ -22,6 +22,9 @@ import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.util.Props;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.registry.BasicRegistryImpl;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
 
 import java.util.Locale;
 
@@ -45,7 +48,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Miguel Angelo Caldas Gallindo
  * @author André de Oliveira
  */
-@PrepareOnlyThisForTest({GroupLocalServiceUtil.class})
+@PrepareOnlyThisForTest(GroupLocalServiceUtil.class)
 @RunWith(PowerMockRunner.class)
 public class BaseIndexerGetSiteGroupIdTest extends PowerMockito {
 
@@ -55,6 +58,7 @@ public class BaseIndexerGetSiteGroupIdTest extends PowerMockito {
 
 		setUpGroupLocalServiceUtil();
 		setUpPropsUtil();
+		setUpRegistryUtil();
 
 		_indexer = new TestIndexer();
 	}
@@ -206,13 +210,21 @@ public class BaseIndexerGetSiteGroupIdTest extends PowerMockito {
 			new NoSuchGroupException()
 		).when(
 			_groupLocalService
-		).getGroup(groupId);
+		).getGroup(
+			groupId
+		);
 	}
 
 	protected void setUpPropsUtil() {
 		Props props = mock(Props.class);
 
 		PropsUtil.setProps(props);
+	}
+
+	protected void setUpRegistryUtil() throws Exception {
+		Registry registry = new BasicRegistryImpl();
+
+		RegistryUtil.setRegistry(registry);
 	}
 
 	@Mock

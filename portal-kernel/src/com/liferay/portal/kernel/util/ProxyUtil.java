@@ -14,9 +14,10 @@
 
 package com.liferay.portal.kernel.util;
 
-import com.liferay.portal.kernel.concurrent.ConcurrentReferenceKeyHashMap;
-import com.liferay.portal.kernel.concurrent.ConcurrentReferenceValueHashMap;
-import com.liferay.portal.kernel.memory.FinalizeManager;
+import com.liferay.petra.concurrent.ConcurrentReferenceKeyHashMap;
+import com.liferay.petra.concurrent.ConcurrentReferenceValueHashMap;
+import com.liferay.petra.memory.FinalizeManager;
+import com.liferay.petra.reflect.ReflectionUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -66,7 +67,7 @@ public class ProxyUtil {
 		Class<?> clazz = classReferences.get(lookupKey);
 
 		if (clazz == null) {
-			synchronized(classReferences) {
+			synchronized (classReferences) {
 				clazz = classReferences.get(lookupKey);
 
 				if (clazz == null) {
@@ -77,18 +78,20 @@ public class ProxyUtil {
 			}
 		}
 
-		Constructor<?> constructor = null;
+		if (!_constructors.containsKey(clazz)) {
+			Constructor<?> constructor = null;
 
-		try {
-			constructor = clazz.getConstructor(_argumentsClazz);
+			try {
+				constructor = clazz.getConstructor(_ARGUMENTS_CLASS);
 
-			constructor.setAccessible(true);
+				constructor.setAccessible(true);
+			}
+			catch (Exception e) {
+				throw new InternalError(e.toString());
+			}
+
+			_constructors.putIfAbsent(clazz, constructor);
 		}
-		catch (Exception e) {
-			throw new InternalError(e.toString());
-		}
-
-		_constructors.putIfAbsent(clazz, constructor);
 
 		return clazz;
 	}
@@ -116,7 +119,9 @@ public class ProxyUtil {
 		}
 	}
 
-	private static final Class<?>[] _argumentsClazz = {InvocationHandler.class};
+	private static final Class<?>[] _ARGUMENTS_CLASS =
+		{InvocationHandler.class};
+
 	private static final ConcurrentMap
 		<ClassLoader, ConcurrentMap<LookupKey, Class<?>>> _classReferences =
 			new ConcurrentReferenceKeyHashMap<>(
@@ -140,18 +145,6 @@ public class ProxyUtil {
 
 	private static class LookupKey {
 
-		public LookupKey(Class<?>[] interfaces) {
-			_interfaces = interfaces;
-
-			int hashCode = 0;
-
-			for (Class<?> clazz : interfaces) {
-				hashCode = HashUtil.hash(hashCode, clazz.getName());
-			}
-
-			_hashCode = hashCode;
-		}
-
 		@Override
 		public boolean equals(Object obj) {
 			LookupKey lookupKey = (LookupKey)obj;
@@ -172,6 +165,18 @@ public class ProxyUtil {
 		@Override
 		public int hashCode() {
 			return _hashCode;
+		}
+
+		private LookupKey(Class<?>[] interfaces) {
+			_interfaces = interfaces;
+
+			int hashCode = 0;
+
+			for (Class<?> clazz : interfaces) {
+				hashCode = HashUtil.hash(hashCode, clazz.getName());
+			}
+
+			_hashCode = hashCode;
 		}
 
 		private final int _hashCode;
